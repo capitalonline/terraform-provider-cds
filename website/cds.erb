@@ -1,0 +1,64 @@
+<% wrap_layout :inner do %>
+    <% content_for :sidebar do %>
+        <div class="docs-sidebar hidden-print affix-top" role="complementary">
+            <ul class="nav docs-sidenav">
+                <li<%= sidebar_current("docs-home") %>>
+                    <a href="/docs/providers/index.html">All Providers</a>
+                </li>
+                <li<%= sidebar_current("docs-cds-index") %>>
+                    <a href="/docs/providers/cds/index.html">CDS Provider</a>
+                </li>
+                <li<%= sidebar_current("docs-cds-resource") %>>
+                    <a href="#">Virtual Data Center</a>
+                    <ul class="nav">
+                         <li<%= sidebar_current("docs-cds-resource-vdc") %>>
+                                <a href="#">VDC</a>
+                                <ul class="nav">
+                                     <li<%= sidebar_current("docs-cds-resource-vdc") %>>
+                                            <a href="/docs/providers/cds/r/vdc.html">Resource</a>
+                                     </li>
+                                      <li<%= sidebar_current("docs-cds-datasource-vdc") %>>
+                                             <a href="/docs/providers/cds/d/vdc.html">Data Source</a>
+                                      </li>
+                                </ul>
+                         </li>
+                          <li<%= sidebar_current("docs-cds-resource-vdc") %>>
+                                 <a href="#">Private Subnet</a>
+                                 <ul class="nav">
+                                      <li<%= sidebar_current("docs-cds-resource-vdc") %>>
+                                             <a href="/docs/providers/cds/r/private_subnet.html">Resource</a>
+                                      </li>
+                                       <li<%= sidebar_current("docs-cds-datasource-vdc") %>>
+                                              <a href="/docs/providers/cds/d/private_subnet.html">Data Source</a>
+                                       </li>
+                                 </ul>
+                          </li>
+                    </ul>
+                </li>
+                <li<%= sidebar_current("docs-cds-resource") %>>
+                    <a href="#">Security Group</a>
+                    <ul class="nav">
+                         <li<%= sidebar_current("docs-cds-resource-vdc") %>>
+                                <a href="/docs/providers/cds/r/security_group.html">Resource</a>
+                         </li>
+                          <li<%= sidebar_current("docs-cds-datasource-vdc") %>>
+                                 <a href="/docs/providers/cds/d/security_group.html">Data Source</a>
+                          </li>
+                    </ul>
+                </li>
+                <li<%= sidebar_current("docs-cds-resource") %>>
+                    <a href="#">Instance</a>
+                    <ul class="nav">
+                         <li<%= sidebar_current("docs-cds-resource-vdc") %>>
+                                <a href="/docs/providers/cds/r/instance.html">Resource</a>
+                         </li>
+                          <li<%= sidebar_current("docs-cds-datasource-vdc") %>>
+                                 <a href="/docs/providers/cds/d/instance.html">Data Source</a>
+                          </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    <% end %>
+    <%= yield %>
+<% end %>
