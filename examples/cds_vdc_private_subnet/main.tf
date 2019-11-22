@@ -1,14 +1,15 @@
-// VPC r for Module
+// create vdc
 resource "cds_vdc" "my_vdc" {
-  vdc_name = var.vdc_name
+  vdc_name = "Terraform(using)"
+  region_id = "CN_Beijing_A"
   public_network = {
-    "IPNum" = 4
-    "Qos" = 20
-    "Name" = "test-accPubNet002"
-    "FloatBandwidth" = 200
-    "BillingMethod" = "BandwIdth"
-    "AutoRenew" = 1
-    "Type" = "Bandwidth_BGP"
+    "ipnum" = 4
+    "qos" = 20
+    "name" = "test-accPubNet"
+    "floatbandwidth" = 200
+    "billingmethod" = "BandwIdth"
+    "autorenew" = 1
+    "type" = "Bandwidth_BGP"
   }
 }
 resource "cds_private_subnet" "my_private_subnet_1" {
