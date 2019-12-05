@@ -560,7 +560,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		} else if len(o) < len(n) {
 			for _, v := range n {
 				if !In_slice(v, o, "size") {
-					i, _ := v["size"].(int)
+					i := v["size"].(int)
 					temp := instance.DataDisk{
 						Size: &i,
 						Type: common.StringPtr(v["type"].(string)),
