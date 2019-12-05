@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
-	"strconv"
 	"strings"
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/instance"
@@ -561,7 +560,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		} else if len(o) < len(n) {
 			for _, v := range n {
 				if !In_slice(v, o, "size") {
-					i, _ := strconv.Atoi(v["size"].(string))
+					i, _ := v["size"].(int)
 					temp := instance.DataDisk{
 						Size: &i,
 						Type: common.StringPtr(v["type"].(string)),
