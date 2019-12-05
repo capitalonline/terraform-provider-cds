@@ -206,7 +206,8 @@ func (me *SecurityGroupService) DeleteSecurityGroupRule(
 		}
 	}()
 
-	result, errRet := me.client.UseSecurityRuleClient().DeleteSecurityGroupRule(request)
-	taskId = *result.TaskId
+	_, errRet = me.client.UseSecurityRuleClient().DeleteSecurityGroupRule(request)
+	taskId = ""
+	//taskId = *result.TaskId
 	return
 }
