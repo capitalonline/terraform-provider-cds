@@ -377,7 +377,8 @@ func resourceCdsSecurityGroupUpdate(d *schema.ResourceData, meta interface{}) er
 
 		}
 		securityGroupService.DeleteSecurityGroupRule(ctx, deleteRuleRequest)
-
+		//TODO 需要等待规则删除，否则接口端会检测有相同优先级的规则导致新规则无法添加
+		time.Sleep(10 * time.Second)
 		// 增加新规则
 		for _, value := range newIngress {
 			rule := value.(map[string]interface{})

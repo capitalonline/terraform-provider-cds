@@ -107,7 +107,7 @@ func testAccSecurityGroupDestroy(s *terraform.State) error {
 const testAccSecurityGroupConfig = `
 resource "cds_security_group" "security_group_1" {
   name = "terraform-test"
-  description = "New security group"
+  description = "New security groupww"
   type ="public"
   rule  {
     action        = "1"
@@ -127,14 +127,14 @@ resource "cds_security_group" "security_group_1" {
 const testAccSecurityGroupUpdate = `
 resource "cds_security_group" "security_group_1" {
   name = "terraform-test"
-  description = "New security group"
+  description = "New security groupww"
   type ="public"
   rule  {
     action        = "1"
-    description   = "tf_rule_test_1"
+    description   = "tf_rule_test"
     targetaddress = "120.78.170.188/28;120.78.170.188/28;120.78.170.188/28"
     targetport    = "70;90;8"
-    localport     = "80"
+    localport     = "800"
     direction     = "all"
     priority      = "11"
     protocol      = "TCP"
