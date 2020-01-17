@@ -22,9 +22,10 @@ func resourceCdsVdc() *schema.Resource {
 		Delete: resourceCdsVdcDelete,
 		Schema: map[string]*schema.Schema{
 			"vdc_name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: false,
+				Type:         schema.TypeString,
+				Required:     true,
+				ForceNew:     false,
+				ValidateFunc: u.ValidateStringLengthInRange(1, 36),
 			},
 			"region_id": {
 				Type:     schema.TypeString,

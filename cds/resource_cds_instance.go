@@ -31,8 +31,9 @@ func resourceCdsCcsInstance() *schema.Resource {
 				Default:  "CN_Beijing_A",
 			},
 			"instance_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: u.ValidateStringLengthInRange(1, 36),
 			},
 			"vdc_id": &schema.Schema{
 				Type:     schema.TypeString,
