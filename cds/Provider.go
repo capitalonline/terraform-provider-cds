@@ -1,9 +1,10 @@
 package cds
 
 import (
+	"os"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
-	"os"
 )
 
 const (

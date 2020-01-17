@@ -2,9 +2,11 @@ package cds
 
 import (
 	"context"
-	"github.com/hashicorp/terraform/helper/schema"
+
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/vdc"
+
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func dataSourceCdsVdc() *schema.Resource {

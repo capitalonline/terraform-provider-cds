@@ -4,12 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
 	"strconv"
+	"time"
+
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/vdc"
 	u "terraform-provider-cds/cds/utils"
-	"time"
+
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceCdsVdc() *schema.Resource {
@@ -122,7 +124,7 @@ func resourceCdsVdcRead(d *schema.ResourceData, meta interface{}) error {
 		if *value.VdcId == id {
 			d.Set("vdc_name", *value.VdcName)
 			d.Set("region_id", *value.RegionId)
-			if len(value.PublicNetwork) > 0{
+			if len(value.PublicNetwork) > 0 {
 				d.Set("public_id", *value.PublicNetwork[0].PublicId)
 			}
 		}
@@ -162,7 +164,7 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 		// Add public network
 		if len(ois) == 0 && len(nis) > 0 {
 
-			request:=vdc.NewAddPublicNetworkRequest()
+			request := vdc.NewAddPublicNetworkRequest()
 			request.VdcId = common.StringPtr(id)
 			terformErr := u.Mapstructure(nis, request)
 			if terformErr != nil {
@@ -174,8 +176,8 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 			}
 			return nil
 		}
- 		// Delete public network
-		if len(nis) == 0 && len(ois) > 0  {
+		// Delete public network
+		if len(nis) == 0 && len(ois) > 0 {
 			if publicId, ok := d.GetOk("public_id"); ok {
 				publicId := publicId.(string)
 				if len(publicId) > 0 {

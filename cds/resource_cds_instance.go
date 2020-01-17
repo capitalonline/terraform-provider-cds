@@ -4,14 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
 	"strconv"
 	"strings"
+	"time"
+
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/instance"
 	"terraform-provider-cds/cds-sdk-go/security_group"
 	u "terraform-provider-cds/cds/utils"
-	"time"
+
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceCdsCcsInstance() *schema.Resource {
@@ -373,7 +375,7 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 					joinRequest.BindData = append(joinRequest.BindData, &bindData)
 				}
 				taskId, _ := securityGroupService.JoinSecurityGroup(ctx, joinRequest)
-				fmt.Println("task: ",taskId)
+				fmt.Println("task: ", taskId)
 				//if errRet != nil {
 				//	return errRet
 				//}
@@ -393,7 +395,7 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
 	ids := d.Id()
-	id := strings.Split(ids,",")[0]
+	id := strings.Split(ids, ",")[0]
 	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
 
 	request := instance.NewDescribeInstanceRequest()
@@ -428,7 +430,7 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 			return err
 		}
 	}
-	time.Sleep(30*time.Second)
+	time.Sleep(30 * time.Second)
 	return nil
 }
 
@@ -442,11 +444,11 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 	securityGroupService := SecurityGroupService{client: meta.(*CdsClient).apiConn}
 
 	ids := d.Id()
-	idArray := strings.Split(ids,",")
+	idArray := strings.Split(ids, ",")
 	if len(idArray) > 1 {
 		return errors.New("Batch creation does not allow modification")
 	}
-	id:=idArray[0]
+	id := idArray[0]
 	d.Partial(true)
 
 	if d.HasChange("private_ip") {
@@ -508,7 +510,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 				}
 			}
 		}
-		time.Sleep(10*time.Second)
+		time.Sleep(10 * time.Second)
 		for _, ing := range newIngress {
 			newbind := ing.(map[string]interface{})
 			request := security_group.NewJoinSecurityGroupRequest()
@@ -643,7 +645,7 @@ func resourceCdsCcsInstanceDelete(d *schema.ResourceData, meta interface{}) erro
 
 	}
 	//todo 等待解绑安全组
-	time.Sleep(30*time.Second)
+	time.Sleep(30 * time.Second)
 	request := instance.NewDeleteInstanceRequest()
 	for _, value := range idArray {
 		request.InstanceIds = append(request.InstanceIds, common.StringPtr(value))
@@ -653,7 +655,7 @@ func resourceCdsCcsInstanceDelete(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 	//todo 等待删除实例，删除动作当前不提供taskid
-	time.Sleep(50*time.Second)
+	time.Sleep(50 * time.Second)
 	return nil
 }
 

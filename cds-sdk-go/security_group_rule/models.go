@@ -1,7 +1,10 @@
 package security_group_rule
 
-import "encoding/json"
-import cdshttp "terraform-provider-cds/cds-sdk-go/common/http"
+import (
+	"encoding/json"
+
+	cdshttp "terraform-provider-cds/cds-sdk-go/common/http"
+)
 
 type RuleParam struct {
 	Action        *string `json:"Action" name:"Action"`

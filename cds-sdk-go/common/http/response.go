@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"terraform-provider-cds/cds-sdk-go/common/errors"
-
-	//"log"
 	"net/http"
+
+	"terraform-provider-cds/cds-sdk-go/common/errors"
 )
 
 type Response interface {

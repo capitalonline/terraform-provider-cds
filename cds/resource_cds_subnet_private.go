@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
+	"time"
+
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/vdc"
-	"time"
+
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceCdsPrivateSubnet() *schema.Resource {
@@ -131,6 +133,6 @@ func resourceCdsPrivateSubnetDelete(d *schema.ResourceData, meta interface{}) er
 	if errRet != nil {
 		return errRet
 	}
-	time.Sleep(20*time.Second)
+	time.Sleep(20 * time.Second)
 	return nil
 }

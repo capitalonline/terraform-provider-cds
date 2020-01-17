@@ -2,10 +2,11 @@ package security_group_rule
 
 import (
 	"fmt"
+	"testing"
+
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/common/profile"
 	"terraform-provider-cds/cds-sdk-go/common/regions"
-	"testing"
 )
 
 func TestClient_CreateSecurityGroup(t *testing.T) {

@@ -2,10 +2,11 @@ package task
 
 import (
 	"fmt"
+	"testing"
+
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/common/profile"
 	"terraform-provider-cds/cds-sdk-go/common/regions"
-	"testing"
 )
 
 func TestClient_DescribeTask(t *testing.T) {

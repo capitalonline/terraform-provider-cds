@@ -4,14 +4,16 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/hashcode"
-	"github.com/hashicorp/terraform/helper/schema"
 	"strconv"
+	"time"
+
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/security_group"
 	"terraform-provider-cds/cds-sdk-go/security_group_rule"
 	u "terraform-provider-cds/cds/utils"
-	"time"
+
+	"github.com/hashicorp/terraform/helper/hashcode"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceCdsSecurityGroup() *schema.Resource {

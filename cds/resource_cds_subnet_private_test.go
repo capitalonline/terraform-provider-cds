@@ -2,9 +2,10 @@ package cds
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"testing"
 )
 
 func TestAccPrivateSubnet(t *testing.T) {

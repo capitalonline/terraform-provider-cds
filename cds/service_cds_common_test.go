@@ -1,10 +1,12 @@
 package cds
 
 import (
+	"strings"
+
+	"terraform-provider-cds/cds-sdk-go/common/errors"
+
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"strings"
-	"terraform-provider-cds/cds-sdk-go/common/errors"
 )
 
 // check the existence of resource

@@ -2,14 +2,16 @@ package cds
 
 import (
 	"context"
-	"github.com/terraform-providers/terraform-provider-tencentcloud/tencentcloud/ratelimit"
 	"log"
+	"time"
+
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/security_group"
 	"terraform-provider-cds/cds-sdk-go/security_group_rule"
 	"terraform-provider-cds/cds/connectivity"
 	u "terraform-provider-cds/cds/utils"
-	"time"
+
+	"github.com/terraform-providers/terraform-provider-tencentcloud/tencentcloud/ratelimit"
 )
 
 type SecurityGroupService struct {

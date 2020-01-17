@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"strings"
+	"time"
+
 	"terraform-provider-cds/cds-sdk-go/common/errors"
 	cdshttp "terraform-provider-cds/cds-sdk-go/common/http"
 	"terraform-provider-cds/cds-sdk-go/common/profile"
-	"time"
 )
 
 type Client struct {
@@ -119,7 +120,7 @@ func (c *Client) GetRegion() string {
 
 func (c *Client) Init(region string) *Client {
 	c.httpClient = &http.Client{
-		Timeout:20*time.Second,
+		Timeout: 20 * time.Second,
 	}
 	c.region = region
 	c.signMethod = "HmacSHA1"

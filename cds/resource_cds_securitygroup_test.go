@@ -3,12 +3,14 @@ package cds
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
-	"terraform-provider-cds/cds-sdk-go/common"
-	"terraform-provider-cds/cds-sdk-go/security_group"
 	"testing"
 	"time"
+
+	"terraform-provider-cds/cds-sdk-go/common"
+	"terraform-provider-cds/cds-sdk-go/security_group"
+
+	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
 )
 
 func TestAccSecurityGroup(t *testing.T) {

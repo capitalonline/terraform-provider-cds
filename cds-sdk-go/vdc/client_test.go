@@ -2,11 +2,12 @@ package vdc
 
 import (
 	"fmt"
+	"testing"
+
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/common/profile"
 	"terraform-provider-cds/cds-sdk-go/common/regions"
 	"terraform-provider-cds/cds-sdk-go/task"
-	"testing"
 )
 
 func TestClient_CreateVdc(t *testing.T) {

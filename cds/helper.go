@@ -5,10 +5,11 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/hashcode"
-	"github.com/hashicorp/terraform/helper/schema"
 	"math/rand"
 	"time"
+
+	"github.com/hashicorp/terraform/helper/hashcode"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 // Generates a hash for the set hash function used by the IDs

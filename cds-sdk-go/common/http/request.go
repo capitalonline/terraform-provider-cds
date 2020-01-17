@@ -1,13 +1,14 @@
 package common
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"io"
 	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 const (

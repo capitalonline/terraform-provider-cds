@@ -2,13 +2,14 @@ package utils
 
 import (
 	"fmt"
-	"github.com/athom/goset"
-	"github.com/hashicorp/terraform/helper/schema"
 	"net"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/athom/goset"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func validateNameRegex(v interface{}, k string) (ws []string, errors []error) {

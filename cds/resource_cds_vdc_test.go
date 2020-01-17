@@ -3,12 +3,14 @@ package cds
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
-	"terraform-provider-cds/cds-sdk-go/common"
-	"terraform-provider-cds/cds-sdk-go/vdc"
 	"testing"
 	"time"
+
+	"terraform-provider-cds/cds-sdk-go/common"
+	"terraform-provider-cds/cds-sdk-go/vdc"
+
+	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
 )
 
 func TestAccCdsCloudVdc(t *testing.T) {

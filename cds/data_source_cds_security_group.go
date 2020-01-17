@@ -2,9 +2,11 @@ package cds
 
 import (
 	"context"
-	"github.com/hashicorp/terraform/helper/schema"
+
 	"terraform-provider-cds/cds-sdk-go/common"
 	"terraform-provider-cds/cds-sdk-go/security_group"
+
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func dataSourceCdsSecurityGroup() *schema.Resource {

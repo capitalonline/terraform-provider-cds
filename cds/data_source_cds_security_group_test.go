@@ -1,8 +1,9 @@
 package cds
 
 import (
-	"github.com/hashicorp/terraform/helper/resource"
 	"testing"
+
+	"github.com/hashicorp/terraform/helper/resource"
 )
 
 func TestAccCdsSecurityGroupDataSource_basic(t *testing.T) {

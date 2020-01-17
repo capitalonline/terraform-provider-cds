@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/likexian/gokit/assert"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,8 +13,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hashicorp/terraform/helper/resource"
 	"terraform-provider-cds/cds-sdk-go/common/errors"
+
+	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/likexian/gokit/assert"
 )
 
 const FILED_SP = "#"
