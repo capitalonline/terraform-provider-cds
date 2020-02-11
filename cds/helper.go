@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/hashicorp/terraform/helper/hashcode"
@@ -148,4 +149,12 @@ func parseTime(s string) (time.Time, error) {
 		return time.Time{}, err
 	}
 	return t, nil
+}
+
+// convert int to string
+func intToString(num *int) string {
+	if num == nil {
+		return ""
+	}
+	return strconv.Itoa(*num)
 }

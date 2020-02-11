@@ -110,7 +110,7 @@ type PrivateNetwork struct {
 	Status     *string   `json:"status" name:"Status"`
 	Name       *string   `json:"name" name:"Name"`
 	UnuseIpNum *int      `json:"unuse_ip_num" name:"UnuseIpNum"`
-	Segments   *[]string `json:"segments" name:"Segments"`
+	Segments   []*string `json:"segments" name:"Segments"`
 }
 
 func (r *PrivateNetwork) ToJsonString() string {
@@ -128,7 +128,7 @@ type PublicNetworkInfo struct {
 	Qos        *int             `json:"Qos" name:"Qos"`
 	Name       *string          `json:"name" name:"Name"`
 	UnuseIpNum *int             `json:"unuse_ip_num" name:"UnuseIpNum"`
-	Segments   *[]PublicSegment `json:"segments" name:"Segments"`
+	Segments   []*PublicSegment `json:"segments" name:"Segments"`
 }
 
 func (r *PublicNetworkInfo) ToJsonString() string {
