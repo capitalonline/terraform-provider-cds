@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"log"
+	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"terraform-provider-cds/cds-sdk-go/common"
@@ -43,11 +46,11 @@ func resourceCdsSecurityGroup() *schema.Resource {
 				Description:  "Description of the security group.",
 			},
 			"rule": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Computed: true,
-				MinItems: 1,
-				MaxItems: 15,
+				Type:       schema.TypeSet,
+				Optional:   true,
+				Computed:   true,
+				ConfigMode: schema.SchemaConfigModeAttr,
+				MaxItems:   15,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
@@ -123,10 +126,10 @@ func resourceCdsSecurityGroup() *schema.Resource {
 				},
 			},
 			"rule_current": {
-				Type:     schema.TypeSet,
-				Computed: true,
-				MinItems: 1,
-				MaxItems: 15,
+				Type:       schema.TypeSet,
+				Computed:   true,
+				ConfigMode: schema.SchemaConfigModeAttr,
+				MaxItems:   15,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
@@ -220,7 +223,7 @@ func resourceCdsSecurityGroupCreate(d *schema.ResourceData, meta interface{}) er
 			groupName = gName
 		}
 	}
-	fmt.Println("create sg: ", groupName)
+	log.Println("create security group: ", groupName)
 	description := ""
 	if desc, ok := d.GetOk("description"); ok {
 		gdescription := desc.(string)
@@ -258,6 +261,8 @@ func resourceCdsSecurityGroupRead(d *schema.ResourceData, meta interface{}) erro
 	defer logElapsed("resource.cds_security_group.read")()
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
+
+	log.Printf("GroupRead")
 
 	securityGroupService := SecurityGroupService{client: meta.(*CdsClient).apiConn}
 
@@ -306,7 +311,7 @@ func resourceCdsSecurityGroupRead(d *schema.ResourceData, meta interface{}) erro
 }
 
 func resourceCdsSecurityGroupUpdate(d *schema.ResourceData, meta interface{}) error {
-	fmt.Println("update sg")
+	log.Println("update security group")
 	defer logElapsed("resource.cds_security_group.update")()
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
@@ -352,48 +357,9 @@ func resourceCdsSecurityGroupUpdate(d *schema.ResourceData, meta interface{}) er
 		d.SetPartial(attr)
 	}
 
-	if d.HasChange("rule") {
-
-		_, ni := d.GetChange("rule")
-		oi := d.Get("rule_current")
-		if ni == nil {
-			ni = new(schema.Set)
-		}
-		if oi == nil {
-			oi = new(schema.Set)
-		}
-		nis := ni.(*schema.Set)
-		ois := oi.(*schema.Set)
-		removeIngress := ois.Difference(nis).List()
-		newIngress := nis.Difference(ois).List()
-
-		fmt.Println(removeIngress)
-		fmt.Println(newIngress)
-
-		// 删除旧规则
-		deleteRuleRequest := security_group_rule.NewDeleteSecurityGroupRuleRequest()
-		deleteRuleRequest.SecurityGroupId = common.StringPtr(id)
-		for _, value := range removeIngress {
-			rule := value.(map[string]interface{})
-			deleteRuleRequest.RuleIds = append(deleteRuleRequest.RuleIds, common.StringPtr(rule["id"].(string)))
-
-		}
-		securityGroupService.DeleteSecurityGroupRule(ctx, deleteRuleRequest)
-
-		// 增加新规则
-		for _, value := range newIngress {
-			rule := value.(map[string]interface{})
-			securityRule := security_group_rule.NewAddSecurityGroupRuleRequest()
-			errRet := u.Mapstructure(rule, securityRule)
-			securityRule.SecurityGroupId = common.StringPtr(id)
-			if errRet != nil {
-				return errRet
-			}
-			_, errRet = securityGroupService.client.UseSecurityRuleClient().CreateSecurityGroupRule(securityRule)
-			time.Sleep(2 * time.Second)
-		}
-
-		d.SetPartial("rule")
+	err := resourceCdsSecurityGroupUpdateRules(d, meta, id, ctx)
+	if err != nil {
+		return err
 	}
 
 	d.Partial(false)
@@ -401,7 +367,7 @@ func resourceCdsSecurityGroupUpdate(d *schema.ResourceData, meta interface{}) er
 }
 
 func resourceCdsSecurityGroupDelete(d *schema.ResourceData, meta interface{}) error {
-	fmt.Println("delete sg")
+	log.Println("delete security group")
 	defer logElapsed("resource.cds_security_group.delete")()
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
@@ -457,4 +423,121 @@ func resourceSecurityRuleHash(v interface{}) int {
 		buf.WriteString(fmt.Sprintf("%s-", v.(string)))
 	}
 	return hashcode.String(buf.String())
+}
+
+func resourceCdsSecurityGroupUpdateRules(
+	d *schema.ResourceData, meta interface{}, id string, ctx context.Context) error {
+
+	if d.HasChange("rule") {
+		c := d.Get("rule_current")
+		o, n := d.GetChange("rule")
+		if o == nil {
+			o = new(schema.Set)
+		}
+		if n == nil {
+			n = new(schema.Set)
+		}
+		if c == nil {
+			c = new(schema.Set)
+		}
+
+		os := o.(*schema.Set)
+		ns := n.(*schema.Set)
+		cs := c.(*schema.Set)
+
+		// TODO: Currently there's no rule updating logic
+		// If any rule were updated, we take it as new rule.
+		// since it's complicated to judge between updating and adding.
+		// Additionly, not all rule options could be modified by API.
+		add := ns.Difference(os).List()
+		remove := getRemoveRules(cs.List(), ns.List())
+
+		securityGroupService := SecurityGroupService{client: meta.(*CdsClient).apiConn}
+		// Remove old rules
+		if len(remove) > 0 {
+			deleteRuleRequest := security_group_rule.NewDeleteSecurityGroupRuleRequest()
+			deleteRuleRequest.SecurityGroupId = common.StringPtr(id)
+			for _, rule := range remove {
+				//rule := value.(map[string]interface{})
+				log.Println("remove rule: ", rule)
+				deleteRuleRequest.RuleIds = append(deleteRuleRequest.RuleIds, common.StringPtr(rule["id"].(string)))
+
+			}
+			securityGroupService.DeleteSecurityGroupRule(ctx, deleteRuleRequest)
+		}
+
+		// Add new rules
+		if len(add) > 0 {
+			for _, value := range add {
+				log.Println("add rule: ", value)
+				rule := value.(map[string]interface{})
+				securityRule := security_group_rule.NewAddSecurityGroupRuleRequest()
+				errRet := u.Mapstructure(rule, securityRule)
+				securityRule.SecurityGroupId = common.StringPtr(id)
+				if errRet != nil {
+					return errRet
+				}
+				_, errRet = securityGroupService.client.UseSecurityRuleClient().CreateSecurityGroupRule(securityRule)
+				time.Sleep(2 * time.Second)
+			}
+		}
+
+		d.SetPartial("rule")
+	}
+
+	return nil
+}
+
+func getRemoveRules(oldWithID, newWithoutID []interface{}) []map[string]interface{} {
+	var newStrRules []string
+	var removeRules []map[string]interface{}
+
+	for _, rule := range newWithoutID {
+		r := rule.(map[string]interface{})
+		newStrRules = append(newStrRules, sortStrRule(r))
+	}
+
+	for _, rule := range oldWithID {
+		r := rule.(map[string]interface{})
+		sortR := sortStrRule(r)
+		if !containsString(newStrRules, sortR) {
+			removeRules = append(removeRules, r)
+		}
+	}
+
+	return removeRules
+}
+
+func sortStrRule(rule map[string]interface{}) string {
+	var keys []string
+
+	copyRule := make(map[string]interface{})
+	for k, v := range rule {
+		copyRule[k] = v
+	}
+	delete(copyRule, "id")
+
+	for k := range copyRule {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	var s string
+	var l []string
+	for _, k := range keys {
+		s = fmt.Sprintf("%s=\"%s\"", k, copyRule[k])
+		l = append(l, s)
+	}
+	strRule := strings.Join(l, ",")
+
+	return strRule
+}
+
+func containsString(slice []string, s string) bool {
+	for _, item := range slice {
+		if item == s {
+			return true
+		}
+	}
+	return false
 }
