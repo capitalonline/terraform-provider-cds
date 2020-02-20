@@ -4,10 +4,9 @@ Terraform CDS provider
 
 ## Building
 
-
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.11+ is *required*). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
 ```sh
-#make sure you have installed the terraform.
+# make sure you have installed the terraform.
 ## if not, please refer to this website.
 ## https://learn.hashicorp.com/terraform/getting-started/install.html
 
@@ -28,6 +27,25 @@ $ mv terraform-provider-cds ~/.terraform.d/plugins/
 #this is for linux, if you use other system, please move the compiled file to right path.
 ```
 If you already have the compiled file, just put it to your terraform.d/plugins path.
+
+## Building with Version
+
+```sh
+# make sure you have installed the terraform.
+# Download project source code
+
+$ cd terraform-provider-cds
+
+# Complie for Linux,
+$ make linux-with-version
+
+# For Mac
+$ make mac-with-version
+
+# For Windows 
+$ make windows-with-version
+
+```
 
 ## Using
 All this resource will happen in our test account so that this is the fastest way to let you test the terrform, and need the Access Key ID, Access Secret Key.

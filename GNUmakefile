@@ -2,6 +2,7 @@ TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=cds
+RELEASE_TAG=$$(git describe --abbrev=0 --tags)
 
 default: build
 
@@ -56,6 +57,8 @@ endif
 
 all: mac windows linux
 
+all-with-version: mac-with-version windows-with-version linux-with-version
+
 dev: clean fmt mac copy
 
 devlinux: clean fmt linux linuxcopy
@@ -73,6 +76,11 @@ mac:
 	tar czvf bin/terraform-provider-cds_darwin-amd64.tgz bin/terraform-provider-cds
 	rm -rf bin/terraform-provider-cds
 
+mac-with-version:
+	GOOS=darwin GOARCH=amd64 go build -o bin/terraform-provider-cds_$(RELEASE_TAG)
+	tar czvf bin/terraform-provider-cds_darwin-amd64_$(RELEASE_TAG).tgz bin/terraform-provider-cds_$(RELEASE_TAG)
+	rm -rf bin/terraform-provider-cds_$(RELEASE_TAG)
+
 windowscopy:
 	tar -xvf bin/terraform-provider-cds_windows-amd64.tgz && mv bin/terraform-provider-cds $(shell dirname `which terraform`)
 
@@ -81,6 +89,11 @@ windows:
 	tar czvf bin/terraform-provider-cds_windows-amd64.tgz bin/terraform-provider-cds.exe
 	rm -rf bin/terraform-provider-cds.exe
 
+windows-with-version:
+	GOOS=windows GOARCH=amd64 go build -o bin/terraform-provider-cds_$(RELEASE_TAG).exe
+	tar czvf bin/terraform-provider-cds_windows-amd64_$(RELEASE_TAG).tgz bin/terraform-provider-cds_$(RELEASE_TAG).exe
+	rm -rf bin/terraform-provider-cds_$(RELEASE_TAG).exe
+
 linuxcopy:
 	tar -xvf bin/terraform-provider-cds_linux-amd64.tgz && mv bin/terraform-provider-cds $(shell dirname `which terraform`)
 
@@ -88,3 +101,8 @@ linux:
 	GOOS=linux GOARCH=amd64 go build -o bin/terraform-provider-cds
 	tar czvf bin/terraform-provider-cds_linux-amd64.tgz bin/terraform-provider-cds
 	rm -rf bin/terraform-provider-cds
+
+linux-with-version:
+	GOOS=linux GOARCH=amd64 go build -o bin/terraform-provider-cds_$(RELEASE_TAG)
+	tar czvf bin/terraform-provider-cds_linux-amd64_$(RELEASE_TAG).tgz bin/terraform-provider-cds_$(RELEASE_TAG)
+	rm -rf bin/terraform-provider-cds_$(RELEASE_TAG)
