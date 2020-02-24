@@ -196,7 +196,7 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 
 		// Update public network
 		result := u.Merge(ois, nis)
-
+		curBillingmethod := result["billingmethod"][0]
 		for key, value := range result {
 			if len(value) != 2 {
 				continue
@@ -225,12 +225,16 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 			case "name":
 				continue
 			case "qos":
-				request := vdc.NewModifyPublicNetworkRequest()
-				request.PublicId = common.StringPtr(publicId)
-				request.Qos = common.StringPtr(value[1].(string))
-				_, errRet := vdcService.ModifyPublicNetwork(ctx, request)
-				if errRet != nil {
-					return errRet
+				if curBillingmethod != "Traffic" {
+					request := vdc.NewModifyPublicNetworkRequest()
+					request.PublicId = common.StringPtr(publicId)
+					request.Qos = common.StringPtr(value[1].(string))
+					_, errRet := vdcService.ModifyPublicNetwork(ctx, request)
+					if errRet != nil {
+						return errRet
+					}
+				} else {
+					return errors.New("Qos can not be modified if the billingmethod is Traffic.")
 				}
 			case "floatbandwidth":
 				continue
