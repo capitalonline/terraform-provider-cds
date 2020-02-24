@@ -6,3 +6,12 @@ func MergeSlice(s1 []*string, s2 []*string) []*string {
 	copy(slice[len(s1):], s2)
 	return slice
 }
+
+func ContainsInt(s []int, e int) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}

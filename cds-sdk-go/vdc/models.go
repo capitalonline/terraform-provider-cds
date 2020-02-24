@@ -339,7 +339,7 @@ func (r *ModifyPublicNetworkResponse) FromJsonString(s string) error {
 type AddPublicIpRequest struct {
 	*cdshttp.BaseRequest
 	PublicId *string `json:"PublicId" name:"PublicId"`
-	Number   *string `json:"Qos" name:"Qos"`
+	Number   *int    `json:"Number" name:"Number"`
 }
 
 func (r *AddPublicIpRequest) ToJsonString() string {

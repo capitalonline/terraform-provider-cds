@@ -198,42 +198,52 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 		result := u.Merge(ois, nis)
 
 		for key, value := range result {
-
 			if len(value) != 2 {
 				continue
 			}
 
 			switch key {
 			case "ipnum":
-				{
-					continue
+				// Add public network IP
+				oldNum, _ := strconv.Atoi(value[0].(string))
+				newNum, _ := strconv.Atoi(value[1].(string))
+				validNums := []int{4, 8, 16, 32, 64}
+				if newNum > oldNum && u.ContainsInt(validNums, newNum) {
+					request := vdc.NewAddPublicIpRequest()
+					request.PublicId = common.StringPtr(publicId)
+					request.Number = common.IntPtr(newNum)
+					_, errRet := vdcService.AddPublicNetworkIp(ctx, request)
+					if errRet != nil {
+						return errRet
+					}
+				} else if newNum < oldNum && u.ContainsInt(validNums, newNum) {
+					// TODO: Delete public network IP
+					return errors.New("Public network IP can not be deleted with Terraform currently.")
+				} else {
+					return errors.New("ipnum is invalid!")
 				}
 			case "name":
 				continue
 			case "qos":
-				{
-					request := vdc.NewModifyPublicNetworkRequest()
-					request.PublicId = common.StringPtr(publicId)
-					request.Qos = common.StringPtr(value[1].(string))
-					_, errRet := vdcService.ModifyPublicNetwork(ctx, request)
-					if errRet != nil {
-						return errRet
-					}
+				request := vdc.NewModifyPublicNetworkRequest()
+				request.PublicId = common.StringPtr(publicId)
+				request.Qos = common.StringPtr(value[1].(string))
+				_, errRet := vdcService.ModifyPublicNetwork(ctx, request)
+				if errRet != nil {
+					return errRet
 				}
 			case "floatbandwidth":
 				continue
 			case "billingmethod":
 				continue
 			case "autorenew":
-				{
-					i, _ := strconv.Atoi(value[0].(string))
-					request := vdc.NewRenewPublicNetworkRequest()
-					request.PublicId = common.StringPtr(publicId)
-					request.AutoRenew = common.IntPtr(i)
-					_, errRet := vdcService.RenewPublicNetwork(ctx, request)
-					if errRet != nil {
-						return errRet
-					}
+				i, _ := strconv.Atoi(value[0].(string))
+				request := vdc.NewRenewPublicNetworkRequest()
+				request.PublicId = common.StringPtr(publicId)
+				request.AutoRenew = common.IntPtr(i)
+				_, errRet := vdcService.RenewPublicNetwork(ctx, request)
+				if errRet != nil {
+					return errRet
 				}
 			case "type":
 				continue
