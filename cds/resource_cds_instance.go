@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
+	"log"
 	"strings"
 	"time"
 
@@ -110,10 +110,11 @@ func resourceCdsCcsInstance() *schema.Resource {
 				},
 			},
 			"data_disks": {
-				Type:     schema.TypeList,
-				Optional: true,
-				MinItems: 1,
-				MaxItems: 15,
+				Type:       schema.TypeList,
+				ConfigMode: schema.SchemaConfigModeAttr,
+				Optional:   true,
+				MinItems:   1,
+				MaxItems:   15,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"disk_id": {
@@ -233,7 +234,7 @@ func resourceCdsCcsInstance() *schema.Resource {
 }
 
 func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) error {
-	fmt.Println("create instance")
+	log.Println("create instance")
 	defer logElapsed("resource.cds_instance.create")()
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
@@ -376,7 +377,7 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 					joinRequest.BindData = append(joinRequest.BindData, &bindData)
 				}
 				taskId, _ := securityGroupService.JoinSecurityGroup(ctx, joinRequest)
-				fmt.Println("task: ", taskId)
+				log.Println("task: ", taskId)
 				//if errRet != nil {
 				//	return errRet
 				//}
@@ -391,7 +392,7 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 }
 
 func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error {
-	fmt.Println("read instance")
+	log.Println("read instance")
 	defer logElapsed("resource.cds_instance.read")()
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
@@ -436,7 +437,7 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 }
 
 func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
-	fmt.Println("update instance")
+	log.Println("update instance")
 	defer logElapsed("resource.cds_instance.update")()
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
@@ -564,7 +565,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		} else if len(o) < len(n) {
 			for _, v := range n {
 				if !In_slice(v, o, "size") {
-					i, _ := strconv.Atoi(v["size"].(string))
+					i := v["size"].(int)
 					temp := instance.DataDisk{
 						Size: &i,
 						Type: common.StringPtr(v["type"].(string)),
@@ -605,7 +606,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 }
 
 func resourceCdsCcsInstanceDelete(d *schema.ResourceData, meta interface{}) error {
-	fmt.Println("delete instance")
+	log.Println("delete instance")
 	defer logElapsed("resource.cds_instance.read")()
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
