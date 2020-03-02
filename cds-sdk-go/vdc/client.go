@@ -125,6 +125,21 @@ func NewDeleteVdcResponse() (response *DeleteVdcResponse) {
 	return
 }
 
+func NewModifyVdcNameRequest() (request *ModifyVdcNameRequest) {
+	request = &ModifyVdcNameRequest{
+		BaseRequest: &cdshttp.BaseRequest{},
+	}
+	request.Init().WithApiInfo("network", ApiVersion, "ModifyVdcName")
+	return
+}
+
+func NewModifyVdcNameResponse() (response *ModifyVdcNameResponse) {
+	response = &ModifyVdcNameResponse{
+		BaseResponse: &cdshttp.BaseResponse{},
+	}
+	return
+}
+
 func NewModifyPublicNetworkRequest() (request *ModifyPublicNetworkRequest) {
 	request = &ModifyPublicNetworkRequest{
 		BaseRequest: &cdshttp.BaseRequest{},
@@ -224,6 +239,7 @@ func (c *Client) DeletePrivateNetwork(request *DeletePrivateNetworkRequest) (res
 	err = c.Send(request, response)
 	return
 }
+
 func (c *Client) DeleteVdc(request *DeleteVdcRequest) (response *DeleteVdcResponse, err error) {
 	if request == nil {
 		request = NewDeleteVdcRequest()
@@ -232,6 +248,16 @@ func (c *Client) DeleteVdc(request *DeleteVdcRequest) (response *DeleteVdcRespon
 	err = c.Send(request, response)
 	return
 }
+
+func (c *Client) ModifyVdcName(request *ModifyVdcNameRequest) (response *ModifyVdcNameResponse, err error) {
+	if request == nil {
+		request = NewModifyVdcNameRequest()
+	}
+	response = NewModifyVdcNameResponse()
+	err = c.Send(request, response)
+	return
+}
+
 func (c *Client) ModifyPublicNetwork(request *ModifyPublicNetworkRequest) (response *ModifyPublicNetworkResponse, err error) {
 	if request == nil {
 		request = NewModifyPublicNetworkRequest()
@@ -240,6 +266,7 @@ func (c *Client) ModifyPublicNetwork(request *ModifyPublicNetworkRequest) (respo
 	err = c.Send(request, response)
 	return
 }
+
 func (c *Client) AddPublicIpNetwork(request *AddPublicIpRequest) (response *AddPublicIpResponse, err error) {
 	if request == nil {
 		request = NewAddPublicIpRequest()
@@ -248,6 +275,7 @@ func (c *Client) AddPublicIpNetwork(request *AddPublicIpRequest) (response *AddP
 	err = c.Send(request, response)
 	return
 }
+
 func (c *Client) RenewPublicNetwork(request *RenewPublicNetworkRequest) (response *RenewPublicNetworkResponse, err error) {
 	if request == nil {
 		request = NewRenewPublicNetworkRequest()

@@ -105,6 +105,24 @@ func TestClient_DeleteVdc(t *testing.T) {
 	}
 }
 
+func TestClient_ModifyVdcName(t *testing.T) {
+	credential := common.NewCredential("", "")
+
+	cpf := profile.NewClientProfile()
+	cpf.HttpProfile.ReqMethod = "POST"
+	client, _ := NewClient(credential, "CN_Beijing_A", cpf)
+
+	request := NewModifyVdcNameRequest()
+	request.VdcId = common.StringPtr("vdc id")
+	request.VdcName = common.StringPtr("vdc name")
+	resp, err := client.ModifyVdcName(request)
+	if err != nil {
+		fmt.Println("API request fail. >>>>>>> " + err.Error())
+	} else {
+		fmt.Printf(">>>>> Response Data: %s", resp.ToJsonString())
+	}
+}
+
 func TestClient_CreatePrivateNetwork(t *testing.T) {
 	credential := common.NewCredential("", "")
 

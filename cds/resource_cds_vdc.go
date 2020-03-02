@@ -143,7 +143,18 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 	vdcService := VdcService{client: meta.(*CdsClient).apiConn}
 
 	if d.HasChange("vdc_name") {
-		return errors.New("vdc_name 不支持修改")
+
+		d.SetPartial("vdc_name")
+		_, newName := d.GetChange("vdc_name")
+
+		request := vdc.NewModifyVdcNameRequest()
+		request.VdcId = common.StringPtr(id)
+		request.VdcName = common.StringPtr(newName.(string))
+		_, err := vdcService.client.UseVdcClient().ModifyVdcName(request)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	if d.HasChange("region_id") {
