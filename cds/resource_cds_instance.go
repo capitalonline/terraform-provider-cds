@@ -453,6 +453,20 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 	id := idArray[0]
 	d.Partial(true)
 
+	// modify instance name
+	if d.HasChange("instance_name") {
+		d.SetPartial("instance_name")
+		_, newName := d.GetChange("instance_name")
+
+		request := instance.NewModifyInstanceNameRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.InstanceName = common.StringPtr(newName.(string))
+		_, err := instanceService.client.UseCvmClient().ModifyInstanceName(request)
+		if err != nil {
+			return err
+		}
+	}
+
 	if d.HasChange("private_ip") {
 		d.SetPartial("private_ip")
 		_, newPrivate := d.GetChange("private_ip")

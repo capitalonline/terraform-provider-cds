@@ -163,6 +163,37 @@ func (instance *DeleteInstanceResponse) FromJsonString(s string) error {
 	return json.Unmarshal([]byte(s), &instance)
 }
 
+// Modify Instance Name
+type ModifyInstanceNameRequest struct {
+	*cdshttp.BaseRequest
+	InstanceId   *string `json:"InstanceId,omitempty" name:"InstanceId"`
+	InstanceName *string `json:"InstanceName,omitempty" name:"InstanceName"`
+}
+
+func (instance *ModifyInstanceNameRequest) ToJsonString() string {
+	b, _ := json.Marshal(instance)
+	return string(b)
+}
+
+func (instance *ModifyInstanceNameRequest) FromJsonString(s string) error {
+	return json.Unmarshal([]byte(s), &instance)
+}
+
+type ModifyInstanceNameResponse struct {
+	*cdshttp.BaseResponse
+	Code   *string
+	TaskId *string
+}
+
+func (instance *ModifyInstanceNameResponse) ToJsonString() string {
+	b, _ := json.Marshal(instance)
+	return string(b)
+}
+
+func (instance *ModifyInstanceNameResponse) FromJsonString(s string) error {
+	return json.Unmarshal([]byte(s), &instance)
+}
+
 // Create Disk
 type CreateDiskRequest struct {
 	*cdshttp.BaseRequest

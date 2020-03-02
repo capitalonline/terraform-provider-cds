@@ -62,6 +62,21 @@ func NewDeleteInstanceResponse() (response *DeleteInstanceResponse) {
 	return
 }
 
+func NewModifyInstanceNameRequest() (request *ModifyInstanceNameRequest) {
+	request = &ModifyInstanceNameRequest{
+		BaseRequest: &cdshttp.BaseRequest{},
+	}
+	request.Init().WithApiInfo("CCS", ApiVersion, "ModifyInstanceName")
+	return
+}
+
+func NewModifyInstanceNameResponse() (response *ModifyInstanceNameResponse) {
+	response = &ModifyInstanceNameResponse{
+		BaseResponse: &cdshttp.BaseResponse{},
+	}
+	return
+}
+
 func NewCreateDiskRequest() (request *CreateDiskRequest) {
 	request = &CreateDiskRequest{
 		BaseRequest: &cdshttp.BaseRequest{},
@@ -144,6 +159,16 @@ func (c *Client) DeleteInstance(request *DeleteInstanceRequest) (response *Delet
 		request = NewDeleteInstanceRequest()
 	}
 	response = NewDeleteInstanceResponse()
+	err = c.Send(request, response)
+	return
+}
+
+// Modify Instance Name
+func (c *Client) ModifyInstanceName(request *ModifyInstanceNameRequest) (response *ModifyInstanceNameResponse, err error) {
+	if request == nil {
+		request = NewModifyInstanceNameRequest()
+	}
+	response = NewModifyInstanceNameResponse()
 	err = c.Send(request, response)
 	return
 }

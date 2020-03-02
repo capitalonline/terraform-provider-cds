@@ -74,6 +74,21 @@ func TestClient_DescribeInstance(t *testing.T) {
 
 }
 
+func TestClient_ModifyInstanceName(t *testing.T) {
+	credential := common.NewCredential("", "")
+
+	cpf := profile.NewClientProfile()
+	cpf.HttpProfile.ReqMethod = "POST"
+	client, _ := NewClient(credential, "CN_Beijing_A", cpf)
+
+	request := NewModifyInstanceNameRequest()
+	request.InstanceId = common.StringPtr("instance id")
+	request.InstanceName = common.StringPtr("new instance name")
+	response, err := client.ModifyInstanceName(request)
+	fmt.Printf(">>>>> Resonponse: %s, err: %s", response.ToJsonString(), err)
+
+}
+
 // wait for test
 func TestClient_DeleteInstance(t *testing.T) {
 	credential := common.NewCredential("", "")
