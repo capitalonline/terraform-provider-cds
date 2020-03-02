@@ -129,7 +129,7 @@ func NewModifyVdcNameRequest() (request *ModifyVdcNameRequest) {
 	request = &ModifyVdcNameRequest{
 		BaseRequest: &cdshttp.BaseRequest{},
 	}
-	request.Init().WithApiInfo("network", ApiVersion, "ModifyVdcName")
+	request.Init().WithApiInfo("ccs", ApiVersion, "ModifyVdcName")
 	return
 }
 
