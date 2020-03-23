@@ -145,7 +145,7 @@ type DescribeSecurityGroupResponse struct {
 		SecurityGroupCount *int             `json:"SecurityGroupCount"`
 		SecurityGroup      []*SecurityGroup `json:"SecurityGroup"`
 	} `json:"Data"`
-	TaskID *string `json:"TaskId"`
+	TaskId *string `json:"TaskId"`
 }
 
 type SecurityGroup struct {
