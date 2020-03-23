@@ -274,6 +274,13 @@ func resourceCdsSecurityGroupRead(d *schema.ResourceData, meta interface{}) erro
 	if errRet != nil {
 		return errRet
 	}
+
+	currentGroups := readResponse.Data.SecurityGroup
+	if len(currentGroups) == 0 {
+		d.SetId("")
+		return nil
+	}
+
 	currentGroup := readResponse.Data.SecurityGroup[0]
 	d.Set("description", *currentGroup.Description)
 	d.Set("name", *currentGroup.SecurityGroupName)
