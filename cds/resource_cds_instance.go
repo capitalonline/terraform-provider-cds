@@ -93,7 +93,9 @@ func resourceCdsCcsInstance() *schema.Resource {
 				Description: "公网ip",
 			},
 			"private_ip": &schema.Schema{
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				MaxItems:    15,
 				Optional:    true,
 				Description: "私网IP",
 				Elem: &schema.Resource{
@@ -105,6 +107,10 @@ func resourceCdsCcsInstance() *schema.Resource {
 						"address": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+						},
+						"interface_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
 						},
 					},
 				},
@@ -320,19 +326,25 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 	if publicIp, ok := d.GetOk("public_ip"); ok {
 		publicIp := publicIp.(string)
 		if len(publicIp) > 0 {
-			publicIpList := strings.Split(publicIp, ";")
+			publicIpList := strings.Split(strings.TrimSpace(publicIp), ";")
 			if len(publicIpList) > 0 {
 				createInstanceRequest.PublicIp = u.MergeSlice(createInstanceRequest.PublicIp, common.StringPtrs(publicIpList))
 			}
 		}
 	}
-	if privateSubnets, ok := d.GetOk("private_ip"); ok {
-		privateSubnet := privateSubnets.(map[string]interface{})
-		createInstanceRequest.PrivateIp = append(createInstanceRequest.PrivateIp, &instance.PrivateIp{
-			PrivateID: common.StringPtr(privateSubnet["private_id"].(string)),
-			IP:        common.StringPtrs([]string{privateSubnet["address"].(string)}),
-		})
+
+	if subnets, ok := d.GetOk("private_ip"); ok {
+		nets := subnets.([]interface{})
+		for i := range nets {
+			net := nets[i].(map[string]interface{})
+			ips := strings.Split(net["address"].(string), ",")
+			createInstanceRequest.PrivateIp = append(createInstanceRequest.PrivateIp, &instance.PrivateIp{
+				PrivateID: common.StringPtr(net["private_id"].(string)),
+				IP:        common.StringPtrs(ips),
+			})
+		}
 	}
+
 	if dataDisks, ok := d.GetOk("data_disks"); ok {
 		disks := dataDisks.([]interface{})
 		for i := range disks {
@@ -418,6 +430,10 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 		return fmt.Errorf("【ERROR】%s", "Read instance info faild")
 	}
 
+	// for instance name
+	d.Set("instance_name", *instanceInfo.InstanceName)
+
+	// for ResizeDisk/DeleteDisk
 	var listDataDisks []map[string]interface{}
 	for _, p := range instanceInfo.Disks.DataDisks {
 		diskMapping := map[string]interface{}{
@@ -432,7 +448,26 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 			return err
 		}
 	}
-	time.Sleep(30 * time.Second)
+
+	// for PrivateNetworkInterface
+	var privateNets []map[string]interface{}
+	for _, p := range instanceInfo.PrivateNetworkInterface {
+		if *p.IP != "" {
+			nets := map[string]interface{}{
+				"private_id":   p.PrivateId,
+				"address":      p.IP,
+				"interface_id": p.InterfaceId,
+			}
+			privateNets = append(privateNets, nets)
+		}
+	}
+	if len(privateNets) > 0 && privateNets != nil {
+		if err := d.Set("private_ip", privateNets); err != nil {
+			return err
+		}
+	}
+
+	time.Sleep(3 * time.Second)
 	return nil
 }
 
@@ -467,23 +502,15 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		}
 	}
 
+	// modify private nets
 	if d.HasChange("private_ip") {
 		d.SetPartial("private_ip")
-		_, newPrivate := d.GetChange("private_ip")
-		//var interfaceId string
-		//oldPrivate, newPrivate := d.GetChange("private_ip")
-		address := newPrivate.(map[string]interface{})["address"]
-		privateId := newPrivate.(map[string]interface{})["private_id"]
-
-		request := instance.NewModifyIpRequest()
-		request.InstanceId = common.StringPtr(id)
-		request.InterfaceId = common.StringPtr(privateId.(string))
-		request.Address = common.StringPtr(address.(string))
-		_, err := instanceService.client.UseCvmClient().ModifyIpAddress(request)
+		err := resourceCdsInstanceUpdatePrivateIp(d, meta, id, ctx)
 		if err != nil {
 			return err
 		}
 	}
+
 	if d.HasChange("security_group_binding") {
 		d.SetPartial("security_group_binding")
 		o, n := d.GetChange("security_group_binding")
@@ -615,7 +642,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 
 	}
 	d.Partial(false)
-	time.Sleep(30 * time.Second)
+	time.Sleep(5 * time.Second)
 	return resourceCdsCcsInstanceRead(d, meta)
 }
 
@@ -671,7 +698,7 @@ func resourceCdsCcsInstanceDelete(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 	//todo 等待删除实例，删除动作当前不提供taskid
-	time.Sleep(50 * time.Second)
+	time.Sleep(30 * time.Second)
 	return nil
 }
 
@@ -682,4 +709,38 @@ func In_slice(val map[string]interface{}, slice []map[string]interface{}, key st
 		}
 	}
 	return false
+}
+
+func resourceCdsInstanceUpdatePrivateIp(
+	d *schema.ResourceData, meta interface{}, id string, ctx context.Context) error {
+
+	od, nd := d.GetChange("private_ip")
+	o := make([]map[string]interface{}, 0)
+	n := make([]map[string]interface{}, 0)
+	for _, v := range od.([]interface{}) {
+		o = append(o, v.(map[string]interface{}))
+	}
+	for _, v := range nd.([]interface{}) {
+		n = append(n, v.(map[string]interface{}))
+	}
+	editList := make([]map[string]interface{}, 0)
+
+	for _, v := range n {
+		if v["address"] != "auto" {
+			editList = append(editList, v)
+		}
+	}
+	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
+	for _, v := range editList {
+		request := instance.NewModifyIpRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.InterfaceId = common.StringPtr(v["interface_id"].(string))
+		request.Address = common.StringPtr(v["address"].(string))
+		_, err := instanceService.client.UseCvmClient().ModifyIpAddress(request)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

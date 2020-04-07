@@ -3,6 +3,8 @@ package cds
 import (
 	"context"
 	"log"
+	"math/rand"
+	"time"
 
 	"terraform-provider-cds/cds-sdk-go/instance"
 	"terraform-provider-cds/cds/connectivity"
@@ -26,6 +28,10 @@ func (me *InstanceService) CreateInstance(ctx context.Context, request *instance
 	}()
 
 	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
 	response, err := me.client.UseCvmClient().CreateInstance(request)
 	if err == nil {
 		log.Printf("[DEBUG]%s api[%s] , request body [%s], response body[%s]\n",

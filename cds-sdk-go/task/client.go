@@ -3,6 +3,8 @@ package task
 import (
 	"encoding/json"
 	"errors"
+	"log"
+	"math/rand"
 	"time"
 
 	"terraform-provider-cds/cds-sdk-go/common"
@@ -74,13 +76,13 @@ func NewDescribeTaskResponse() (response *DescribeTaskResponse) {
 	return
 }
 
-// Create Instance
 func (c *Client) DescribeTask(request *DescribeTaskRequest) (response *DescribeTaskResponse, err error) {
 	if request == nil {
 		request = NewDescribeTaskRequest()
 	}
 	response = NewDescribeTaskResponse()
 
+	errRetry, retryCount := 0, 3
 	for i := 0; i < 100; i++ {
 		err = c.Send(request, response)
 		if err != nil {
@@ -88,8 +90,17 @@ func (c *Client) DescribeTask(request *DescribeTaskRequest) (response *DescribeT
 		}
 		switch *response.Data.Status {
 		case "FINISH":
+			log.Printf("get task status FINISH!\n")
 			return
 		case "ERROR":
+			if errRetry < retryCount {
+				log.Printf("get task status ERROR! Retry %v.\n", errRetry)
+				errRetry++
+				minSleepMs, maxSleepMs := 2000, 10000
+				sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+				time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+				continue
+			}
 			err = errors.New("get task status error")
 			return
 		}
