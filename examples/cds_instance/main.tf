@@ -48,7 +48,7 @@ resource "cds_instance" "my_instance" {
   vdc_id        = cds_vdc.my_vdc.id
   password      = "123abc,.;"
   public_ip     = "auto"
-  private_ip = {
+  private_ip {
     "private_id" = cds_private_subnet.my_private_subnet_1.id
     "address"    = "auto"
   }
