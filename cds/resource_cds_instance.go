@@ -108,6 +108,12 @@ func resourceCdsCcsInstance() *schema.Resource {
 						"address": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								if old != "" && new == "auto" {
+									return true
+								}
+								return false
+							},
 						},
 						"interface_id": &schema.Schema{
 							Type:     schema.TypeString,
@@ -478,8 +484,8 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 			return err
 		}
 	}
-
 	time.Sleep(3 * time.Second)
+
 	return nil
 }
 
@@ -521,6 +527,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		if err != nil {
 			return err
 		}
+		time.Sleep(50 * time.Second)
 	}
 
 	// modify ModifyInstanceSpec: cpu, ram
