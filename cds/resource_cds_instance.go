@@ -2,6 +2,7 @@ package cds
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -430,8 +431,19 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 		return fmt.Errorf("【ERROR】%s", "Read instance info faild")
 	}
 
+	jsondata, _ := json.Marshal(instanceInfo)
+	log.Printf("DEBUG_INSTANCEINFO: %s", string(jsondata))
+
 	// for instance name
 	d.Set("instance_name", *instanceInfo.InstanceName)
+
+	// for instance spec
+	d.Set("cpu", *instanceInfo.Cpu)
+	d.Set("ram", *instanceInfo.Ram)
+
+	// for instance status
+	log.Printf("DEBUG_INSTANCEINFO: status: %#v", *instanceInfo.InstanceStatus)
+	d.Set("instance_status", *instanceInfo.InstanceStatus)
 
 	// for ResizeDisk/DeleteDisk
 	var listDataDisks []map[string]interface{}
@@ -506,6 +518,27 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 	if d.HasChange("private_ip") {
 		d.SetPartial("private_ip")
 		err := resourceCdsInstanceUpdatePrivateIp(d, meta, id, ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	// modify ModifyInstanceSpec: cpu, ram
+	if d.HasChange("cpu") || d.HasChange("ram") {
+		d.SetPartial("cpu")
+		d.SetPartial("ram")
+		_, newCpu := d.GetChange("cpu")
+		_, newRam := d.GetChange("ram")
+
+		request := instance.NewModifyInstanceSpecRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.Cpu = common.IntPtr(newCpu.(int))
+		request.Ram = common.IntPtr(newRam.(int))
+
+		requestdata, _ := json.Marshal(request)
+		log.Printf("DEBUG_REQUEST: %s", string(requestdata))
+
+		_, err := instanceService.client.UseCvmClient().ModifyInstanceSpec(request)
 		if err != nil {
 			return err
 		}

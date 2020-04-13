@@ -77,6 +77,21 @@ func NewModifyInstanceNameResponse() (response *ModifyInstanceNameResponse) {
 	return
 }
 
+func NewModifyInstanceSpecRequest() (request *ModifyInstanceSpecRequest) {
+	request = &ModifyInstanceSpecRequest{
+		BaseRequest: &cdshttp.BaseRequest{},
+	}
+	request.Init().WithApiInfo("CCS", ApiVersion, "ModifyInstanceSpec")
+	return
+}
+
+func NewModifyInstanceSpecResponse() (response *ModifyInstanceSpecResponse) {
+	response = &ModifyInstanceSpecResponse{
+		BaseResponse: &cdshttp.BaseResponse{},
+	}
+	return
+}
+
 func NewCreateDiskRequest() (request *CreateDiskRequest) {
 	request = &CreateDiskRequest{
 		BaseRequest: &cdshttp.BaseRequest{},
@@ -169,6 +184,16 @@ func (c *Client) ModifyInstanceName(request *ModifyInstanceNameRequest) (respons
 		request = NewModifyInstanceNameRequest()
 	}
 	response = NewModifyInstanceNameResponse()
+	err = c.Send(request, response)
+	return
+}
+
+// ModifyInstanceSpec cpu, ram
+func (c *Client) ModifyInstanceSpec(request *ModifyInstanceSpecRequest) (response *ModifyInstanceSpecResponse, err error) {
+	if request == nil {
+		request = NewModifyInstanceSpecRequest()
+	}
+	response = NewModifyInstanceSpecResponse()
 	err = c.Send(request, response)
 	return
 }

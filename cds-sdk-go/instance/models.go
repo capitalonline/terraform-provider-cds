@@ -88,6 +88,8 @@ type DescribeReturnInfo struct {
 	VdcId                   *string    `json:"VdcId"`
 	VdcName                 *string    `json:"VdcName"`
 	Disks                   *DisksInfo `json:"Disks"`
+	Cpu                     *int       `json:"Cpu"`
+	Ram                     *int       `json:"Ram"`
 	PrivateNetworkInterface []*PrivateNetworkInterfaceInfo
 	PublicNetworkInterface  *PublicNetworkInterfaceInfo `json:"PublicNetworkInterface"`
 	InstanceChargeType      *string                     `json:"InstanceChargeType"`
@@ -191,6 +193,38 @@ func (instance *ModifyInstanceNameResponse) ToJsonString() string {
 }
 
 func (instance *ModifyInstanceNameResponse) FromJsonString(s string) error {
+	return json.Unmarshal([]byte(s), &instance)
+}
+
+// ModifyInstanceSpec, cpu, ram
+type ModifyInstanceSpecRequest struct {
+	*cdshttp.BaseRequest
+	InstanceId *string `json:"InstanceId,omitempty" name:"InstanceId"`
+	Cpu        *int    `json:"Cpu,omitempty" name:"Cpu"`
+	Ram        *int    `json:"Ram,omitempty" name:"Ram"`
+}
+
+func (instance *ModifyInstanceSpecRequest) ToJsonString() string {
+	b, _ := json.Marshal(instance)
+	return string(b)
+}
+
+func (instance *ModifyInstanceSpecRequest) FromJsonString(s string) error {
+	return json.Unmarshal([]byte(s), &instance)
+}
+
+type ModifyInstanceSpecResponse struct {
+	*cdshttp.BaseResponse
+	Code   *string
+	TaskId *string
+}
+
+func (instance *ModifyInstanceSpecResponse) ToJsonString() string {
+	b, _ := json.Marshal(instance)
+	return string(b)
+}
+
+func (instance *ModifyInstanceSpecResponse) FromJsonString(s string) error {
 	return json.Unmarshal([]byte(s), &instance)
 }
 
