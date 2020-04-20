@@ -92,6 +92,12 @@ func resourceCdsCcsInstance() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "公网ip",
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if old != "" && new == "auto" {
+						return true
+					}
+					return false
+				},
 			},
 			"private_ip": &schema.Schema{
 				Type:        schema.TypeList,
@@ -467,6 +473,9 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 			return err
 		}
 	}
+
+	// for PublicNetworkInterface
+	d.Set("public_ip", *instanceInfo.PublicNetworkInterface.IP)
 
 	// for PrivateNetworkInterface
 	var privateNets []map[string]interface{}
