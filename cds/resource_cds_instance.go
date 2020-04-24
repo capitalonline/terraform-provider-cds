@@ -56,9 +56,16 @@ func resourceCdsCcsInstance() *schema.Resource {
 				Required: true,
 			},
 			"password": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:      schema.TypeString,
+				Optional:  true,
+				ForceNew:  true,
+				Sensitive: true,
+			},
+			"public_key": &schema.Schema{
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+				ConflictsWith: []string{"password"},
 			},
 			"instance_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -316,6 +323,12 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 		passwd := password.(string)
 		if len(passwd) > 0 {
 			createInstanceRequest.Password = common.StringPtr(passwd)
+		}
+	}
+	if publicKey, ok := d.GetOk("public_key"); ok {
+		publicKey := publicKey.(string)
+		if len(publicKey) > 0 {
+			createInstanceRequest.PublicKey = common.StringPtr(publicKey)
 		}
 	}
 	if autoRenew, ok := d.GetOk("auto_renew"); ok {

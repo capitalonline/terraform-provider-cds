@@ -14,6 +14,7 @@ type AddInstanceRequest struct {
 	InstanceName       *string      `json:"InstanceName,omitempty" name:"InstanceName"`
 	InstanceChargeType *string      `json:"InstanceChargeType,omitempty" name:"InstanceChargeType"`
 	Password           *string      `json:"Password,omitempty" name:"Password"`
+	PublicKey          *string      `json:"PublicKey,omitempty" name:"PublicKey"`
 	Cpu                *int         `json:"Cpu,omitempty" name:"Cpu"`
 	Ram                *int         `json:"Ram,omitempty" name:"Ram"`
 	InstanceType       *string      `json:"InstanceType,omitempty" name:"InstanceType"`
@@ -94,6 +95,7 @@ type DescribeReturnInfo struct {
 	PublicNetworkInterface  *PublicNetworkInterfaceInfo `json:"PublicNetworkInterface"`
 	InstanceChargeType      *string                     `json:"InstanceChargeType"`
 }
+
 type DisksInfo struct {
 	DataDisks       []*DataDisksInfo `json:"DataDisks"`
 	SystemDisk      *map[string]int  `json:"SystemDisk"`
@@ -106,6 +108,7 @@ type DataDisksInfo struct {
 	Size     *int    `json:"Size"`
 	IopsSize *int    `json:"IopsSize"`
 }
+
 type PrivateNetworkInterfaceInfo struct {
 	InterfaceId *string `json:"InterfaceId"`
 	Name        *string `json:"Name"`
@@ -123,6 +126,7 @@ type PublicNetworkInterfaceInfo struct {
 	Connected   *int    `json:"Connected"`
 	PublicId    *string `json:"PublicId"`
 }
+
 type DescribeInstanceReponse struct {
 	*cdshttp.BaseResponse
 	Code    *string `json:"Code"`

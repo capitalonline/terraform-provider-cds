@@ -46,11 +46,13 @@ resource "cds_instance" "my_instance" {
   cpu           = 4
   ram           = 4
   vdc_id        = cds_vdc.my_vdc.id
-  password      = "123abc,.;"
-  public_ip     = "auto"
+  # password 和 public_key 二选一
+  # public_key = file("/home/guest/.ssh/test.pub")
+  password  = "123abc,.;"
+  public_ip = "auto"
   private_ip {
-    "private_id" = cds_private_subnet.my_private_subnet_1.id
-    "address"    = "auto"
+    private_id = cds_private_subnet.my_private_subnet_1.id
+    address    = "auto"
   }
   data_disks {
     size = 100
