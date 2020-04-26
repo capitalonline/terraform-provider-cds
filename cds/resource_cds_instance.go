@@ -387,7 +387,7 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 		return errRet
 	}
 	//get create result
-	time.Sleep(10 * time.Second)
+	time.Sleep(30 * time.Second)
 	detail, errRet := taskService.DescribeTask(ctx, taskId)
 	if errRet != nil {
 		return errRet

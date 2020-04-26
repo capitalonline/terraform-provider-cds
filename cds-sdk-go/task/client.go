@@ -82,17 +82,10 @@ func (c *Client) DescribeTask(request *DescribeTaskRequest) (response *DescribeT
 	}
 	response = NewDescribeTaskResponse()
 
-	errRetry, retryCount := 0, 3
+	errRetry, retryCount := 0, 10
 	for i := 0; i < 100; i++ {
 		err = c.Send(request, response)
 		if err != nil {
-			return
-		}
-		switch *response.Data.Status {
-		case "FINISH":
-			log.Printf("get task status FINISH!\n")
-			return
-		case "ERROR":
 			if errRetry < retryCount {
 				log.Printf("get task status ERROR! Retry %v.\n", errRetry)
 				errRetry++
@@ -101,6 +94,13 @@ func (c *Client) DescribeTask(request *DescribeTaskRequest) (response *DescribeT
 				time.Sleep(time.Duration(sleepMs) * time.Millisecond)
 				continue
 			}
+			return
+		}
+		switch *response.Data.Status {
+		case "FINISH":
+			log.Printf("get task status FINISH!\n")
+			return
+		case "ERROR":
 			err = errors.New("get task status error")
 			return
 		}
