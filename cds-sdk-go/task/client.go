@@ -83,7 +83,7 @@ func (c *Client) DescribeTask(request *DescribeTaskRequest) (response *DescribeT
 	response = NewDescribeTaskResponse()
 
 	errRetry, retryCount := 0, 10
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 1000; i++ {
 		err = c.Send(request, response)
 		if err != nil {
 			if errRetry < retryCount {
