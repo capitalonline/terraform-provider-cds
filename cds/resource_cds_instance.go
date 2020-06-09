@@ -427,6 +427,7 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 			}
 		}
 	}
+	time.Sleep(5 * time.Second)
 	return resourceCdsCcsInstanceRead(d, meta)
 }
 
@@ -488,7 +489,10 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 	}
 
 	// for PublicNetworkInterface
-	d.Set("public_ip", *instanceInfo.PublicNetworkInterface.IP)
+	// TBD: keep the data structure of user resource temporarily,
+	// will change the public res config structure to slice in next big version
+	publicId1 := instanceInfo.PublicNetworkInterface[0]
+	d.Set("public_ip", *publicId1.IP)
 
 	// for PrivateNetworkInterface
 	var privateNets []map[string]interface{}
@@ -572,6 +576,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		if err != nil {
 			return err
 		}
+		time.Sleep(5 * time.Second)
 	}
 
 	if d.HasChange("security_group_binding") {

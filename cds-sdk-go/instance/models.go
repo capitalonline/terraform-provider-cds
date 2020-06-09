@@ -92,8 +92,8 @@ type DescribeReturnInfo struct {
 	Cpu                     *int       `json:"Cpu"`
 	Ram                     *int       `json:"Ram"`
 	PrivateNetworkInterface []*PrivateNetworkInterfaceInfo
-	PublicNetworkInterface  *PublicNetworkInterfaceInfo `json:"PublicNetworkInterface"`
-	InstanceChargeType      *string                     `json:"InstanceChargeType"`
+	PublicNetworkInterface  []*PublicNetworkInterfaceInfo `json:"PublicNetworkInterface"`
+	InstanceChargeType      *string                       `json:"InstanceChargeType"`
 }
 
 type DisksInfo struct {
