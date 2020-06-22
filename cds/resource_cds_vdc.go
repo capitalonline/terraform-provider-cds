@@ -98,6 +98,9 @@ func resourceCdsVdcCreate(d *schema.ResourceData, meta interface{}) error {
 		return nil
 	}
 
+	//get create result
+	time.Sleep(10 * time.Second)
+
 	detail, err := taskService.DescribeTask(ctx, taskId)
 	if err != nil {
 		return err
