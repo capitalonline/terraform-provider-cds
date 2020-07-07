@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 )
 
 const (
@@ -158,7 +158,7 @@ func ConstructParams(req Request) (err error) {
 func CompleteCdsParams(ak string, req Request) {
 	params := req.GetParams()
 	timestamp := time.Now().UTC().Format("2006-01-02T15:04:05Z")
-	uuidStr := uuid.NewV4()
+	uuidStr := uuid.New()
 	params["Action"] = req.GetAction()
 	params["AccessKeyId"] = ak
 	params["SignatureNonce"] = uuidStr.String()

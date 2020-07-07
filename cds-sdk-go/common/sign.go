@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"sort"
 	"strings"
-	_http "terraform-provider-cds/cds-sdk-go/common/http"
+	cdshttp "terraform-provider-cds/cds-sdk-go/common/http"
 )
 
 const (
@@ -38,7 +38,7 @@ func hmacsha256(s, key string) string {
 	return string(hashed.Sum(nil))
 }
 
-func signRequest(request _http.Request, credential *Credential, method string) (err error) {
+func signRequest(request cdshttp.Request, credential *Credential, method string) (err error) {
 	if method != SHA256 {
 		method = SHA1
 	}
@@ -49,7 +49,7 @@ func signRequest(request _http.Request, credential *Credential, method string) (
 	return
 }
 
-func checkAuthParams(request _http.Request, credential *Credential, method string) {
+func checkAuthParams(request cdshttp.Request, credential *Credential, method string) {
 	params := request.GetParams()
 	//credentialParams := credential.GetCredentialParams()
 	//for key, value := range credentialParams {
@@ -59,7 +59,7 @@ func checkAuthParams(request _http.Request, credential *Credential, method strin
 	delete(params, "Signature")
 }
 
-func getStringToSign(request _http.Request) string {
+func getStringToSign(request cdshttp.Request) string {
 	method := request.GetHttpMethod()
 	params := request.GetParams()
 	var paramsKeys sort.StringSlice
