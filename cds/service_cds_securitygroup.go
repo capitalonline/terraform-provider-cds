@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	"terraform-provider-cds/cds-sdk-go/common"
-	"terraform-provider-cds/cds-sdk-go/security_group"
-	"terraform-provider-cds/cds-sdk-go/security_group_rule"
+	"github.com/capitalonline/cds-gic-sdk-go/common"
+	"github.com/capitalonline/cds-gic-sdk-go/security_group"
+	"github.com/capitalonline/cds-gic-sdk-go/security_group_rule"
 	"terraform-provider-cds/cds/connectivity"
 	u "terraform-provider-cds/cds/utils"
 

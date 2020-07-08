@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"terraform-provider-cds/cds-sdk-go/vdc"
+	"github.com/capitalonline/cds-gic-sdk-go/vdc"
 	"terraform-provider-cds/cds/connectivity"
 	u "terraform-provider-cds/cds/utils"
 

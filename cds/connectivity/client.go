@@ -1,13 +1,13 @@
 package connectivity
 
 import (
-	"terraform-provider-cds/cds-sdk-go/common"
-	"terraform-provider-cds/cds-sdk-go/common/profile"
-	"terraform-provider-cds/cds-sdk-go/instance"
-	"terraform-provider-cds/cds-sdk-go/security_group"
-	"terraform-provider-cds/cds-sdk-go/security_group_rule"
-	"terraform-provider-cds/cds-sdk-go/task"
-	"terraform-provider-cds/cds-sdk-go/vdc"
+	"github.com/capitalonline/cds-gic-sdk-go/common"
+	"github.com/capitalonline/cds-gic-sdk-go/common/profile"
+	"github.com/capitalonline/cds-gic-sdk-go/instance"
+	"github.com/capitalonline/cds-gic-sdk-go/security_group"
+	"github.com/capitalonline/cds-gic-sdk-go/security_group_rule"
+	"github.com/capitalonline/cds-gic-sdk-go/task"
+	"github.com/capitalonline/cds-gic-sdk-go/vdc"
 )
 
 // client for all Capitalonline data service

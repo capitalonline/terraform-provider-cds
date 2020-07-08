@@ -1,7 +1,7 @@
 package cds
 
 import (
-	"terraform-provider-cds/cds-sdk-go/common"
+	"github.com/capitalonline/cds-gic-sdk-go/common"
 	"terraform-provider-cds/cds/connectivity"
 )
 

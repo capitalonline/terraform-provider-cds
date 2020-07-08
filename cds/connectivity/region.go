@@ -1,7 +1,7 @@
 package connectivity
 
 import (
-	"terraform-provider-cds/cds-sdk-go/common/regions"
+	"github.com/capitalonline/cds-gic-sdk-go/common/regions"
 )
 
 var AllSupportedRegions = []string{

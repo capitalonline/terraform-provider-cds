@@ -3,8 +3,8 @@ package cds
 import (
 	"context"
 
-	"terraform-provider-cds/cds-sdk-go/common"
-	"terraform-provider-cds/cds-sdk-go/security_group"
+	"github.com/capitalonline/cds-gic-sdk-go/common"
+	"github.com/capitalonline/cds-gic-sdk-go/security_group"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )

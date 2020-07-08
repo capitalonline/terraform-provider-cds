@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"terraform-provider-cds/cds-sdk-go/common"
-	"terraform-provider-cds/cds-sdk-go/security_group"
+	"github.com/capitalonline/cds-gic-sdk-go/common"
+	"github.com/capitalonline/cds-gic-sdk-go/security_group"
 
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"

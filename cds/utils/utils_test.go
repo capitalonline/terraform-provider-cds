@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"terraform-provider-cds/cds-sdk-go/security_group_rule"
+	"github.com/capitalonline/cds-gic-sdk-go/security_group_rule"
 )
 
 func TestUtil_MapToStruct(t *testing.T) {

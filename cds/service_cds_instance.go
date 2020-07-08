@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"time"
 
-	"terraform-provider-cds/cds-sdk-go/instance"
+	"github.com/capitalonline/cds-gic-sdk-go/instance"
 	"terraform-provider-cds/cds/connectivity"
 
 	"github.com/terraform-providers/terraform-provider-tencentcloud/tencentcloud/ratelimit"

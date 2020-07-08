@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"terraform-provider-cds/cds-sdk-go/common"
-	"terraform-provider-cds/cds-sdk-go/task"
+	"github.com/capitalonline/cds-gic-sdk-go/common"
+	"github.com/capitalonline/cds-gic-sdk-go/task"
 	"terraform-provider-cds/cds/connectivity"
 
 	"github.com/terraform-providers/terraform-provider-tencentcloud/tencentcloud/ratelimit"

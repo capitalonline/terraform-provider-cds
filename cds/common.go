@@ -13,7 +13,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"terraform-provider-cds/cds-sdk-go/common/errors"
+	"github.com/capitalonline/cds-gic-sdk-go/common/errors"
 
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/likexian/gokit/assert"

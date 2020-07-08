@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"terraform-provider-cds/cds-sdk-go/common"
-	"terraform-provider-cds/cds-sdk-go/instance"
-	"terraform-provider-cds/cds-sdk-go/security_group"
+	"github.com/capitalonline/cds-gic-sdk-go/common"
+	"github.com/capitalonline/cds-gic-sdk-go/instance"
+	"github.com/capitalonline/cds-gic-sdk-go/security_group"
 	u "terraform-provider-cds/cds/utils"
 
 	"github.com/hashicorp/terraform/helper/schema"
