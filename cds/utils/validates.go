@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/athom/goset"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func validateNameRegex(v interface{}, k string) (ws []string, errors []error) {

@@ -3,7 +3,7 @@ package cds
 import (
 	"testing"
 
-	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 )
 
 func TestAccCdsVdcDataSource_basic(t *testing.T) {

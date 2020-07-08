@@ -14,7 +14,7 @@ import (
 	"github.com/capitalonline/cds-gic-sdk-go/security_group"
 	u "terraform-provider-cds/cds/utils"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceCdsCcsInstance() *schema.Resource {

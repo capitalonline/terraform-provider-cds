@@ -15,7 +15,7 @@ import (
 
 	"github.com/capitalonline/cds-gic-sdk-go/common/errors"
 
-	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/likexian/gokit/assert"
 )
 

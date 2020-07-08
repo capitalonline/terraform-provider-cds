@@ -3,7 +3,7 @@ package main
 import (
 	"terraform-provider-cds/cds"
 
-	"github.com/hashicorp/terraform/plugin"
+	"github.com/hashicorp/terraform-plugin-sdk/plugin"
 )
 
 func main() {

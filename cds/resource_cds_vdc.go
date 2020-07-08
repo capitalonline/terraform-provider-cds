@@ -11,7 +11,7 @@ import (
 	"github.com/capitalonline/cds-gic-sdk-go/vdc"
 	u "terraform-provider-cds/cds/utils"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceCdsVdc() *schema.Resource {
