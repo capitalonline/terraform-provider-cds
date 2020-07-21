@@ -63,5 +63,6 @@ resource "cds_instance" "my_instance" {
     subnet_id         = cds_private_subnet.my_private_subnet_1.id
     security_group_id = cds_security_group.security_group_1.id
   }
+  #utc = true
 }
 
