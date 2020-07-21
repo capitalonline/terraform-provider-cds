@@ -9,10 +9,11 @@ import (
 	"strings"
 	"time"
 
+	u "terraform-provider-cds/cds/utils"
+
 	"github.com/capitalonline/cds-gic-sdk-go/common"
 	"github.com/capitalonline/cds-gic-sdk-go/instance"
 	"github.com/capitalonline/cds-gic-sdk-go/security_group"
-	u "terraform-provider-cds/cds/utils"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -185,74 +186,13 @@ func resourceCdsCcsInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//"private_network_interface": &schema.Schema{
-			//	Type:     schema.TypeList,
-			//	Computed: true,
-			//	Elem: &schema.r{
-			//		Schema: map[string]*schema.Schema{
-			//			"interface_id": &schema.Schema{
-			//				Type:     schema.TypeString,
-			//				Computed: true,
-			//			},
-			//			"name": &schema.Schema{
-			//				Type:     schema.TypeString,
-			//				Computed: true,
-			//			},
-			//			"ip": &schema.Schema{
-			//				Type:     schema.TypeString,
-			//				Computed: true,
-			//			},
-			//			"mac": &schema.Schema{
-			//				Type:     schema.TypeString,
-			//				Computed: true,
-			//			},
-			//			"connected": &schema.Schema{
-			//				Type:     schema.TypeInt,
-			//				Computed: true,
-			//			},
-			//			"private_id": &schema.Schema{
-			//				Type:     schema.TypeString,
-			//				Computed: true,
-			//			},
-			//		},
-			//	},
-			//},
-			//"public_network_interface": &schema.Schema{
-			//	Type:     schema.TypeList,
-			//	Computed: true,
-			//	Elem: &schema.r{
-			//		Schema: map[string]*schema.Schema{
-			//			"interface_id": &schema.Schema{
-			//				Type:     schema.TypeString,
-			//				Computed: true,
-			//			},
-			//			"name": &schema.Schema{
-			//				Type:     schema.TypeString,
-			//				Computed: true,
-			//			},
-			//			"ip": &schema.Schema{
-			//				Type:     schema.TypeString,
-			//				Computed: true,
-			//			},
-			//			"mac": &schema.Schema{
-			//				Type:     schema.TypeString,
-			//				Computed: true,
-			//			},
-			//			"connected": &schema.Schema{
-			//				Type:     schema.TypeInt,
-			//				Computed: true,
-			//			},
-			//			"public_id": &schema.Schema{
-			//				Type:     schema.TypeString,
-			//				Computed: true,
-			//			},
-			//		},
-			//	},
-			//},
-
 			//service
 			"operate_instance_status": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"utc": &schema.Schema{
+				Type:     schema.TypeBool,
 				Optional: true,
 			},
 		},
@@ -348,6 +288,10 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 		if amount > 0 {
 			createInstanceRequest.Amount = common.IntPtr(amount)
 		}
+	}
+	if utc, ok := d.GetOk("utc"); ok {
+		utc := utc.(bool)
+		createInstanceRequest.UTC = common.BoolPtr(utc)
 	}
 	if publicIp, ok := d.GetOk("public_ip"); ok {
 		publicIp := publicIp.(string)
