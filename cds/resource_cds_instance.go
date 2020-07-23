@@ -136,6 +136,27 @@ func resourceCdsCcsInstance() *schema.Resource {
 					},
 				},
 			},
+			"system_disk": {
+				Type:        schema.TypeMap,
+				Optional:    true,
+				Description: "System disk info.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"size": {
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"iops": {
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"data_disks": {
 				Type:       schema.TypeList,
 				ConfigMode: schema.SchemaConfigModeAttr,
@@ -313,6 +334,15 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 				IP:        common.StringPtrs(ips),
 			})
 		}
+	}
+
+	if v, ok := d.GetOk("system_disk"); ok {
+		var sysdisk = instance.SystemDisk{}
+		err := u.Mapstructure(v.(map[string]interface{}), &sysdisk)
+		if err != nil {
+			return err
+		}
+		createInstanceRequest.SystemDisk = &sysdisk
 	}
 
 	if dataDisks, ok := d.GetOk("data_disks"); ok {

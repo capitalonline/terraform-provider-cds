@@ -54,6 +54,11 @@ resource "cds_instance" "my_instance" {
     private_id = cds_private_subnet.my_private_subnet_1.id
     address    = "auto"
   }
+  #system_disk = {
+  #type = "ssd_system_disk"
+  #size = 200
+  #iops = 5
+  #}
   data_disks {
     size = 100
     type = "high_disk"
