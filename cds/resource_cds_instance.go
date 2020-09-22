@@ -465,8 +465,11 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 	// for PublicNetworkInterface
 	// TBD: keep the data structure of user resource temporarily,
 	// will change the public res config structure to slice in next big version
-	publicId1 := instanceInfo.PublicNetworkInterface[0]
-	d.Set("public_ip", *publicId1.IP)
+	publicId0 := instanceInfo.PublicNetworkInterface
+	if len(publicId0) != 0 {
+		publicId1 := instanceInfo.PublicNetworkInterface[0]
+		d.Set("public_ip", *publicId1.IP)
+	}
 
 	// for PrivateNetworkInterface
 	var privateNets []map[string]interface{}
