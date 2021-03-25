@@ -76,3 +76,31 @@ $ terraform destroy
 
 ### Appendix
 region_id, public_network.type, image_id, instance_type, refer to [CDS OpenApi](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#6describesecuritygroups)
+
+
+## Upgrade
+| terraform version | terraform-provider-cds tag | need upgrade |
+| :----: | :----: | :----: |
+| 0.13.* or higher  | *                          | True         |
+| *                 | 0.5.3 or higher            | True         |
+| 0.13.* or higher  | 0.5.3 or higher            | True         |
+| 0.12.* or lower   | 0.5.3 or lower             | False        |
+
+You have to refer to it https://www.terraform.io/upgrade-guides/index.html. And Step by step upgrade to the corresponding version
+
+The easiest way to upgrade:
+* modify versions.tf file
+```
+    terraform {
+        required_providers {
+            cds = {
+                source = "hashicorp/cds"
+            }
+        }
+    }
+```
+* change compiled file path
+```bash
+$ go build -o terraform-provider-cds_v0.5.4
+$ mv terraform-provider-cds_v0.5.4 ~/.terraform.d/plugins/registry.terraform.io/hashicorp/cds/0.5.4/terraform-provider-cds_v0.5.4
+```
