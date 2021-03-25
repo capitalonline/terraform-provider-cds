@@ -82,9 +82,7 @@ region_id, public_network.type, image_id, instance_type, refer to [CDS OpenApi](
 | terraform version | terraform-provider-cds tag | need upgrade |
 | :----: | :----: | :----: |
 | 0.13.* or higher  | *                          | True         |
-| *                 | 0.5.3 or higher            | True         |
-| 0.13.* or higher  | 0.5.3 or higher            | True         |
-| 0.12.* or lower   | 0.5.3 or lower             | False        |
+| 0.12.* or lower   | *                          | False        |
 
 You have to refer to it https://www.terraform.io/upgrade-guides/index.html. And Step by step upgrade to the corresponding version
 
