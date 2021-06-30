@@ -76,3 +76,60 @@ $ terraform destroy
 
 ### Appendix
 region_id, public_network.type, image_id, instance_type, refer to [CDS OpenApi](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#6describesecuritygroups)
+
+
+## Upgrade
+| terraform version | terraform-provider-cds tag | need upgrade |
+| :----: | :----: | :----: |
+| 0.13.* or higher  | *                          | True         |
+| 0.12.* or lower   | *                          | False        |
+
+You have to refer to it https://www.terraform.io/upgrade-guides/index.html. And Step by step upgrade to the corresponding version
+
+The easiest way to upgrade:
+1. modify versions.tf file
+```
+terraform {
+    required_providers {
+        cds = {
+            source = "terraform.capitalonline.net/capitalonline/cds"
+            version = "1.0.0"
+        }
+    }
+}
+```
+2. change compiled file path
+- Implied Local Mirror Directories
+  * Windows: %APPDATA%/terraform.d/plugins and %APPDATA%/HashiCorp/Terraform/plugins
+  * Mac OS X: $HOME/.terraform.d/plugins/, ~/Library/Application Support/io.terraform/plugins, and /Library/Application Support/io.terraform/plugins
+  * Linux and other Unix-like systems: $HOME/.terraform.d/plugins/, and XDG Base Directory data directories as configured, after appending terraform/plugins. Without any XDG environment variables set, Terraform will use ~/.local/share/terraform/plugins, /usr/local/share/terraform/plugins, and /usr/share/terraform/plugins.
+- Flatform
+  * Windows: windows_amd64
+  * Mac OS X: darwin_amd64
+  * Linux and other Unix-like systems: linux_amd64
+- File path format
+  * [local mirror dir]/[hostname]/[namespace]/[type]/[tag version]/[platform]/[provider]
+```bash
+$ go build -o ~/.terraform.d/plugins/terraform.capitalonline.net/capitalonline/cds/1.0.0/darwin_amd64/terraform-provider-cds
+$ cd example/cds_instance
+$ tree -a
+.
+├── main.tf
+├── variables.tf
+└── versions.tf
+$ terraform init
+$ tree -a
+.
+├── .terraform
+│   └── providers
+│       └── terraform.capitalonline.net
+│           └── capitalonline
+│               └── cds
+│                   └── 1.0.0
+│                       └── darwin_amd64 -> /Users/XXX/.terraform.d/plugins/terraform.capitalonline.net/capitalonline/cds/1.0.0/darwin_amd64
+├── .terraform.lock.hcl
+├── main.tf
+├── variables.tf
+└── versions.tf
+```
+now you can continue your option.
