@@ -5,23 +5,23 @@
 # HaProxy 请求字段参考 https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#9describecacertificate
 
 # 获取创建HaProxy实例所需要的参数数据包括（可用区，可用产品规格，已创建的HaProxy实例）
-#data cds_data_source_haproxy my_data {
-  # 取对应区域的Haproxy实例列表
-#  region_id = "CN_Beijing_A"
-#  result_output_file = "data.json"
-#}
+data cds_data_source_haproxy my_data {
+    # 取对应区域的Haproxy实例列表
+   region_id = "CN_Beijing_A"
+   result_output_file = "data.json"
+}
 
 resource cds_haproxy my_haproxy {
 	region_id = var.haproxy_zones[9]
-  # vdc_id base_pipe_id 从 vdc 获取
-	vdc_id = "3a526fcf-98e9-4149-a6a2-df1d67446bd7"
-	base_pipe_id = "f02fa2fa-d57f-11eb-a77a-3eb98755b2a4"
-	instance_name = var.haproxy_name
-  # paas_goods_id 从data.json PaasGoodsId 获取
-	paas_goods_id = var.haproxy_goods["1C2G"]
+    # vdc_id base_pipe_id 从 vdc 获取
+	vdc_id = "XXXXXXXXXX"
+	base_pipe_id = "XXXXXXXXXX"
+	instance_name = "my_terraform_haproxy"
+    # paas_goods_id 从data.json PaasGoodsId 获取
+	paas_goods_id = 13721
 	ips = [
 		{
-      # pipe_id pipe_type vdc网络
+            # pipe_id pipe_type vdc网络
 			pipe_id = "f02fa2fa-d57f-11eb-a77a-3eb98755b2a4"
 			pipe_type = "private"
 			segment_id = ""
@@ -29,36 +29,36 @@ resource cds_haproxy my_haproxy {
 	]
 	instance_uuid = "bc1fe739-e01e-43ad-9575-1080ee9565d6"
 
-  #  若想创建、更新删除HaProxy策略，必须在创建HaProxy实例后手动更新 instance_uuid 执行 terraform apply 使生效
+    # 若想创建、更新删除HaProxy策略，必须在创建HaProxy实例后手动更新 instance_uuid 执行 terraform apply 使生效
 	strategies = [
-    {
+		{
 			http_listeners = [
 				{
-				  server_timeout_unit = "s"
-				  server_timeout = 1200
-				  sticky_session = "on"
-				  acl_white_list = "192.168.4.1"
-				  listener_mode = "http"
-				  max_conn = 2021
-				  connect_timeout_unit = "s"
-				  scheduler = "roundrobin"
-				  connect_timeout = 1200
-				  client_timeout = 1001
-				  listener_name = "terraform"
-				  client_timeout_unit = "ms"
-				  listener_port = 24353
-				  backend_server = [
-            {
-              ip = "192.168.3.1"
-              max_conn = 2021
-              port = 12313
-              weight = 1
-            }
-				  ]
-				  certificate_ids = []
+					server_timeout_unit = "s"
+					server_timeout = 1200
+					sticky_session = "on"
+					acl_white_list = "192.168.4.1"
+					listener_mode = "http"
+					max_conn = 2021
+					connect_timeout_unit = "s"
+					scheduler = "roundrobin"
+					connect_timeout = 1200
+					client_timeout = 1001
+					listener_name = "terraform"
+					client_timeout_unit = "ms"
+					listener_port = 24353
+					backend_server = [
+						{
+							ip = "192.168.3.1"
+							max_conn = 2021
+							port = 12313
+							weight = 1
+						}
+					]
+					certificate_ids = []
 				}
 			]
-      tcp_listeners = []
+			tcp_listeners = []
 		}
-  ]
+    ]
 }

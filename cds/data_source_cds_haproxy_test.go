@@ -14,7 +14,6 @@ import (
 var testHaproxyResource = `
 resource cds_haproxy my_haproxy {
     data cds_data_source_haproxy my_data {
-	  # 取对应区域的Haproxy实例列表
 	  region_id = "CN_Beijing_A"
 	  result_output_file = "data.json"
 	}

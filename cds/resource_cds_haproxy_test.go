@@ -2,8 +2,11 @@ package cds
 
 import (
 	"context"
+	"errors"
 	"testing"
 
+	"github.com/capitalonline/cds-gic-sdk-go/common"
+	"github.com/capitalonline/cds-gic-sdk-go/haproxy"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
@@ -17,7 +20,7 @@ func TestAccHaproxyStrategy(t *testing.T) {
 			{
 				Config: testAccHaproxyStrategyConfig,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("cds_haproxy_strategy.my_haproxy_strategy", "instance_name", "my_haproxy_strategy"),
+					resource.TestCheckResourceAttr("cds_haproxy.my_haproxy", "instance_name", "my_terraform_haproxy"),
 				),
 			},
 		},
@@ -77,31 +80,28 @@ func testAccHaproxyStrategyDestory(s *terraform.State) error {
 	defer logElapsed("data_source.haproxy_strategy.read")()
 
 	logId := getLogId(contextNil)
-	context.WithValue(context.TODO(), "logId", logId)
+	ctx := context.WithValue(context.TODO(), "logId", logId)
 
-	// for _, rs := range s.RootModule().Resources {
-	// 	if rs.Type != "cds_haproxy_strategy" {
-	// 		continue
-	// 	}
+	for _, rs := range s.RootModule().Resources {
+		if rs.Type != "cds_haproxy_strategy" {
+			continue
+		}
 
-	// 	haproxyService := HaproxyStrategyService{client: testAccProvider.Meta().(*CdsClient).apiConn}
+		haproxyService := HaproxyService{client: testAccProvider.Meta().(*CdsClient).apiConn}
 
-	// 	request := haproxy.NewDescribeLoadBalancerStrategysRequest()
+		request := haproxy.NewDescribeLoadBalancerStrategysRequest()
 
-	// 	request.InstanceUuid = common.StringPtr(rs.Primary.Attributes["id"])
+		request.InstanceUuid = common.StringPtr(rs.Primary.Attributes["id"])
 
-	// 	response, err := haproxyService.DescribeLoadBalancerStrategys(ctx, request)
-	// 	if err != nil {
-	// 		return err
-	// 	}
+		response, err := haproxyService.DescribeLoadBalancerStrategys(ctx, request)
+		if err != nil {
+			return err
+		}
 
-	// 	bytes, _ := json.Marshal(response)
-	// 	log.Println(string(bytes), err)
-
-	// 	if response.Data.HttpListeners != nil || response.Data.TcpListeners != nil {
-	// 		return errors.New("asdasdasdasd")
-	// 	}
-	// }
+		if response.Data.HttpListeners != nil || response.Data.TcpListeners != nil {
+			return errors.New("instance is not destroy")
+		}
+	}
 
 	return nil
 }

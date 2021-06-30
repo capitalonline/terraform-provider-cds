@@ -364,35 +364,6 @@ func createResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 func readResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error {
 	log.Println("read haproxy")
 	defer logElapsed("resource.cds_haproxy.read")()
-	// logId := getLogId(contextNil)
-	// ctx := context.WithValue(context.TODO(), "logId", logId)
-
-	// if !strings.Contains(data.Id(), "Need to Set Instance UUID") {
-	// 	haproxyService := HaproxyService{client: meta.(*CdsClient).apiConn}
-
-	// 	request := haproxy.NewDescribeLoadBalancersRequest()
-
-	// 	response, err := haproxyService.DescribeHaproxy(ctx, request)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	for _, d := range response.Data {
-	// 		if request.InstanceUuid == d.InstanceUuid {
-	// 			data.Set("display_name", d.DisplayName)
-	// 			data.Set("ip", d.IP)
-	// 			data.Set("instance_uuid", d.InstanceUuid)
-	// 			data.Set("link_type", d.LinkType)
-	// 			data.Set("master_info", d.MasterInfo)
-	// 			data.Set("port", d.Port)
-	// 			data.Set("resource_id", d.ResourceId)
-	// 			data.Set("status", d.Status)
-	// 			data.Set("sub_product_name", d.SubProductName)
-	// 			data.Set("version", d.Version)
-	// 			break
-	// 		}
-	// 	}
-	// }
 
 	return nil
 }
