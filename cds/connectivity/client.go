@@ -3,6 +3,7 @@ package connectivity
 import (
 	"github.com/capitalonline/cds-gic-sdk-go/common"
 	"github.com/capitalonline/cds-gic-sdk-go/common/profile"
+	"github.com/capitalonline/cds-gic-sdk-go/haproxy"
 	"github.com/capitalonline/cds-gic-sdk-go/instance"
 	"github.com/capitalonline/cds-gic-sdk-go/security_group"
 	"github.com/capitalonline/cds-gic-sdk-go/security_group_rule"
@@ -12,17 +13,19 @@ import (
 
 // client for all Capitalonline data service
 type CdsClient struct {
-	Region     string
-	SecretId   string
-	SecretKey  string
-	vdcConn    *vdc.Client
-	vdcGetConn *vdc.Client
-	sgConn     *security_group.Client
-	sgGetConn  *security_group.Client
-	vmConn     *instance.Client
-	taskConn   *task.Client
-	sgrConn    *security_group_rule.Client
-	sgrGetConn *security_group_rule.Client
+	Region         string
+	SecretId       string
+	SecretKey      string
+	vdcConn        *vdc.Client
+	vdcGetConn     *vdc.Client
+	sgConn         *security_group.Client
+	sgGetConn      *security_group.Client
+	vmConn         *instance.Client
+	taskConn       *task.Client
+	sgrConn        *security_group_rule.Client
+	sgrGetConn     *security_group_rule.Client
+	haproxyConn    *haproxy.Client
+	haproxyGetConn *haproxy.Client
 }
 
 func NewCdsClient(secretId, secretKey, region string) *CdsClient {
@@ -141,6 +144,30 @@ func (me *CdsClient) UseTaskGetClient() *task.Client {
 	client.WithHttpTransport(&round)
 	me.taskConn = client
 	return me.taskConn
+}
+
+func (me *CdsClient) UseHaproxyClient() *haproxy.Client {
+	if me.haproxyConn != nil {
+		return me.haproxyConn
+	}
+	credential := common.NewCredential(me.SecretId, me.SecretKey)
+	client, _ := haproxy.NewClient(credential, me.Region, clientProfile("POST"))
+	var round LogRoundTripper
+	client.WithHttpTransport(&round)
+	me.haproxyConn = client
+	return me.haproxyConn
+}
+
+func (me *CdsClient) UseHaproxyGetClient() *haproxy.Client {
+	if me.haproxyGetConn != nil {
+		return me.haproxyGetConn
+	}
+	credential := common.NewCredential(me.SecretId, me.SecretKey)
+	client, _ := haproxy.NewClient(credential, me.Region, clientProfile("GET"))
+	var round LogRoundTripper
+	client.WithHttpTransport(&round)
+	me.haproxyGetConn = client
+	return me.haproxyGetConn
 }
 
 func clientProfile(method string) *profile.ClientProfile {

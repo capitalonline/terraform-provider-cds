@@ -44,12 +44,14 @@ func Provider() terraform.ResourceProvider {
 			"cds_data_source_security_group": dataSourceCdsSecurityGroup(),
 			"cds_data_source_instance":       dataSourceCdsInstance(),
 			"cds_data_source_private_subnet": dataSourceCdsPrivateSubnet(),
+			"cds_data_source_haproxy":        dataSourceHaproxy(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"cds_vdc":            resourceCdsVdc(),
 			"cds_instance":       resourceCdsCcsInstance(),
 			"cds_security_group": resourceCdsSecurityGroup(),
 			"cds_private_subnet": resourceCdsPrivateSubnet(),
+			"cds_haproxy":        resourceCdsHaproxy(),
 		},
 
 		ConfigureFunc: providerConfigure,
