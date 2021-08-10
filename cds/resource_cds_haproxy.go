@@ -2,7 +2,9 @@ package cds
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -87,7 +89,7 @@ func resourceCdsHaproxy() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"acl_white_list": {
 										Type:     schema.TypeString,
-										Required: true,
+										Optional: true,
 									},
 									"backend_server": {
 										Type:       schema.TypeList,
@@ -116,7 +118,7 @@ func resourceCdsHaproxy() *schema.Resource {
 									},
 									"certificate_ids": {
 										Type:       schema.TypeList,
-										Required:   true,
+										Optional:   true,
 										ConfigMode: schema.SchemaConfigModeAttr,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
@@ -191,7 +193,7 @@ func resourceCdsHaproxy() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"acl_white_list": {
 										Type:     schema.TypeString,
-										Required: true,
+										Optional: true,
 									},
 									"backend_server": {
 										Type:       schema.TypeList,
@@ -451,6 +453,8 @@ func createModitifyStrategyRequest(data *schema.ResourceData) *haproxy.ModifyLoa
 	if !ok {
 		return request
 	}
+	bytesData, _ := json.Marshal(inter)
+	fmt.Println(string(bytesData))
 	strategies, ok := inter.([]interface{})
 	if !ok {
 		return request
@@ -495,6 +499,8 @@ func createModitifyStrategyRequest(data *schema.ResourceData) *haproxy.ModifyLoa
 							CertificateName: common.StringPtr(certificateIdsMap["certificate_name"].(string)),
 						})
 					}
+				} else {
+					certificateIds = []*haproxy.DescribeLoadBalancerStrategysCertificateIds{}
 				}
 
 				listener := &haproxy.DescribeLoadBalancerStrategysHttpListeners{
@@ -504,6 +510,8 @@ func createModitifyStrategyRequest(data *schema.ResourceData) *haproxy.ModifyLoa
 
 				if dataMap["acl_white_list"] != nil {
 					listener.AclWhiteList = common.StringPtrs(strings.Split(dataMap["acl_white_list"].(string), ","))
+				} else {
+					listener.AclWhiteList = []*string{}
 				}
 				if dataMap["client_timeout"] != nil {
 					listener.ClientTimeout = common.StringPtr(dataMap["client_timeout"].(string))

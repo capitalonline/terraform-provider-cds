@@ -26,53 +26,63 @@ resource "cds_haproxy" "haproxy_example" {
         pipe_id    = var.pipe_id
         segment_id = var.segment.id
     }]
-    strategies = [{
-        http_listeners = [{
-            acl_white_list = ""
-            backend_server = [{
-                ip = ""
-                max_conn = 1000
-                port = port
-                weight = 1
-            }]
-            certificate_ids = [{
-                certificate_id = ""
-                certificate_name = ""
-            }]
-            client_timeout = ""
-            client_timeout_unit = ""
-            connect_timeout = ""
-            connect_timeout_unit = ""
-            server_timeout = ""
-            server_timeout_unit
-            listener_mode = ""
-            listener_name = ""
-            listener_port = 8080
-            max_conn = 2000
-            scheduler = ""
-            sticky_session = ""
-        }]
-        tcp_listeners = [{
-            acl_white_list = ""
-            backend_server = [{
-                ip = ""
-                max_conn = 1000
-                port = port
-                weight = 1
-            }]
-            client_timeout = ""
-            client_timeout_unit = ""
-            connect_timeout = ""
-            connect_timeout_unit = ""
-            server_timeout = ""
-            server_timeout_unit
-            listener_mode = ""
-            listener_name = ""
-            listener_port = 8080
-            max_conn = 2000
-            scheduler = ""
-        }] 
-    }] 
+}
+
+# create haproxy strategy
+resource "cds_haproxy_strategy" "my_cds_haproxy_strategy" {
+http_listeners = [{
+  instance_uuid = "XXXXXXXXXX"
+  acl_white_list = ""
+    backend_server = [{
+      ip = ""
+      max_conn = 1000
+      port = port
+      weight = 1
+    }]
+    certificate_ids = [{
+      certificate_id = ""
+      certificate_name = ""
+    }]
+    client_timeout = ""
+    client_timeout_unit = ""
+    connect_timeout = ""
+    connect_timeout_unit = ""
+    server_timeout = ""
+    server_timeout_unit
+    listener_mode = ""
+    listener_name = ""
+    listener_port = 8080
+    max_conn = 2000
+    scheduler = ""
+    sticky_session = ""
+  }]
+  tcp_listeners = [{
+    acl_white_list = ""
+    backend_server = [{
+      ip = ""
+      max_conn = 1000
+      port = port
+      weight = 1
+    }]
+    client_timeout = ""
+    client_timeout_unit = ""
+    connect_timeout = ""
+    connect_timeout_unit = ""
+    server_timeout = ""
+    server_timeout_unit
+    listener_mode = ""
+    listener_name = ""
+    listener_port = 8080
+    max_conn = 2000
+    scheduler = ""
+  }] 
+}
+
+# create certificate
+resource cds_certificate my_cds_certificate {
+  certificate_name = "my_cert"
+  certificate = "XXXXXXXXXX"
+  private_key = "XXXXXXXXXX"
 }
 ```
 
@@ -83,54 +93,59 @@ You need to manually get the newly generated instance_uuid from the JSON file ge
 
 ## Argument Reference
 The following arguments are supported
+### Haproxy
 * `instance_uuid` - (Optional) After creation, you need to provide ID manually to support update and deletion
 * `instance_name` - (Required,Unmodifiable) The name of the instance.
 * `region_id` - (Required,Unmodifiable) The Region of the instance, refer to [All Region](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#1describezones).
 * `vdc_id` - (Required,Unmodifiable) Instance belongs to the virtual data center.
 * `base_pipe_id` - (Required,Unmodifiable) Vdc private network id, the haproxy instance will create id by this [Get PipeId](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1describevdc)
 * `ips` - (Required,Unmodifiable) The network used by haproxy [All Instance Type](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E4%B8%BB%E6%9C%BA%E7%B1%BB%E5%9E%8B).
-  * pipe_type - (Required) The network of the haproxy type. The options are public and private
-  * pipe_id - (Required) The netwrok of the haproxy id. [Get PipeId](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1describevdc)
-  * segment_id - (Optional) When the haproxy type is public, it needs to be provided. [Get SegmentId](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1describevdc)
+  * `pipe_type` - (Required) The network of the haproxy type. The options are public and private
+  * `pipe_id` - (Required) The netwrok of the haproxy id. [Get PipeId](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1describevdc)
+  * `segment_id` - (Optional) When the haproxy type is public, it needs to be provided. [Get SegmentId](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1describevdc)
 * `paas_goods_id` - (Required,Unmodifiable) Product ID that support haproxy in specific region [List of product id that support haproxy in specific regions](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#1describezones)
-* `strategies` - (Required) Policy configuration of haproxy instance.
-  * http_listeners - (Required) HTTP configuration list.
-    * acl_white_list - (Required) White list setting, this is a string use , to split.
-    * backend_server - (Required) Backend server configuration.
-      * ip - (Required) Backend server IP address.
-      * port - (Required) Backend server port.
-      * weight - (Required) Backend server weight.
-      * max_conn - (Required) Maximum number of backend server connections.
-    * certificate_ids - (Required) Bind certificate, set empty array without binding.
-      * certificate_id - (Required) The certificate id.
-      * certificate_name - (Required)  The certificate name.
-    * client_timeout - (Required) Set the time for client connection timeout.
-    * client_timeout_unit - (Required) Set the time unit for client connection timeout ['m', 'ms'].
-    * connect_timeout - (Required) Set the time for client connection timeout.
-    * connect_timeout_unit - (Required) Set the time unit for client connection timeout.
-    * server_timeout - (Required) Set the time for server connection timeout.
-    * server_timeout_unit - (Required) Set the time unit for server connection timeout.
-    * listener_mode - (Required) Listener mode.
-    * listener_name - (Required) The name of the listening strategy is used to generate the configuration file. The name cannot be the same.
-    * listener_port - (Required) Listener port.
-    * max_conn - (Required) The maximum number of connections on the proxy side.
-    * scheduler - (Required) Scheduling strategy [roundrobin, leastconn, static-rr, source]
-    * sticky_session - (Required) Turn on call back hold [on, off]
-  * tcp_listeners - (Required) TCP configuration list.
-    * acl_white_list - (Required) White list setting, this is a string use , to split.
-    * backend_server - (Required) Backend server configuration.
-      * ip - (Required) Backend server IP address.
-      * port - (Required) Backend server port.
-      * weight - (Required) Backend server weight.
-      * max_conn - (Required) Maximum number of backend server connections.
-    * client_timeout - (Required) Set the time for client connection timeout.
-    * client_timeout_unit - (Required) Set the time unit for client connection timeout ['m', 'ms'].
-    * connect_timeout - (Required) Set the time for client connection timeout.
-    * connect_timeout_unit - (Required) Set the time unit for client connection timeout.
-    * server_timeout - (Required) Set the time for server connection timeout.
-    * server_timeout_unit - (Required) Set the time unit for server connection timeout.
-    * listener_mode - (Required) Listener mode.
-    * listener_name - (Required) The name of the listening strategy is used to generate the configuration file. The name cannot be the same.
-    * listener_port - (Required) Listener port.
-    * max_conn - (Required) The maximum number of connections on the proxy side.
-    * scheduler - (Required) Scheduling strategy [roundrobin, leastconn, static-rr, source]
+### Haproxy Strategy
+* `http_listeners` - (Required) HTTP configuration list.
+  * `acl_white_list` - (Required) White list setting, this is a string use , to split.
+  * `backend_server` - (Required) Backend server configuration.
+    * `ip` - (Required) Backend server IP address.
+    * `port` - (Required) Backend server port.
+    * `weight` - (Required) Backend server weight.
+    * `max_conn` - (Required) Maximum number of backend server connections.
+  * `certificate_ids` - (Required) Bind certificate, set empty array without binding.
+     * `certificate_id` - (Required) The certificate id.
+     * `certificate_name` - (Required)  The certificate name.
+   * `client_timeout` - (Required) Set the time for client connection timeout.
+   * `client_timeout_unit` - (Required) Set the time unit for client connection timeout ['m', 'ms'].
+   * `connect_timeout` - (Required) Set the time for client connection timeout.
+   * `connect_timeout_unit` - (Required) Set the time unit for client connection timeout.
+   * `server_timeout` - (Required) Set the time for server connection timeout.
+   * `server_timeout_unit` - (Required) Set the time unit for server connection timeout.
+   * `listener_mode` - (Required) Listener mode.
+   * `listener_name` - (Required) The name of the listening strategy is used to generate the configuration file. The name cannot be the same.
+   * `listener_port` - (Required) Listener port.
+   * `max_conn` - (Required) The maximum number of connections on the proxy side.
+   * `scheduler` - (Required) Scheduling strategy [roundrobin, leastconn, static-rr, source]
+   * `sticky_session` - (Required) Turn on call back hold [on, off]
+ * `tcp_listeners` - (Required) TCP configuration list.
+   * `acl_white_list` - (Required) White list setting, this is a string use , to split.
+   * `backend_server` - (Required) Backend server configuration.
+     * `ip` - (Required) Backend server IP address.
+     * `port` - (Required) Backend server port.
+     * `weight` - (Required) Backend server weight.
+     * `max_conn` - (Required) Maximum number of backend server connections.
+   * `client_timeout` - (Required) Set the time for client connection timeout.
+   * `client_timeout_unit` - (Required) Set the time unit for client connection timeout ['m', 'ms'].
+   * `connect_timeout` - (Required) Set the time for client connection timeout.
+   * `connect_timeout_unit` - (Required) Set the time unit for client connection timeout.
+   * `server_timeout` - (Required) Set the time for server connection timeout.
+   * `server_timeout_unit` - (Required) Set the time unit for server connection timeout.
+   * `listener_mode` - (Required) Listener mode.
+   * `listener_name` - (Required) The name of the listening strategy is used to generate the configuration file. The name cannot be the same.
+   * `listener_port` - (Required) Listener port.
+   * `max_conn` - (Required) The maximum number of connections on the proxy side.
+   * `scheduler` - (Required) Scheduling strategy [roundrobin, leastconn, static-rr, source]
+### Certificate
+* `certificate_name` - (Required) Certificate name
+* `certificate` - (Required) Certificate content such as BEGIN CERTIFICATE-----\nXXXXXXXXX\n-----END CERTIFICATE-----\n(must contain \n)
+* `private_key` - (Required) Private key content such as -----BEGIN RSA PRIVATE KEY-----\nXXXXXXXXX\n-----END RSA PRIVATE KEY-----\n(must contain \n)

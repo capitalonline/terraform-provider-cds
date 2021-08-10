@@ -81,14 +81,22 @@ data cds_data_source_haproxy "my_haproxy_data" {
     end_time = ""
     region_id = ""
 }
+
+data cds_data_source_certificate "my_certificate" {
+    result_output_file = data.json
+}
 ```
 
 ## Argument Reference
 
 The following arguments are supported:
 
+# Haproxy
 * `ip` - (Optional) The HaProxy instance IP to filter.
 * `instance_name` - (Optional) The HaProxy instance name to filter.
 * `start_time` - (Optional) The HaProxy instance create time to filter.
 * `end_time` - (Optional) The HaProxy instance end time to filter.
 * `result_output_file` - (Required) Save all instance information under the VDC to the path.
+
+# Certificate
+* no parameter
