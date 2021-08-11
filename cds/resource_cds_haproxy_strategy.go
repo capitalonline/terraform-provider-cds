@@ -29,41 +29,34 @@ func resourceCdsHaproxyStrategy() *schema.Resource {
 				Type:        schema.TypeList,
 				ConfigMode:  schema.SchemaConfigModeAttr,
 				Optional:    true,
-				Computed:    true,
 				Description: "http listeners",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"acl_white_list": {
 							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Required: true,
 						},
 						"backend_server": {
 							Type:       schema.TypeList,
 							Optional:   true,
-							Computed:   true,
 							ConfigMode: schema.SchemaConfigModeAttr,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"ip": {
 										Type:     schema.TypeString,
-										Optional: true,
-										Computed: true,
+										Required: true,
 									},
 									"max_conn": {
 										Type:     schema.TypeInt,
-										Optional: true,
-										Computed: true,
+										Required: true,
 									},
 									"port": {
 										Type:     schema.TypeInt,
-										Optional: true,
-										Computed: true,
+										Required: true,
 									},
 									"weight": {
 										Type:     schema.TypeString,
-										Optional: true,
-										Computed: true,
+										Required: true,
 									},
 								},
 							},
@@ -77,13 +70,11 @@ func resourceCdsHaproxyStrategy() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"certificate_id": {
 										Type:     schema.TypeString,
-										Optional: true,
-										Computed: true,
+										Required: true,
 									},
 									"certificate_name": {
 										Type:     schema.TypeString,
-										Optional: true,
-										Computed: true,
+										Required: true,
 									},
 								},
 							},
@@ -158,19 +149,19 @@ func resourceCdsHaproxyStrategy() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"ip": {
 										Type:     schema.TypeString,
-										Optional: true,
+										Required: true,
 									},
 									"max_conn": {
 										Type:     schema.TypeInt,
-										Optional: true,
+										Required: true,
 									},
 									"port": {
 										Type:     schema.TypeInt,
-										Optional: true,
+										Required: true,
 									},
 									"weight": {
 										Type:     schema.TypeString,
-										Optional: true,
+										Required: true,
 									},
 								},
 							},
@@ -283,18 +274,15 @@ func readResourceCdsHaproxyStrategy(data *schema.ResourceData, meta interface{})
 
 	descriptionLoadBalancerStrategyRequest := haproxy.NewDescribeLoadBalancerStrategysRequest()
 
+	descriptionLoadBalancerStrategyRequest.InstanceUuid = common.StringPtr(data.Get("instance_uuid").(string))
+
 	response, err := haproxyService.DescribeLoadBalancerStrategys(ctx, descriptionLoadBalancerStrategyRequest)
 	if err != nil {
 		return err
 	}
 
-	// TODO 更新
-	for _, entry := range response.Data.HttpListeners {
-		log.Println(entry)
-	}
-
-	for _, entry := range response.Data.TcpListeners {
-		log.Println(entry)
+	if *response.Code != "Success" {
+		return fmt.Errorf("read haproxy strategy failed, error: %s", *response.Message)
 	}
 	return nil
 }
@@ -392,9 +380,29 @@ func createResourceCdsHaproxyStrategy(data *schema.ResourceData, meta interface{
 }
 
 func updateResourceCdsHaproxyStrategy(data *schema.ResourceData, meta interface{}) error {
-	return nil
+	return createResourceCdsHaproxyStrategy(data, meta)
 }
 
 func deleteResourceCdsHaproxyStrategy(data *schema.ResourceData, meta interface{}) error {
+	log.Println("delete haproxy strategy")
+	defer logElapsed("resource.cds_haproxy_strategy.create")()
+	logId := getLogId(contextNil)
+	ctx := context.WithValue(context.TODO(), "logId", logId)
+
+	haproxyService := HaproxyService{client: meta.(*CdsClient).apiConn}
+
+	request := haproxy.NewModifyLoadBalancerStrategysRequest()
+	instanceUuid := data.Get("instance_uuid").(string)
+	request.InstanceUuid = &instanceUuid
+	request.HttpListeners = make([]*haproxy.DescribeLoadBalancerStrategysHttpListeners, 0)
+	request.TcpListeners = make([]*haproxy.DescribeLoadBalancerStrategysTcpListeners, 0)
+
+	response, err := haproxyService.ModifyHaproxyStrategy(ctx, request)
+	if err != nil {
+		return err
+	}
+	if *response.Code != "Success" {
+		return fmt.Errorf("Haproxy modify haproxy strategy with error: %s", err)
+	}
 	return nil
 }
