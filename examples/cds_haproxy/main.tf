@@ -4,6 +4,7 @@
 # VDC 请求字段参考 https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E7%9B%B8%E5%85%B3
 # HaProxy 请求字段参考 https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#9describecacertificate
 
+
 # 获取创建HaProxy实例所需要的参数数据包括（可用区，可用产品规格，已创建的HaProxy实例）
 data cds_data_source_haproxy my_data {
     # 取对应区域的Haproxy实例列表
@@ -28,37 +29,44 @@ resource cds_haproxy my_haproxy {
 		}
 	]
 	instance_uuid = "bc1fe739-e01e-43ad-9575-1080ee9565d6"
-
-    # 若想创建、更新删除HaProxy策略，必须在创建HaProxy实例后手动更新 instance_uuid 执行 terraform apply 使生效
-	strategies = [
-		{
-			http_listeners = [
-				{
-					server_timeout_unit = "s"
-					server_timeout = 1200
-					sticky_session = "on"
-					acl_white_list = "192.168.4.1"
-					listener_mode = "http"
-					max_conn = 2021
-					connect_timeout_unit = "s"
-					scheduler = "roundrobin"
-					connect_timeout = 1200
-					client_timeout = 1001
-					listener_name = "terraform"
-					client_timeout_unit = "ms"
-					listener_port = 24353
-					backend_server = [
-						{
-							ip = "192.168.3.1"
-							max_conn = 2021
-							port = 12313
-							weight = 1
-						}
-					]
-					certificate_ids = []
-				}
-			]
-			tcp_listeners = []
-		}
-    ]
 }
+
+# terraform 因可选嵌套对象无法灵活设置对象字段的必选和可选性，所以可选字段必须保留字段赋空值 [参考](https://github.com/hashicorp/terraform-provider-google/issues/3928)
+resource cds_haproxy_strategy my_haproxy_strategy {
+	instance_uuid = "d2e7e2f2-15b4-4cdf-b1db-33ebdc7b01b3"
+	http_listeners = [{
+		server_timeout_unit = "s"
+		server_timeout = 1200
+		sticky_session = "on"
+		acl_white_list = "192.168.4.1"
+		listener_mode = "http"
+		max_conn = 2021
+		connect_timeout_unit = "s"
+		scheduler = "roundrobin"
+		connect_timeout = 1200
+		client_timeout = 1001
+		listener_name = "terraform"
+		client_timeout_unit = "ms"
+		listener_port = 24353
+		backend_server = [{
+			ip = "192.168.3.1"
+			max_conn = 2021
+			port = 12313
+			weight = 1
+		}]
+        # terraform针对可选字段的嵌套对象的字段只能指定为必选，即使显式设置为可选也不生效 （https://github.com/hashicorp/terraform-provider-google/issues/3928）
+        # 对于可选字段有嵌套对象的，若不设置就置对应类型的空值
+		certificate_ids = []
+	}]
+}
+
+resource cds_certificate "my_certificate" {
+	certificate_name = "my_certificate"
+	certificate = "XXXXXXXX"
+	private_key = "XXXXXXXX"
+}
+
+data cds_data_source_certificate "my_certificate_data" {
+    result_output_file = "data.json"
+}
+

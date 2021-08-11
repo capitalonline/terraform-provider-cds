@@ -71,203 +71,6 @@ func resourceCdsHaproxy() *schema.Resource {
 					},
 				},
 			},
-			"strategies": {
-				Type:       schema.TypeList,
-				ConfigMode: schema.SchemaConfigModeAttr,
-				Required:   true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"http_listeners": {
-							Type:        schema.TypeList,
-							ConfigMode:  schema.SchemaConfigModeAttr,
-							MaxItems:    15,
-							Optional:    true,
-							Description: "http listeners",
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"acl_white_list": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"backend_server": {
-										Type:       schema.TypeList,
-										Optional:   true,
-										ConfigMode: schema.SchemaConfigModeAttr,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-												"ip": {
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-												"max_conn": {
-													Type:     schema.TypeInt,
-													Optional: true,
-												},
-												"port": {
-													Type:     schema.TypeInt,
-													Optional: true,
-												},
-												"weight": {
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-											},
-										},
-									},
-									"certificate_ids": {
-										Type:       schema.TypeList,
-										Required:   true,
-										ConfigMode: schema.SchemaConfigModeAttr,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-												"certificate_id": {
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-												"certificate_name": {
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-											},
-										},
-									},
-									"client_timeout": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"client_timeout_unit": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"connect_timeout": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"connect_timeout_unit": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"listener_mode": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"listener_name": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"listener_port": {
-										Type:     schema.TypeInt,
-										Optional: true,
-									},
-									"max_conn": {
-										Type:     schema.TypeInt,
-										Optional: true,
-									},
-									"scheduler": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"server_timeout": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"server_timeout_unit": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"sticky_session": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-								},
-							},
-						},
-						"tcp_listeners": {
-							Type:        schema.TypeList,
-							Optional:    true,
-							Description: "base pipe id.",
-							ConfigMode:  schema.SchemaConfigModeAttr,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"acl_white_list": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"backend_server": {
-										Type:       schema.TypeList,
-										Optional:   true,
-										ConfigMode: schema.SchemaConfigModeAttr,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-												"ip": {
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-												"max_conn": {
-													Type:     schema.TypeInt,
-													Optional: true,
-												},
-												"port": {
-													Type:     schema.TypeInt,
-													Optional: true,
-												},
-												"weight": {
-													Type:     schema.TypeString,
-													Optional: true,
-												},
-											},
-										},
-									},
-									"client_timeout": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"client_timeout_unit": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"connect_timeout": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"connect_timeout_unit": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"listener_mode": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"listener_name": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"listener_port": {
-										Type:     schema.TypeInt,
-										Optional: true,
-									},
-									"max_conn": {
-										Type:     schema.TypeInt,
-										Optional: true,
-									},
-									"scheduler": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"server_timeout": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"server_timeout_unit": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
 		},
 	}
 }
@@ -342,7 +145,11 @@ func createResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 		return err
 	}
 
+	data.Set("instance_uuid", "")
+
 	data.SetId("Need to Set Instance UUID" + strconv.FormatInt(time.Now().Unix(), 10))
+
+	time.Sleep(time.Second * 30)
 
 	// TODO wait until task id has effect
 	// taskService := TaskService{client: meta.(*CdsClient).apiConn}
@@ -396,12 +203,6 @@ func updateResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 			if err != nil {
 				return err
 			}
-		}
-
-		modifyStrategyRequest := createModitifyStrategyRequest(data)
-		_, err := haproxyService.ModifyHaproxyStrategy(ctx, modifyStrategyRequest)
-		if err != nil {
-			return err
 		}
 	} else {
 		return errors.New("You must update instance_uuid in cds_haproxy block by your self, it will fix in the future")
@@ -495,6 +296,8 @@ func createModitifyStrategyRequest(data *schema.ResourceData) *haproxy.ModifyLoa
 							CertificateName: common.StringPtr(certificateIdsMap["certificate_name"].(string)),
 						})
 					}
+				} else {
+					certificateIds = []*haproxy.DescribeLoadBalancerStrategysCertificateIds{}
 				}
 
 				listener := &haproxy.DescribeLoadBalancerStrategysHttpListeners{
@@ -504,6 +307,8 @@ func createModitifyStrategyRequest(data *schema.ResourceData) *haproxy.ModifyLoa
 
 				if dataMap["acl_white_list"] != nil {
 					listener.AclWhiteList = common.StringPtrs(strings.Split(dataMap["acl_white_list"].(string), ","))
+				} else {
+					listener.AclWhiteList = []*string{}
 				}
 				if dataMap["client_timeout"] != nil {
 					listener.ClientTimeout = common.StringPtr(dataMap["client_timeout"].(string))

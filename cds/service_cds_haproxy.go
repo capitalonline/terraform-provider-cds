@@ -144,3 +144,63 @@ func (me *HaproxyService) ModifyHaproxyStrategy(ctx context.Context, request *ha
 	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
 	return response, err
 }
+
+// Describe Certs
+func (me *HaproxyService) DescribeCACertificates(ctx context.Context, request *haproxy.DescribeCACertificatesRequest) (*haproxy.DescribeCACertificatesResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+
+	response, err := me.client.UseHaproxyGetClient().DescribeCACertificates(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+// Describe Cert
+func (me *HaproxyService) DescribeCACertificate(ctx context.Context, request *haproxy.DescribeCACertificateRequest) (*haproxy.DescribeCACertificateResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+
+	response, err := me.client.UseHaproxyGetClient().DescribeCACertificate(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+// Delete Cert
+func (me *HaproxyService) DeleteCACertificate(ctx context.Context, request *haproxy.DeleteCACertificateRequest) (*haproxy.DeleteCACertificateResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+
+	response, err := me.client.UseHaproxyClient().DeleteCACertificate(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+// UploadCACertificate
+func (me *HaproxyService) UploadCACertificate(ctx context.Context, request *haproxy.UploadCACertificateRequest) (*haproxy.UploadCACertificateResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+
+	response, err := me.client.UseHaproxyClient().UploadCACertificate(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
