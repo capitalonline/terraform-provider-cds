@@ -1,0 +1,640 @@
+{
+	"goods": {
+		"ProductName": "haproxy",
+		"Products": [
+			{
+				"Architectures": [
+					{
+						"ComputeRoles": [
+							{
+								"ComputeName": "通用型",
+								"Standards": {
+									"AttachDisk": [
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "SSD",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "ssd_disk"
+										},
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "性能型",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "high_disk"
+										}
+									],
+									"CpuRam": [
+										{
+											"CPU": 1,
+											"Name": "1C2G",
+											"PaasGoodsId": 13721,
+											"RAM": 2
+										},
+										{
+											"CPU": 2,
+											"Name": "2C4G",
+											"PaasGoodsId": 13724,
+											"RAM": 4
+										},
+										{
+											"CPU": 4,
+											"Name": "4C8G",
+											"PaasGoodsId": 13727,
+											"RAM": 8
+										},
+										{
+											"CPU": 8,
+											"Name": "8C16G",
+											"PaasGoodsId": 13730,
+											"RAM": 16
+										},
+										{
+											"CPU": 16,
+											"Name": "16C32G",
+											"PaasGoodsId": 19733,
+											"RAM": 32
+										}
+									]
+								}
+							}
+						],
+						"SubProductName": "haproxy 主从版"
+					}
+				],
+				"Version": "1.8"
+			}
+		],
+		"RegionId": "CN_Beijing_A"
+	},
+	"haproxy": [
+		{
+			"instance": {
+				"Cpu": 1,
+				"CreatedTime": "2021-08-11 10:27:46",
+				"DisplayName": "中国大陆-北京-可用区A",
+				"IP": "10.240.180.16",
+				"InstanceName": "my_terraform_haproxy",
+				"InstanceUuid": "193edaaa-9c55-4d3e-afc8-0fabd7e70fc9",
+				"LinkType": "",
+				"LinkTypeStr": "",
+				"MasterInfo": "",
+				"Port": 0,
+				"Ram": 2048,
+				"RegionId": "CN_Beijing_A",
+				"ResourceId": "33ab2b88-bfcc-48f5-b544-1a1eb3b1a443",
+				"Status": "RUNNING",
+				"StatusStr": "运行中",
+				"SubProductName": "haproxy 主从版",
+				"VdcId": "3a526fcf-98e9-4149-a6a2-df1d67446bd7",
+				"VdcName": "Terraform(testing)",
+				"Version": "1.8",
+				"Vips": [
+					{
+						"IP": "10.240.180.16",
+						"Type": "private"
+					}
+				]
+			},
+			"strategy": {}
+		},
+		{
+			"instance": {
+				"Cpu": 1,
+				"CreatedTime": "2021-06-23 16:42:57",
+				"DisplayName": "亚太地区-香港-可用区A",
+				"IP": "10.240.103.4",
+				"InstanceName": "HaProxy-2021-06-23-CKLNd",
+				"InstanceUuid": "21caff58-d9dc-4179-9253-4c0724d83dff",
+				"LinkType": "",
+				"LinkTypeStr": "",
+				"MasterInfo": "",
+				"Port": 0,
+				"Ram": 2048,
+				"RegionId": "CN_Hongkong_A",
+				"ResourceId": "e247417d-7131-458a-9f7c-3207db42c6af",
+				"Status": "RUNNING",
+				"StatusStr": "运行中",
+				"SubProductName": "haproxy 主从版",
+				"VdcId": "1e56b274-5673-4f67-bcf3-2d9ddec1e390",
+				"VdcName": "lzf-elk",
+				"Version": "1.8",
+				"Vips": [
+					{
+						"IP": "10.240.103.4",
+						"Type": "private"
+					}
+				]
+			},
+			"strategy": {}
+		},
+		{
+			"instance": {
+				"Cpu": 1,
+				"CreatedTime": "2021-08-11 10:26:30",
+				"DisplayName": "中国大陆-北京-可用区A",
+				"IP": "10.240.180.13",
+				"InstanceName": "my_terraform_haproxy",
+				"InstanceUuid": "17c636fc-f116-4310-8174-8e1122be18a6",
+				"LinkType": "",
+				"LinkTypeStr": "",
+				"MasterInfo": "",
+				"Port": 0,
+				"Ram": 2048,
+				"RegionId": "CN_Beijing_A",
+				"ResourceId": "e82564a5-360f-4de3-89d0-e1c75afa69bf",
+				"Status": "RUNNING",
+				"StatusStr": "运行中",
+				"SubProductName": "haproxy 主从版",
+				"VdcId": "3a526fcf-98e9-4149-a6a2-df1d67446bd7",
+				"VdcName": "Terraform(testing)",
+				"Version": "1.8",
+				"Vips": [
+					{
+						"IP": "10.240.180.13",
+						"Type": "private"
+					}
+				]
+			},
+			"strategy": {}
+		},
+		{
+			"instance": {
+				"Cpu": 1,
+				"CreatedTime": "2020-12-14 10:22:34",
+				"DisplayName": "中国大陆-北京-可用区H",
+				"IP": "101.251.220.29",
+				"InstanceName": "logCollect（不要删除20201217）",
+				"InstanceUuid": "25640a84-ecd0-484f-8a52-1c0f4d5ac573",
+				"LinkType": "",
+				"LinkTypeStr": "",
+				"MasterInfo": "",
+				"Port": 0,
+				"Ram": 2048,
+				"RegionId": "CN_Beijing_H",
+				"ResourceId": "3c0c9eb5-7caa-4054-ac65-61f9b26324d3",
+				"Status": "RUNNING",
+				"StatusStr": "运行中",
+				"SubProductName": "haproxy 主从版",
+				"VdcId": "9992eef4-c619-4587-b705-604a0b853241",
+				"VdcName": "kafka-agent Done",
+				"Version": "1.8.3",
+				"Vips": [
+					{
+						"IP": "101.251.220.29",
+						"Type": "public"
+					}
+				]
+			},
+			"strategy": {
+				"HttpListeners": [
+					{
+						"BackendServer": [
+							{
+								"IP": "10.241.30.8",
+								"MaxConn": 20000,
+								"Port": 80,
+								"Weight": "1"
+							}
+						],
+						"ClientTimeout": "10000",
+						"ClientTimeoutUnit": "ms",
+						"ConnectTimeout": "10000",
+						"ConnectTimeoutUnit": "ms",
+						"ListenerMode": "http",
+						"ListenerName": "test_80",
+						"ListenerPort": 80,
+						"MaxConn": 50000,
+						"Scheduler": "roundrobin",
+						"ServerTimeout": "10000",
+						"ServerTimeoutUnit": "ms",
+						"StickySession": "off"
+					}
+				]
+			}
+		},
+		{
+			"instance": {
+				"Cpu": 1,
+				"CreatedTime": "2021-06-30 11:20:48",
+				"DisplayName": "中国大陆-北京-可用区A",
+				"IP": "10.240.180.28",
+				"InstanceName": "my_terraform_haproxy",
+				"InstanceUuid": "89a8e239-9d85-4e27-9c52-e9ac641d1bca",
+				"LinkType": "",
+				"LinkTypeStr": "",
+				"MasterInfo": "",
+				"Port": 0,
+				"Ram": 2048,
+				"RegionId": "CN_Beijing_A",
+				"ResourceId": "5e7f5c42-40fa-440b-ab45-5dabc668344e",
+				"Status": "RUNNING",
+				"StatusStr": "运行中",
+				"SubProductName": "haproxy 主从版",
+				"VdcId": "3a526fcf-98e9-4149-a6a2-df1d67446bd7",
+				"VdcName": "Terraform(testing)",
+				"Version": "1.8",
+				"Vips": [
+					{
+						"IP": "10.240.180.28",
+						"Type": "private"
+					}
+				]
+			},
+			"strategy": {}
+		},
+		{
+			"instance": {
+				"Cpu": 1,
+				"CreatedTime": "2021-06-30 11:41:32",
+				"DisplayName": "中国大陆-北京-可用区A",
+				"IP": "10.240.180.34",
+				"InstanceName": "my_terraform_haproxy",
+				"InstanceUuid": "d2e7e2f2-15b4-4cdf-b1db-33ebdc7b01b3",
+				"LinkType": "",
+				"LinkTypeStr": "",
+				"MasterInfo": "",
+				"Port": 0,
+				"Ram": 2048,
+				"RegionId": "CN_Beijing_A",
+				"ResourceId": "870264a0-67fe-4435-8774-50d6cdca8de2",
+				"Status": "RUNNING",
+				"StatusStr": "运行中",
+				"SubProductName": "haproxy 主从版",
+				"VdcId": "3a526fcf-98e9-4149-a6a2-df1d67446bd7",
+				"VdcName": "Terraform(testing)",
+				"Version": "1.8",
+				"Vips": [
+					{
+						"IP": "10.240.180.34",
+						"Type": "private"
+					}
+				]
+			},
+			"strategy": {}
+		},
+		{
+			"instance": {
+				"Cpu": 1,
+				"CreatedTime": "2021-06-30 11:37:00",
+				"DisplayName": "中国大陆-北京-可用区A",
+				"IP": "10.240.180.31",
+				"InstanceName": "my_terraform_haproxy",
+				"InstanceUuid": "fbe06d3e-9817-4465-8ff0-ac9b876aebda",
+				"LinkType": "",
+				"LinkTypeStr": "",
+				"MasterInfo": "",
+				"Port": 0,
+				"Ram": 2048,
+				"RegionId": "CN_Beijing_A",
+				"ResourceId": "2878f7d9-6755-4824-a845-15bc1f8f633c",
+				"Status": "RUNNING",
+				"StatusStr": "运行中",
+				"SubProductName": "haproxy 主从版",
+				"VdcId": "3a526fcf-98e9-4149-a6a2-df1d67446bd7",
+				"VdcName": "Terraform(testing)",
+				"Version": "1.8",
+				"Vips": [
+					{
+						"IP": "10.240.180.31",
+						"Type": "private"
+					}
+				]
+			},
+			"strategy": {}
+		},
+		{
+			"instance": {
+				"Cpu": 2,
+				"CreatedTime": "2020-11-27 18:24:37",
+				"DisplayName": "中国大陆-北京-可用区C",
+				"IP": "103.52.173.4",
+				"InstanceName": "cck-video-transcode-haproxy",
+				"InstanceUuid": "7d7fecdf-8f3e-48f7-bc2a-5075413076c3",
+				"LinkType": "",
+				"LinkTypeStr": "",
+				"MasterInfo": "",
+				"Port": 0,
+				"Ram": 4096,
+				"RegionId": "CN_Beijing_C",
+				"ResourceId": "c820ac21-8fe3-4d44-9bc5-d7f481ffe918",
+				"Status": "RUNNING",
+				"StatusStr": "运行中",
+				"SubProductName": "haproxy 主从版",
+				"VdcId": "9b71909b-2d80-4067-9396-115cf9a49930",
+				"VdcName": "视频转码测试（勿删）Done",
+				"Version": "1.8.3",
+				"Vips": [
+					{
+						"IP": "103.52.173.4",
+						"Type": "public"
+					}
+				]
+			},
+			"strategy": {
+				"TcpListeners": [
+					{
+						"BackendServer": [
+							{
+								"IP": "10.241.49.5",
+								"MaxConn": 2000,
+								"Port": 30443,
+								"Weight": "1"
+							},
+							{
+								"IP": "10.241.49.6",
+								"MaxConn": 2000,
+								"Port": 30443,
+								"Weight": "1"
+							},
+							{
+								"IP": "10.241.49.7",
+								"MaxConn": 2000,
+								"Port": 30443,
+								"Weight": "1"
+							}
+						],
+						"ClientTimeout": "10000",
+						"ClientTimeoutUnit": "ms",
+						"ConnectTimeout": "10000",
+						"ConnectTimeoutUnit": "ms",
+						"ListenerMode": "tcp",
+						"ListenerName": "ccp-cluster-router-https",
+						"ListenerPort": 443,
+						"MaxConn": 10000,
+						"Scheduler": "leastconn",
+						"ServerTimeout": "10000",
+						"ServerTimeoutUnit": "ms"
+					},
+					{
+						"BackendServer": [
+							{
+								"IP": "10.241.49.5",
+								"MaxConn": 2000,
+								"Port": 30080,
+								"Weight": "1"
+							},
+							{
+								"IP": "10.241.49.6",
+								"MaxConn": 2000,
+								"Port": 30080,
+								"Weight": "1"
+							},
+							{
+								"IP": "10.241.49.7",
+								"MaxConn": 2000,
+								"Port": 30080,
+								"Weight": "1"
+							}
+						],
+						"ClientTimeout": "10000",
+						"ClientTimeoutUnit": "ms",
+						"ConnectTimeout": "10000",
+						"ConnectTimeoutUnit": "ms",
+						"ListenerMode": "tcp",
+						"ListenerName": "ccp-cluster-router-http",
+						"ListenerPort": 80,
+						"MaxConn": 10000,
+						"Scheduler": "leastconn",
+						"ServerTimeout": "10000",
+						"ServerTimeoutUnit": "ms"
+					},
+					{
+						"BackendServer": [
+							{
+								"IP": "10.241.49.5",
+								"MaxConn": 2000,
+								"Port": 6443,
+								"Weight": "1"
+							},
+							{
+								"IP": "10.241.49.6",
+								"MaxConn": 2000,
+								"Port": 6443,
+								"Weight": "1"
+							},
+							{
+								"IP": "10.241.49.7",
+								"MaxConn": 2000,
+								"Port": 6443,
+								"Weight": "1"
+							}
+						],
+						"ClientTimeout": "10000",
+						"ClientTimeoutUnit": "ms",
+						"ConnectTimeout": "10000",
+						"ConnectTimeoutUnit": "ms",
+						"ListenerMode": "tcp",
+						"ListenerName": "ccp-cluster-master-api",
+						"ListenerPort": 6443,
+						"MaxConn": 20000,
+						"Scheduler": "leastconn",
+						"ServerTimeout": "10000",
+						"ServerTimeoutUnit": "ms"
+					}
+				]
+			}
+		}
+	],
+	"zones": [
+		{
+			"CityId": "3082f45e-306e-11e7-9796-0050569b4d9c",
+			"CityName": "洛杉矶",
+			"IsSaling": 1,
+			"RegionId": "US_LosAngeles_A",
+			"RegionName": "北美地区",
+			"SiteName": "洛杉矶1"
+		},
+		{
+			"CityId": "7b98a5d1-306e-11e7-9796-0050569b4d9c",
+			"CityName": "法兰克福",
+			"IsSaling": 1,
+			"RegionId": "EUR_Germany_A",
+			"RegionName": "欧洲地区",
+			"SiteName": "德国1"
+		},
+		{
+			"CityId": "8737606f-306d-11e7-9796-0050569b4d9c",
+			"CityName": "东京",
+			"IsSaling": 1,
+			"RegionId": "APAC_Tokyo_A",
+			"RegionName": "亚太地区",
+			"SiteName": "东京1"
+		},
+		{
+			"CityId": "27b57297-306d-11e7-9796-0050569b4d9c",
+			"CityName": "香港",
+			"IsSaling": 1,
+			"RegionId": "CN_Hongkong_A",
+			"RegionName": "亚太地区",
+			"SiteName": "香港1"
+		},
+		{
+			"CityId": "a8937b00-306d-11e7-9796-0050569b4d9c",
+			"CityName": "新加坡",
+			"IsSaling": 1,
+			"RegionId": "APAC_Singapore_A",
+			"RegionName": "亚太地区",
+			"SiteName": "新加坡1"
+		},
+		{
+			"CityId": "5c432e0e-306e-11e7-9796-0050569b4d9c",
+			"CityName": "阿姆斯特丹",
+			"IsSaling": 0,
+			"RegionId": "EUR_Netherlands_A",
+			"RegionName": "欧洲地区",
+			"SiteName": "荷兰1"
+		},
+		{
+			"CityId": "154ed19e-306e-11e7-9796-0050569b4d9c",
+			"CityName": "纽约",
+			"IsSaling": 0,
+			"RegionId": "US_NewYork_A",
+			"RegionName": "北美地区",
+			"SiteName": "纽约1"
+		},
+		{
+			"CityId": "ea3ca775-306c-11e7-9796-0050569b4d9c",
+			"CityName": "北京",
+			"IsSaling": 1,
+			"RegionId": "CN_Beijing_B",
+			"RegionName": "中国大陆",
+			"SiteName": "北京2"
+		},
+		{
+			"CityId": "ea3ca775-306c-11e7-9796-0050569b4d9c",
+			"CityName": "北京",
+			"IsSaling": 1,
+			"RegionId": "CN_Beijing_E",
+			"RegionName": "中国大陆",
+			"SiteName": "北京5"
+		},
+		{
+			"CityId": "ea3ca775-306c-11e7-9796-0050569b4d9c",
+			"CityName": "北京",
+			"IsSaling": 1,
+			"RegionId": "CN_Beijing_A",
+			"RegionName": "中国大陆",
+			"SiteName": "北京1"
+		},
+		{
+			"CityId": "e48e2312-306d-11e7-9796-0050569b4d9c",
+			"CityName": "达拉斯",
+			"IsSaling": 1,
+			"RegionId": "US_Dallas_A",
+			"RegionName": "北美地区",
+			"SiteName": "达拉斯1"
+		},
+		{
+			"CityId": "713d3745-306d-11e7-9796-0050569b4d9c",
+			"CityName": "台北",
+			"IsSaling": 1,
+			"RegionId": "CN_Taipei_A",
+			"RegionName": "亚太地区",
+			"SiteName": "台北1"
+		},
+		{
+			"CityId": "123d0d01-306d-11e7-9796-0050569b4d9c",
+			"CityName": "无锡",
+			"IsSaling": 1,
+			"RegionId": "CN_Wuxi_A",
+			"RegionName": "中国大陆",
+			"SiteName": "无锡1"
+		},
+		{
+			"CityId": "87fcbbd6-be0a-11e7-9d6b-0242ac110004",
+			"CityName": "首尔",
+			"IsSaling": 1,
+			"RegionId": "APAC_Seoul_A",
+			"RegionName": "亚太地区",
+			"SiteName": "首尔1"
+		},
+		{
+			"CityId": "ea3ca775-306c-11e7-9796-0050569b4d9c",
+			"CityName": "北京",
+			"IsSaling": 1,
+			"RegionId": "CN_Beijing_C",
+			"RegionName": "中国大陆",
+			"SiteName": "北京3"
+		},
+		{
+			"CityId": "c11a5abe-3f7e-11e7-86b1-0242ac11000e",
+			"CityName": "广州",
+			"IsSaling": 1,
+			"RegionId": "CN_Guangzhou_A",
+			"RegionName": "中国大陆",
+			"SiteName": "广州1"
+		},
+		{
+			"CityId": "b44355d0-65e7-11e7-8ea9-0050569b651c",
+			"CityName": "上海",
+			"IsSaling": 1,
+			"RegionId": "CN_Shanghai_A",
+			"RegionName": "中国大陆",
+			"SiteName": "上海1"
+		},
+		{
+			"CityId": "ea3ca775-306c-11e7-9796-0050569b4d9c",
+			"CityName": "北京",
+			"IsSaling": 1,
+			"RegionId": "CN_Beijing_H",
+			"RegionName": "中国大陆",
+			"SiteName": "北京8"
+		},
+		{
+			"CityId": "e48e2312-306d-11e7-9796-0050569b4d9c",
+			"CityName": "达拉斯",
+			"IsSaling": 1,
+			"RegionId": "US_Dallas_G",
+			"RegionName": "北美地区",
+			"SiteName": "达拉斯7"
+		},
+		{
+			"CityId": "e48e2312-306d-11e7-9796-0050569b4d9c",
+			"CityName": "达拉斯",
+			"IsSaling": 1,
+			"RegionId": "US_Dallas_J",
+			"RegionName": "北美地区",
+			"SiteName": "达拉斯10"
+		},
+		{
+			"CityId": "7b98a5d1-306e-11e7-9796-0050569b4d9c",
+			"CityName": "法兰克福",
+			"IsSaling": 1,
+			"RegionId": "EUR_Germany_B",
+			"RegionName": "欧洲地区",
+			"SiteName": "德国2"
+		},
+		{
+			"CityId": "a8937b00-306d-11e7-9796-0050569b4d9c",
+			"CityName": "新加坡",
+			"IsSaling": 1,
+			"RegionId": "APAC_Singapore_D",
+			"RegionName": "亚太地区",
+			"SiteName": "新加坡4"
+		},
+		{
+			"CityId": "97f6884e-1502-11eb-8847-0242ac150007",
+			"CityName": "弗吉尼亚",
+			"IsSaling": 1,
+			"RegionId": "US_Virginia_A",
+			"RegionName": "北美地区",
+			"SiteName": "弗吉尼亚1"
+		},
+		{
+			"CityId": "b44355d0-65e7-11e7-8ea9-0050569b651c",
+			"CityName": "上海",
+			"IsSaling": 1,
+			"RegionId": "CN_Shanghai_C",
+			"RegionName": "中国大陆",
+			"SiteName": "上海3"
+		}
+	]
+}
