@@ -54,6 +54,8 @@ resource cds_haproxy_strategy my_haproxy_strategy {
 			port = 12313
 			weight = 1
 		}]
+        # terraform针对可选字段的嵌套对象的字段只能指定为必选，即使显式设置为可选也不生效 （https://github.com/hashicorp/terraform-provider-google/issues/3928）
+        # 对于可选字段有嵌套对象的，若不设置就置对应类型的空值
 		certificate_ids = []
 	}]
 }
