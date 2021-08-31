@@ -7,9 +7,10 @@ import (
 	"strconv"
 	"time"
 
+	u "terraform-provider-cds/cds/utils"
+
 	"github.com/capitalonline/cds-gic-sdk-go/common"
 	"github.com/capitalonline/cds-gic-sdk-go/vdc"
-	u "terraform-provider-cds/cds/utils"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -17,7 +18,7 @@ import (
 func resourceCdsVdc() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceCdsVdcCreate,
-		Read:   resourceCdsVdcRead,
+		Read:   resourceCdsVdcRead1,
 		Update: resourceCdsVdcUpdate,
 		Delete: resourceCdsVdcDelete,
 		Schema: map[string]*schema.Schema{
@@ -74,6 +75,14 @@ func resourceCdsVdc() *schema.Resource {
 				Computed:    true,
 				Description: "Public Network id.",
 			},
+			"add_public_ip": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"delete_public_ip": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -98,16 +107,45 @@ func resourceCdsVdcCreate(d *schema.ResourceData, meta interface{}) error {
 		return nil
 	}
 
-	//get create result
-	time.Sleep(10 * time.Second)
-
 	detail, err := taskService.DescribeTask(ctx, taskId)
 	if err != nil {
 		return err
 	}
 	d.SetId(*detail.Data.ResourceID)
+	return resourceCdsVdcRead1(d, meta)
+}
 
-	return resourceCdsVdcRead(d, meta)
+func resourceCdsVdcRead1(d *schema.ResourceData, meta interface{}) error {
+	defer logElapsed("resource.cds_vdc.read")()
+	logId := getLogId(contextNil)
+	ctx := context.WithValue(context.TODO(), "logId", logId)
+
+	vdcService := VdcService{client: meta.(*CdsClient).apiConn}
+	request := vdc.DescribeVdcRequest()
+	request.VdcId = common.StringPtr(d.Id())
+
+	response, err := vdcService.DescribeVdc(ctx, request)
+	if err != nil {
+		return err
+	}
+
+	if *response.Code != "Success" {
+		return errors.New(*response.Message)
+	}
+
+	if len(response.Data) == 0 {
+		return errors.New("not found")
+	}
+
+	d.Set("vdc_name", *response.Data[0].VdcName)
+	d.Set("region_id", *response.Data[0].RegionId)
+	if len(response.Data[0].PublicNetwork) > 0 {
+		d.Set("public_id", *response.Data[0].PublicNetwork[0].PublicId)
+	} else {
+		return errors.New("not public id")
+	}
+
+	return nil
 }
 
 func resourceCdsVdcRead(d *schema.ResourceData, meta interface{}) error {
@@ -116,7 +154,7 @@ func resourceCdsVdcRead(d *schema.ResourceData, meta interface{}) error {
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
 
-	id := d.Id()
+	// id := d.Id()
 	vdcService := VdcService{client: meta.(*CdsClient).apiConn}
 
 	request := vdc.DescribeVdcRequest()
@@ -125,12 +163,10 @@ func resourceCdsVdcRead(d *schema.ResourceData, meta interface{}) error {
 		return errRet
 	}
 	for _, value := range result.Data {
-		if *value.VdcId == id {
-			d.Set("vdc_name", *value.VdcName)
-			d.Set("region_id", *value.RegionId)
-			if len(value.PublicNetwork) > 0 {
-				d.Set("public_id", *value.PublicNetwork[0].PublicId)
-			}
+		d.Set("vdc_name", *value.VdcName)
+		d.Set("region_id", *value.RegionId)
+		if len(value.PublicNetwork) > 0 {
+			d.Set("public_id", *value.PublicNetwork[0].PublicId)
 		}
 	}
 
@@ -162,6 +198,35 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	if d.HasChange("region_id") {
 		return errors.New("region_id 不支持修改")
+	}
+
+	if d.HasChange("add_public_ip") {
+		request := vdc.NewAddPublicIpRequest()
+		request.PublicId = common.StringPtr(d.Get("public_id").(string))
+		request.Number = common.IntPtr(d.Get("add_public_ip").(int))
+
+		response, err := vdcService.AddPublicIp(ctx, request)
+		if err != nil {
+			return err
+		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+	}
+
+	if d.HasChange("delete_public_ip") {
+		request := vdc.NewDeletePublicIpRequest()
+		request.SegmentId = d.Get("delete_public_ip").(string)
+
+		response, err := vdcService.DeletePublicIp(ctx, request)
+		if err != nil {
+			return err
+		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
 	}
 
 	if d.HasChange("public_network") {
@@ -303,6 +368,7 @@ func resourceCdsVdcDelete(d *schema.ResourceData, meta interface{}) error {
 	if errRet != nil {
 		return errRet
 	}
-	time.Sleep(10 * time.Second)
+
+	time.Sleep(time.Second * 30)
 	return nil
 }
