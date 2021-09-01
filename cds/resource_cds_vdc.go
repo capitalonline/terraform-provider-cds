@@ -18,7 +18,7 @@ import (
 func resourceCdsVdc() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceCdsVdcCreate,
-		Read:   resourceCdsVdcRead1,
+		Read:   resourceCdsVdcRead,
 		Update: resourceCdsVdcUpdate,
 		Delete: resourceCdsVdcDelete,
 		Schema: map[string]*schema.Schema{
@@ -112,10 +112,10 @@ func resourceCdsVdcCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	d.SetId(*detail.Data.ResourceID)
-	return resourceCdsVdcRead1(d, meta)
+	return resourceCdsVdcRead(d, meta)
 }
 
-func resourceCdsVdcRead1(d *schema.ResourceData, meta interface{}) error {
+func resourceCdsVdcRead(d *schema.ResourceData, meta interface{}) error {
 	defer logElapsed("resource.cds_vdc.read")()
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
@@ -148,30 +148,6 @@ func resourceCdsVdcRead1(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func resourceCdsVdcRead(d *schema.ResourceData, meta interface{}) error {
-	fmt.Println("read vdc")
-	defer logElapsed("resource.cds_vdc.read")()
-	logId := getLogId(contextNil)
-	ctx := context.WithValue(context.TODO(), "logId", logId)
-
-	// id := d.Id()
-	vdcService := VdcService{client: meta.(*CdsClient).apiConn}
-
-	request := vdc.DescribeVdcRequest()
-	result, errRet := vdcService.DescribeVdc(ctx, request)
-	if errRet != nil {
-		return errRet
-	}
-	for _, value := range result.Data {
-		d.Set("vdc_name", *value.VdcName)
-		d.Set("region_id", *value.RegionId)
-		if len(value.PublicNetwork) > 0 {
-			d.Set("public_id", *value.PublicNetwork[0].PublicId)
-		}
-	}
-
-	return nil
-}
 func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 	fmt.Println("update vdc")
 	defer logElapsed("resource.cds_vdc.read")()
