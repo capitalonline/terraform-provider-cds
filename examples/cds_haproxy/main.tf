@@ -9,8 +9,8 @@
 resource cds_haproxy my_haproxy {
 	region_id = var.haproxy_zones[9]
     # vdc_id base_pipe_id 从 vdc 获取
-	vdc_id = "3a526fcf-98e9-4149-a6a2-df1d67446bd7"
-	base_pipe_id = "f02fa2fa-d57f-11eb-a77a-3eb98755b2a4"
+	vdc_id = "XXXXXXXX"
+	base_pipe_id = "XXXXXXXX"
 	instance_name = "my_terraform_haproxy"
     # paas_goods_id 从data.json PaasGoodsId 获取
 	cpu = 1
@@ -18,9 +18,9 @@ resource cds_haproxy my_haproxy {
 	ips = [
 		{
             # pipe_id pipe_type vdc网络
-			pipe_id = "f02fa2fa-d57f-11eb-a77a-3eb98755b2a4"
+			pipe_id = "XXXXXXXX"
 			pipe_type = "private"
-			segment_id = ""
+			segment_id = "XXXXXXXX"
 		}
 	]
 	http_listeners = [{
