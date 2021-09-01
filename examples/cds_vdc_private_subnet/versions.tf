@@ -1,8 +1,3 @@
 terraform {
-    required_providers {
-        cds = {
-            source = "terraform.capitalonline.net/capitalonline/cds"
-            version = "1.0.0"
-        }
-    }
+  required_version = ">= 0.12"
 }

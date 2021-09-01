@@ -43,5 +43,3 @@ The following arguments are supported:
   * `billingmethod` - (Required,Unmodifiable) Billing method.
   * `autorenew` - (Required) Whether to automatically renew,1 is the automatic renewal fee (default), 0 is not automatic renewal.
   * `type` - (Required,Unmodifiable) The type of the public subnet, refer to [All Type](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E5%B8%A6%E5%AE%BD%E7%B1%BB%E5%9E%8B).
-* `add_public_ip` - (Optional) Add public ip num.
-* `delete_public_ip` - (Optional) Delete public Ip segment id.

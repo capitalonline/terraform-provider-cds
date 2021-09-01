@@ -5,7 +5,6 @@ import (
 	"github.com/capitalonline/cds-gic-sdk-go/common/profile"
 	"github.com/capitalonline/cds-gic-sdk-go/haproxy"
 	"github.com/capitalonline/cds-gic-sdk-go/instance"
-	"github.com/capitalonline/cds-gic-sdk-go/mysql"
 	"github.com/capitalonline/cds-gic-sdk-go/security_group"
 	"github.com/capitalonline/cds-gic-sdk-go/security_group_rule"
 	"github.com/capitalonline/cds-gic-sdk-go/task"
@@ -27,8 +26,6 @@ type CdsClient struct {
 	sgrGetConn     *security_group_rule.Client
 	haproxyConn    *haproxy.Client
 	haproxyGetConn *haproxy.Client
-	mysqlConn      *mysql.Client
-	mysqlGetConn   *mysql.Client
 }
 
 func NewCdsClient(secretId, secretKey, region string) *CdsClient {
@@ -171,30 +168,6 @@ func (me *CdsClient) UseHaproxyGetClient() *haproxy.Client {
 	client.WithHttpTransport(&round)
 	me.haproxyGetConn = client
 	return me.haproxyGetConn
-}
-
-func (me *CdsClient) UseMySQLClient() *mysql.Client {
-	if me.mysqlConn != nil {
-		return me.mysqlConn
-	}
-	credential := common.NewCredential(me.SecretId, me.SecretKey)
-	client, _ := mysql.NewClient(credential, me.Region, clientProfile("POST"))
-	var round LogRoundTripper
-	client.WithHttpTransport(&round)
-	me.mysqlConn = client
-	return me.mysqlConn
-}
-
-func (me *CdsClient) UseMySQLGetClient() *mysql.Client {
-	if me.mysqlGetConn != nil {
-		return me.mysqlGetConn
-	}
-	credential := common.NewCredential(me.SecretId, me.SecretKey)
-	client, _ := mysql.NewClient(credential, me.Region, clientProfile("GET"))
-	var round LogRoundTripper
-	client.WithHttpTransport(&round)
-	me.mysqlGetConn = client
-	return me.mysqlGetConn
 }
 
 func clientProfile(method string) *profile.ClientProfile {

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-export CDS_SECRET_ID=bd27cbbc72f711eab98c824ee1207173
-export CDS_SECRET_KEY=422cd7dc78a99c77092c687c39fe1dac
+export CDS_SECRET_ID=**************
+export CDS_SECRET_KEY=***********
 export CDS_REGION=CN_Beijing_A

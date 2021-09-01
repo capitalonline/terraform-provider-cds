@@ -4,10 +4,9 @@ import (
 	"context"
 	"log"
 
+	"github.com/capitalonline/cds-gic-sdk-go/vdc"
 	"terraform-provider-cds/cds/connectivity"
 	u "terraform-provider-cds/cds/utils"
-
-	"github.com/capitalonline/cds-gic-sdk-go/vdc"
 
 	"github.com/terraform-providers/terraform-provider-tencentcloud/tencentcloud/ratelimit"
 )
@@ -255,34 +254,4 @@ func (me *VdcService) RenewPublicNetwork(
 
 	errRet = err
 	return
-}
-
-func (me *VdcService) AddPublicIp(ctx context.Context, request *vdc.AddPublicIpRequest) (*vdc.AddPublicIpResponse, error) {
-	logId := getLogId(ctx)
-	var err error
-	defer func() {
-		if err != nil {
-			log.Printf("[CRITAL]%s api[%s] fail, request body [%s], reason[%s]\n",
-				logId, request.GetAction(), request.ToJsonString(), err.Error())
-		}
-	}()
-
-	ratelimit.Check(request.GetAction())
-
-	return me.client.UseVdcGetClient().AddPublicIpNetwork(request)
-}
-
-func (me *VdcService) DeletePublicIp(ctx context.Context, request *vdc.DeletePublicIpRequest) (*vdc.DeletePublicIpResponse, error) {
-	logId := getLogId(ctx)
-	var err error
-	defer func() {
-		if err != nil {
-			log.Printf("[CRITAL]%s api[%s] fail, request body [%s], reason[%s]\n",
-				logId, request.GetAction(), request.ToJsonString(), err.Error())
-		}
-	}()
-
-	ratelimit.Check(request.GetAction())
-
-	return me.client.UseVdcGetClient().DeletePublicIpNetwork(request)
 }
