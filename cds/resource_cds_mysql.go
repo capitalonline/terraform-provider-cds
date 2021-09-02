@@ -42,6 +42,18 @@ func resourceCdsMySQL() *schema.Resource {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
+			"mysql_version": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"architecture_name": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"compute_name": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
 			"disk_type": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -75,7 +87,7 @@ func createResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 
 	mysqlService := MySQLService{client: meta.(*CdsClient).apiConn}
 
-	paasGoodsId, err := matchMysqlPassGoodsId(ctx, mysqlService, data.Get("cpu").(int), data.Get("ram").(int), data.Get("region_id").(string))
+	paasGoodsId, err := matchMysqlPassGoodsId(ctx, mysqlService, data.Get("cpu").(int), data.Get("ram").(int), data.Get("architecture_name").(string), data.Get("compute_name").(string), data.Get("mysql_version").(string), data.Get("region_id").(string))
 	if err != nil {
 		return err
 	}
@@ -139,7 +151,7 @@ func updateResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 
 	mysqlService := MySQLService{client: meta.(*CdsClient).apiConn}
 
-	paasGoodsId, err := matchMysqlPassGoodsId(ctx, mysqlService, data.Get("cpu").(int), data.Get("ram").(int), data.Get("region_id").(string))
+	paasGoodsId, err := matchMysqlPassGoodsId(ctx, mysqlService, data.Get("cpu").(int), data.Get("ram").(int), data.Get("architecture_name").(string), data.Get("compute_name").(string), data.Get("mysql_version").(string), data.Get("region_id").(string))
 	if err != nil {
 		return err
 	}
@@ -205,7 +217,7 @@ func deleteResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func matchMysqlPassGoodsId(ctx context.Context, service MySQLService, cpu, ram int, regionId string) (int, error) {
+func matchMysqlPassGoodsId(ctx context.Context, service MySQLService, cpu, ram int, architectureName, computeName, mysqlVersion string, regionId string) (int, error) {
 	goodsRequest := mysql.NewDescribeAvailableDBConfigRequest()
 
 	goodsRequest.RegionId = common.StringPtr(regionId)
@@ -216,11 +228,17 @@ func matchMysqlPassGoodsId(ctx context.Context, service MySQLService, cpu, ram i
 	}
 
 	for _, product := range goodsResponse.Data.Products {
-		for _, arch := range product.Architectures {
-			for _, role := range arch.ComputeRoles {
-				for _, cpuRam := range role.Standards.CpuRam {
-					if *cpuRam.CPU == cpu && *cpuRam.RAM == ram {
-						return *cpuRam.PaasGoodsId, nil
+		if *product.Version == mysqlVersion {
+			for _, arch := range product.Architectures {
+				if *arch.ArchitectureName == architectureName {
+					for _, role := range arch.ComputeRoles {
+						if *role.ComputeName == computeName {
+							for _, cpuRam := range role.Standards.CpuRam {
+								if *cpuRam.CPU == cpu && *cpuRam.RAM == ram {
+									return *cpuRam.PaasGoodsId, nil
+								}
+							}
+						}
 					}
 				}
 			}
@@ -259,14 +277,9 @@ func waitMysqlDeleted(ctx context.Context, service MySQLService, instanceUuid st
 
 	for {
 		time.Sleep(time.Second * 15)
-		response, err := service.GetMySQLList(ctx, request)
+		_, err := service.GetMySQLList(ctx, request)
 		if err != nil {
-			return err
-		}
-
-		if *response.Code == "RESOURCE_NOT_FOUND" {
 			return nil
 		}
-
 	}
 }

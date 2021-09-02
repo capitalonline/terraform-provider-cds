@@ -8,3 +8,8 @@ resource "cds_mysql" "mysql_example" {
     disk_type       = var.disk_type
     disk_value      = var.disk_value
 }
+
+data cds_data_source_mysql "mysql_data" {
+    region_id = "CN_Beijing_A"
+    result_output_file = "data.json" // availableDB, instances, regions
+}

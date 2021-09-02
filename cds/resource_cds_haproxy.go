@@ -565,12 +565,8 @@ func waitHaproxyDelete(ctx context.Context, service HaproxyService, instanceUuid
 
 	for {
 		time.Sleep(time.Second * 15)
-		descResp, err := service.DescribeHaproxy(ctx, descRequest)
+		_, err := service.DescribeHaproxy(ctx, descRequest)
 		if err != nil {
-			return err
-		}
-
-		if *descResp.Code == "RESOURCE_NOT_FOUND" {
 			return nil
 		}
 	}
