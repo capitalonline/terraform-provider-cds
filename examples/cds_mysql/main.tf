@@ -1,12 +1,15 @@
 resource "cds_mysql" "mysql_example" {
-    region_id       = var.region_id
-    vdc_id          = var.vdc_id
-    base_pipe_id    = var.base_pipe_id
-    instance_name   = var.instance_name
-    cpu             = var.cpu
-    ram             = var.ram
-    disk_type       = var.disk_type
-    disk_value      = var.disk_value
+    region_id         = var.region_id
+    vdc_id            = var.vdc_id
+    base_pipe_id      = var.base_pipe_id
+    instance_name     = var.instance_name
+    cpu               = var.cpu
+    ram               = var.ram
+    disk_type         = var.disk_type
+    disk_value        = var.disk_value
+    mysql_version     = "5.7"
+    architecture_name = "主从"
+    compute_name      = "通用型"
 }
 
 data cds_data_source_mysql "mysql_data" {
