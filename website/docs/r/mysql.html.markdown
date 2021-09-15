@@ -15,14 +15,23 @@ Provide resources to create, update or delete Mysql.
 ```hcl
 # create mysql
 resource "cds_mysql" "mysql_example" {
-    region_id       = var.region_id
-    vdc_id          = var.vdc_id
-    base_pipe_id    = var.base_pipe_id
-    instance_name   = var.instance_name
-    cpu             = var.cpu
-    ram             = var.ram
-    disk_type       = var.disk_type
-    disk_value      = var.disk_value
+    region_id         =  var.region_id
+    vdc_id            = var.vdc_id
+    base_pipe_id      = var.base_pipe_id
+    instance_name     = var.instance_name
+    cpu               = var.cpu
+    ram               = var.ram
+    disk_type         = var.disk_type
+    disk_value        = var.disk_value
+    mysql_version     = var.mysql_version 
+    architecture_name = var.architecture_name
+    compute_name      = var.compute_name
+}
+
+# create mysql param
+data cds_data_source_mysql "mysql_data" {
+    region_id = "CN_Beijing_A"
+    result_output_file = "data.json" // availableDB, instances, regions
 }
 ```
 ## Argument Reference
@@ -35,4 +44,7 @@ The following arguments are supported
 * `cpu` - (Required) Mysql cpu/C
 * `ram` - (Required) Mysql ram/G
 * `disk_type` - (Required,Unmodifiable) Mysql disk type. It can only be the same as the type at the beginning of purchase. You cannot add multiple types of disks to an instance. For example, you can only add high-performance disks later
-* `disk_value` = (Required) Mysql disk value
+* `disk_value` - (Required) Mysql disk value, Please refer to data.json availableDB
+* `mysql_version` - (Required) Mysql version, Please refer to data.json availableDB
+* `architecture_name` - (Required) Architecture name, Please refer to data.json availableDB
+* `compute_name` - (Required) Compute name, Please refer to data.json availableDB
