@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -157,7 +156,6 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	id := d.Id()
 	vdcService := VdcService{client: meta.(*CdsClient).apiConn}
-	taskService := TaskService{client: meta.(*CdsClient).apiConn}
 
 	if d.HasChange("vdc_name") {
 
@@ -184,24 +182,13 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 		request.Number = common.IntPtr(d.Get("add_public_ip").(int))
 
 		response, err := vdcService.AddPublicIp(ctx, request)
-
-		log.Printf("[DEBUG]%s api[%s] , request body [%s], response body[%s]\n",
-			logId, request.GetAction(), request.ToJsonString(), response.ToJsonString())
-
 		if err != nil {
 			return err
 		}
 
-		// if *response.Code != "Success" {
-		// 	return errors.New(*response.Message)
-		// }
-		taskId := response.TaskId
-
-		_, err = taskService.DescribeTask(ctx, *taskId)
-		if err != nil {
-			return err
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
 		}
-
 	}
 
 	if d.HasChange("delete_public_ip") {
@@ -213,15 +200,8 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 
-		// if *response.Code != "Success" {
-		// 	return errors.New(*response.Message)
-		// }
-
-		taskId := response.TaskId
-
-		_, err = taskService.DescribeTask(ctx, *taskId)
-		if err != nil {
-			return err
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
 		}
 	}
 
@@ -291,7 +271,6 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 					if errRet != nil {
 						return errRet
 					}
-
 				} else if newNum < oldNum && u.ContainsInt(validNums, newNum) {
 					// TODO: Delete public network IP
 					return errors.New("Public network IP can not be deleted with Terraform currently.")
@@ -332,7 +311,6 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 
 		d.SetPartial("public_network")
 	}
-
 	time.Sleep(20 * time.Second)
 	return nil
 }
