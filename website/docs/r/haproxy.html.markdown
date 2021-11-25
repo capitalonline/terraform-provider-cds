@@ -99,7 +99,7 @@ The following arguments are supported
   * `backend_server` - (Required) Backend server configuration.
     * `ip` - (Required) Backend server IP address.
     * `port` - (Required) Backend server port.
-    * `weight` - (Required) Backend server weight.
+    * `weight` - (Required) Backend server weight. 1-256
     * `max_conn` - (Required) Maximum number of backend server connections.
   * `certificate_ids` - (Required) Bind certificate, set empty array without binding.
      * `certificate_id` - (Required) The certificate id.
@@ -121,7 +121,7 @@ The following arguments are supported
   * `backend_server` - (Required) Backend server configuration.
     * `ip` - (Required) Backend server IP address.
     * `port` - (Required) Backend server port.
-    * `weight` - (Required) Backend server weight.
+    * `weight` - (Required) Backend server weight. 1-256
     * `max_conn` - (Required) Maximum number of backend server connections.
   * `client_timeout` - (Required) Set the time for client connection timeout.
   * `client_timeout_unit` - (Required) Set the time unit for client connection timeout ['m', 'ms'].
