@@ -24,8 +24,8 @@ resource "cds_mysql" "mysql_example" {
     disk_type         = var.disk_type
     disk_value        = var.disk_value
     mysql_version     = var.mysql_version 
-    architecture_name = var.architecture_name
-    compute_name      = var.compute_name
+    architecture_type = var.architecture_type //0:basic edition|1:master-slave edition
+    compute_type      = var.compute_type      //0:common type
 }
 
 # create mysql param
