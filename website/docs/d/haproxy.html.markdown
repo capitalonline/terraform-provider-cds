@@ -25,28 +25,6 @@ resource "cds_haproxy" "haproxy_example" {
         pipe_id    = var.pipe_id
         segment_id = var.segment.id
     }]
-    http_listeners = [{
-      server_timeout_unit = var.server_timeout_unit
-      server_timeout = var.server_timeout
-      sticky_session = var.sticky_session
-      acl_white_list = var.acl_white_list
-      listener_mode = var.listener_mode
-      max_conn = var.max_conn
-      connect_timeout_unit = var.connect_timeout_unit
-      scheduler = var.scheduler
-      connect_timeout = var.connect_timeout
-      client_timeout = var.client_timeout
-      listener_name = var.listener_name
-      client_timeout_unit = var.client_timeout_unit
-      listener_port = var.listener_port
-      backend_server = [{
-        ip = var.backend_server_ip
-        max_conn = var.backend_server_max_conn
-        port = var.backend_server_port
-        weight = var.backend_server_weight //between 1-256
-      }]
-      certificate_ids = []
-	}]
 }
 
 data cds_data_source_haproxy "my_haproxy_data" {
