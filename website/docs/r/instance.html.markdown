@@ -29,9 +29,15 @@ resource "cds_instance" "instance_example" {
     "private_id" = cds_private_subnet.my_private_subnet_1.id,
     "address" = "auto"
   }
+  system_disk = {
+    type = "ssd_system_disk"
+    size = 200
+    iops = 20
+  }
   data_disks {
     size  =  100
-    type  =  "high_disk"
+    type  =  "ssd_disk"
+    iops  =  10
   }
   security_group_binding {
     type = "private"
@@ -63,6 +69,7 @@ The following arguments are supported
 * `data_disks` - (Optional) Data Disks.
   * `size` - The size of the disk in GiBs.
   * `type` - The type of the disk. Allow values: big_disk, high_disk, ssd_disk.
+  * `iops` - The size of the disk iops int. 
 * `security_group_binding` - (Optional) Instance binding security group.
   * `type` -(Required) Specify a public or private network binding security group. Allow values: private, public.
   * `subnet_id` - (Required)Subnet ID.
