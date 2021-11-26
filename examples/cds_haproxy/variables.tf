@@ -45,3 +45,107 @@ variable haproxy_goods {
         "16C32G" = 19733
     }
 }
+
+variable "vdc_id" {
+  default = "xxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+variable "base_pipe_id" {
+  default = "xxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+variable "instance_name" {
+  default = "my_terraform_haproxy"
+}
+
+variable "cpu" {
+  default = 1
+}
+
+variable "ram" {
+  default = 2
+}
+
+variable "pipe_id" {
+  description = "PrivateNetwork id"
+  default = "xxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+variable "pipe_type" {
+  default = "private"
+}
+
+variable "segment_id" {
+  description = "public network segment_id"
+  default = "xxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+variable "server_timeout_unit" {
+  default = "s"
+}
+
+variable "server_timeout" {
+  default = 1300
+}
+
+variable "sticky_session" {
+  default = "on"
+}
+
+variable "acl_white_list" {
+  default = "192.168.9.1"
+}
+
+variable "listener_mode" {
+  default = "http"
+}
+
+variable "max_conn" {
+  default = 2022
+}
+
+variable "connect_timeout_unit" {
+  default = "s"
+}
+
+variable "scheduler" {
+  default = "roundrobin"
+}
+
+variable "connect_timeout" {
+  default = 1300
+}
+
+variable "client_timeout" {
+  default = 1002
+}
+
+variable "listener_name" {
+  default = "terraform"
+}
+
+variable "client_timeout_unit" {
+  default = "ms"
+}
+
+variable "listener_port" {
+  default = 24354
+}
+
+variable "backend_server_ip" {
+  default = "192.168.12.1"
+}
+
+variable "backend_server_max_conn" {
+  default = 2022
+}
+
+variable "backend_server_port" {
+  default = 12314
+}
+
+variable "backend_server_weight" {
+  description = "between 1-256"
+  default = 255
+}
+

@@ -1,14 +1,21 @@
 resource "cds_vdc" "my_vdc" {
-  vdc_name  = "Terraform(using1)"
-  region_id = "CN_Beijing_A"
+  vdc_name  = var.vdc_name
+  region_id = var.region_id
   public_network = {
-    "ipnum"          = 4
-    "qos"            = 10
-    "name"           = "test-accPubNet"
-    "floatbandwidth" = 200
-    "billingmethod"  = "BandwIdth"
-    "autorenew"      = 1
-    "type"           = "Bandwidth_China_Telecom"
+    "ipnum"          = var.ipnum
+    "qos"            = var.qos
+    "name"           = var.public_network_name
+    "floatbandwidth" = var.floatbandwidth
+    "billingmethod"  = var.billingmethod
+    "autorenew"      = var.autorenew
+    "type"           = var.public_network_type
   }
-  add_public_ip = 2
+  #add_public_ip = 8
+  #delete_public_ip = "b174ef20-4cfd-11ec-9fa7-b6e127184f5c"
+}
+
+data "cds_data_source_vdc" "my_vdc_data" {
+    id = cds_vdc.my_vdc.id
+    vdc_name = cds_vdc.my_vdc.vdc_name
+    result_output_file = "data.json" 
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/capitalonline/cds-gic-sdk-go/common"
@@ -46,12 +47,12 @@ func resourceCdsMySQL() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"architecture_name": {
-				Type:     schema.TypeString,
+			"architecture_type": {
+				Type:     schema.TypeInt,
 				Required: true,
 			},
-			"compute_name": {
-				Type:     schema.TypeString,
+			"compute_type": {
+				Type:     schema.TypeInt,
 				Required: true,
 			},
 			"disk_type": {
@@ -62,20 +63,43 @@ func resourceCdsMySQL() *schema.Resource {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
+			"ip": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
 
 func readResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
-	// log.Println("read mysql")
-	// defer logElapsed("resource.cds_mysql.read")()
+	log.Println("read mysql")
+	defer logElapsed("resource.cds_mysql.read")()
 
-	// logId := getLogId(contextNil)
-	// ctx := context.WithValue(context.TODO(), "logId", logId)
+	logId := getLogId(contextNil)
+	ctx := context.WithValue(context.TODO(), "logId", logId)
 
-	// mySQLService := MySQLService{client: meta.(*CdsClient).apiConn}
+	mySQLService := MySQLService{client: meta.(*CdsClient).apiConn}
 
-	// request := mysql.NewDescribeDBInstancesRequest()
+	request := mysql.NewDescribeDBInstancesRequest()
+	request.InstanceUuid = common.StringPtr(data.Id())
+	request.InstanceName = common.StringPtr(data.Get("instance_name").(string))
+	response, err := mySQLService.DescribeDBInstances(ctx, request)
+
+	if err != nil {
+		return err
+	}
+
+	if *response.Code != "Success" {
+		return errors.New(*response.Message)
+	}
+
+	if len(response.Data) == 0 {
+		return errors.New("not found")
+	}
+	log.Printf("read mysql request:%v, response:%v", request.ToJsonString(), response.ToJsonString())
+	data.Set("instance_name", *response.Data[0].InstanceName)
+	data.Set("region_id", *response.Data[0].RegionId)
+	data.Set("ip", *response.Data[0].IP)
 
 	return nil
 }
@@ -87,7 +111,7 @@ func createResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 
 	mysqlService := MySQLService{client: meta.(*CdsClient).apiConn}
 
-	paasGoodsId, err := matchMysqlPassGoodsId(ctx, mysqlService, data.Get("cpu").(int), data.Get("ram").(int), data.Get("architecture_name").(string), data.Get("compute_name").(string), data.Get("mysql_version").(string), data.Get("region_id").(string))
+	paasGoodsId, err := matchMysqlPassGoodsId(ctx, mysqlService, data.Get("cpu").(int), data.Get("ram").(int), data.Get("architecture_type").(int), data.Get("compute_type").(int), data.Get("mysql_version").(string), data.Get("region_id").(string))
 	if err != nil {
 		return err
 	}
@@ -121,7 +145,8 @@ func createResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 	if err := waitMysqlRunning(ctx, mysqlService, instanceUuid); err != nil {
 		return err
 	}
-	return nil
+
+	return readResourceCdsMySQL(data, meta)
 }
 
 func updateResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
@@ -130,28 +155,38 @@ func updateResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 	ctx := context.WithValue(context.TODO(), "logId", logId)
 
 	if data.HasChange("region_id") {
+		o_region_id, _ := data.GetChange("region_id")
+		data.Set("region_id", o_region_id)
 		return fmt.Errorf("region_id %s not support modify with openapi", data.Get("region_id").(string))
 	}
 
 	if data.HasChange("vdc_id") {
+		o_vdc_id, _ := data.GetChange("vdc_id")
+		data.Set("vdc_id", o_vdc_id)
 		return fmt.Errorf("vdc_id %s not support modify with openapi", data.Get("vdc_id").(string))
 	}
 
 	if data.HasChange("base_pipe_id") {
+		o_base_pipe_id, _ := data.GetChange("base_pipe_id")
+		data.Set("base_pipe_id", o_base_pipe_id)
 		return fmt.Errorf("base_pipe_id %s not support modify with openapi", data.Get("base_pipe_id").(string))
 	}
 
 	if data.HasChange("instance_name") {
+		o_instance_name, _ := data.GetChange("instance_name")
+		data.Set("instance_name", o_instance_name)
 		return fmt.Errorf("instance_name %s not support modify with openapi", data.Get("instance_name").(string))
 	}
 
 	if data.HasChange("disk_type") {
+		o_disk_type, _ := data.GetChange("disk_type")
+		data.Set("disk_type", o_disk_type)
 		return fmt.Errorf("disk type %s can not change with openapi", data.Get("disk_type").(string))
 	}
 
 	mysqlService := MySQLService{client: meta.(*CdsClient).apiConn}
 
-	paasGoodsId, err := matchMysqlPassGoodsId(ctx, mysqlService, data.Get("cpu").(int), data.Get("ram").(int), data.Get("architecture_name").(string), data.Get("compute_name").(string), data.Get("mysql_version").(string), data.Get("region_id").(string))
+	paasGoodsId, err := matchMysqlPassGoodsId(ctx, mysqlService, data.Get("cpu").(int), data.Get("ram").(int), data.Get("architecture_type").(int), data.Get("compute_type").(int), data.Get("mysql_version").(string), data.Get("region_id").(string))
 	if err != nil {
 		return err
 	}
@@ -217,7 +252,7 @@ func deleteResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func matchMysqlPassGoodsId(ctx context.Context, service MySQLService, cpu, ram int, architectureName, computeName, mysqlVersion string, regionId string) (int, error) {
+func matchMysqlPassGoodsId(ctx context.Context, service MySQLService, cpu, ram int, architectureType, computeType int, mysqlVersion string, regionId string) (int, error) {
 	goodsRequest := mysql.NewDescribeAvailableDBConfigRequest()
 
 	goodsRequest.RegionId = common.StringPtr(regionId)
@@ -230,9 +265,9 @@ func matchMysqlPassGoodsId(ctx context.Context, service MySQLService, cpu, ram i
 	for _, product := range goodsResponse.Data.Products {
 		if *product.Version == mysqlVersion {
 			for _, arch := range product.Architectures {
-				if *arch.ArchitectureName == architectureName {
+				if *arch.ArchitectureType == architectureType {
 					for _, role := range arch.ComputeRoles {
-						if *role.ComputeName == computeName {
+						if *role.ComputeType == computeType {
 							for _, cpuRam := range role.Standards.CpuRam {
 								if *cpuRam.CPU == cpu && *cpuRam.RAM == ram {
 									return *cpuRam.PaasGoodsId, nil
@@ -245,7 +280,8 @@ func matchMysqlPassGoodsId(ctx context.Context, service MySQLService, cpu, ram i
 		}
 	}
 
-	return -1, fmt.Errorf("cpu %d, ram %d not found paas_goods_id", cpu, ram)
+	return -1, fmt.Errorf("RegionId %v,architectureType %d , computeType %d ,cpu %d, ram %d not found paas_goods",
+		regionId, architectureType, computeType, cpu, ram)
 }
 
 func waitMysqlRunning(ctx context.Context, service MySQLService, instanceUuid string) error {
