@@ -33,6 +33,7 @@ func dataSourceCdsVdc() *schema.Resource {
 	}
 }
 
+
 func dataSourceCdsVdcRead(d *schema.ResourceData, meta interface{}) error {
 	defer logElapsed("data_source.vdc.read")()
 
