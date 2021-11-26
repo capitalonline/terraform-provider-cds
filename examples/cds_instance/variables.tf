@@ -1,5 +1,5 @@
 variable "vdc_name" {
-  //  description = "The vdc name used to launch a new vdc."
+  description = "The vdc name used to launch a new vdc."
   default = "TF-testAccVdc"
 }
 variable "availability_zone" {
@@ -26,10 +26,6 @@ variable "ram" {
   default = 4
 }
 
-variable "vdc_id" {
-  default = "6a0ff09f-8f54-4ae9-ad70-1673392af6d0"
-}
-
 variable "password" {
   default = "123abc,.;"
 }
@@ -41,8 +37,33 @@ variable "public_address" {
 variable "group_name" {
   default = "tf_test_zz_1"
 }
+
 variable "group_type" {
   default = "public"
+}
+
+variable "system_disk_type" {
+  default = "ssd_system_disk"
+}
+
+variable "system_disk_size" {
+  default = 100
+}
+
+variable "system_disk_iops" {
+  default = 5
+}
+
+variable "data_disks_type" {
+  default = "ssd_disk"
+}
+
+variable "data_disks_size" {
+  default = 150
+}
+
+variable "data_disks_iops" {
+  default = 10
 }
 
 

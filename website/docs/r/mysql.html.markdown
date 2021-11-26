@@ -24,8 +24,8 @@ resource "cds_mysql" "mysql_example" {
     disk_type         = var.disk_type
     disk_value        = var.disk_value
     mysql_version     = var.mysql_version 
-    architecture_name = var.architecture_name
-    compute_name      = var.compute_name
+    architecture_type = var.architecture_type //0:basic edition|1:master-slave edition
+    compute_type      = var.compute_type      //0:common type
 }
 
 # create mysql param
@@ -46,5 +46,5 @@ The following arguments are supported
 * `disk_type` - (Required,Unmodifiable) Mysql disk type. It can only be the same as the type at the beginning of purchase. You cannot add multiple types of disks to an instance. For example, you can only add high-performance disks later
 * `disk_value` - (Required) Mysql disk value, Please refer to data.json availableDB
 * `mysql_version` - (Required) Mysql version, Please refer to data.json availableDB
-* `architecture_name` - (Required) Architecture name, Please refer to data.json availableDB
-* `compute_name` - (Required) Compute name, Please refer to data.json availableDB
+* `architecture_type` - (Required) Architecture name, Please refer to data.json availableDB 0:basic edition|1:master-slave edition
+* `compute_type` - (Required) Compute name, Please refer to data.json availableDB 0:common type

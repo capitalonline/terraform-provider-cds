@@ -1,29 +1,31 @@
-// create vdc
 resource "cds_vdc" "my_vdc" {
-  vdc_name  = "Terraform(using)"
+  vdc_name  = "Terraform(using)25"
   region_id = "CN_Beijing_A"
   public_network = {
     "ipnum"          = 4
-    "qos"            = 20
+    "qos"            = 10
     "name"           = "test-accPubNet"
     "floatbandwidth" = 200
     "billingmethod"  = "BandwIdth"
     "autorenew"      = 1
-    "type"           = "Bandwidth_BGP"
+    "type"           = "Bandwidth_Multi_ISP_BGP"
   }
+  add_public_ip = 4
 }
+
 // create private subnet for vdc
 resource "cds_private_subnet" "my_private_subnet_1" {
   vdc_id  = cds_vdc.my_vdc.id
-  name    = "private_1"
+  name    = "private_25"
   type    = "auto"
   address = "192.168.0.0"
   mask    = 16
 }
+
 // create security group
-resource "cds_security_group" "security_group_1" {
-  name        = "test_tf_new_zz"
-  description = "New security group"
+resource "cds_security_group" "security_group_2" {
+  name        = "test_tf_new_zz25"
+  description = "New security group25"
   type        = "private"
   rule {
     action        = "1"
@@ -37,9 +39,10 @@ resource "cds_security_group" "security_group_1" {
     ruletype      = "ip"
   }
 }
+
 // create instance
-resource "cds_instance" "my_instance" {
-  instance_name = "test_zz_002"
+resource "cds_instance" "my_instance2" {
+  instance_name = "test_zz_04"
   region_id     = "CN_Beijing_A"
   image_id      = "Ubuntu_16.04_64"
   instance_type = "high_ccs"
@@ -54,20 +57,28 @@ resource "cds_instance" "my_instance" {
     private_id = cds_private_subnet.my_private_subnet_1.id
     address    = "auto"
   }
-  #system_disk = {
-  #type = "ssd_system_disk"
-  #size = 200
-  #iops = 5
-  #}
-  data_disks {
+  system_disk = {
+    type = var.system_disk_type
     size = 100
-    type = "high_disk"
+    iops = 5
   }
+  
+  #data_disks {   
+  #  iops = 10
+  #  size = 200
+  #  type = "ssd_disk"
+  #}
+
   security_group_binding {
     type              = "private"
     subnet_id         = cds_private_subnet.my_private_subnet_1.id
-    security_group_id = cds_security_group.security_group_1.id
+    security_group_id = cds_security_group.security_group_2.id
   }
   #utc = true
 }
 
+data cds_data_source_instance "my_instance_data" {
+    instance_id = cds_instance.my_instance2.id
+    vdc_id =  cds_instance.my_instance2.vdc_id
+    result_output_file = "data.json"
+}

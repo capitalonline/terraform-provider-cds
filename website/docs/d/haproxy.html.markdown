@@ -8,24 +8,11 @@ description: |-
 
 # HaProxy
 
-This data source provides a json file of instances in a HaProxy
+This data source provides a json file of instances in a HaProxy  
 
 ## Example Usage
 
 ```hcl
-resource "cds_haproxy" "haproxy_example" {
-    instance_uuid       = var.instance_uuid
-    instance_name       = var.instance_name
-    region_id           = var.region_id
-    vdc_id              = var.vdc_id
-    base_pipe_id        = var.base_pipe_id
-    paas_goods_id       = var.paas_goods_id
-    ips = [{
-        pipe_type  = var.pipe_type
-        pipe_id    = var.pipe_id
-        segment_id = var.segment.id
-    }]
-}
 
 data cds_data_source_haproxy "my_haproxy_data" {
     ip = ""
