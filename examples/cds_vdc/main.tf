@@ -11,11 +11,12 @@ resource "cds_vdc" "my_vdc" {
     "type"           = var.public_network_type
   }
   #add_public_ip = 8
-  #delete_public_ip = "b174ef20-4cfd-11ec-9fa7-b6e127184f5c"
+  #delete_public_ip  = var.delete_public_ip
 }
 
 data "cds_data_source_vdc" "my_vdc_data" {
-    id = cds_vdc.my_vdc.id
-    vdc_name = cds_vdc.my_vdc.vdc_name
+    id                 = cds_vdc.my_vdc.id
+    vdc_name           = cds_vdc.my_vdc.vdc_name
     result_output_file = "data.json" 
 }
+

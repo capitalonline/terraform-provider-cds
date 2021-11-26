@@ -35,7 +35,7 @@ variable "disk_value" {
 }
 
 variable "mysql_version" {
-  description = "5.6|5.7|8.0"
+  description = "selective 5.6,5.7,8.0"
   default = "5.7"
 }
 
@@ -47,6 +47,3 @@ variable "compute_type" {
   description = "compute type 0:common type"  
   default = "0"
 }
-
-
-

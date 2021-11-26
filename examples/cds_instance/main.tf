@@ -59,11 +59,15 @@ resource "cds_instance" "my_instance2" {
   }
   system_disk = {
     type = var.system_disk_type
-    size = 324
-    iops = 33
+    size = 100
+    iops = 5
   }
   
-  
+  #data_disks {   
+  #  iops = 10
+  #  size = 200
+  #  type = "ssd_disk"
+  #}
 
   security_group_binding {
     type              = "private"
