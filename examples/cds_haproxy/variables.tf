@@ -51,6 +51,7 @@ variable "vdc_id" {
 }
 
 variable "base_pipe_id" {
+  description = "PrivateNetwork id from data source vdc"
   default = "xxxxxxxxxxxxxxxxxxxxxxxx"
 }
 
@@ -67,7 +68,7 @@ variable "ram" {
 }
 
 variable "pipe_id" {
-  description = "PrivateNetwork id"
+  description = "PrivateNetwork id from data source vdc"
   default = "xxxxxxxxxxxxxxxxxxxxxxxx"
 }
 
@@ -76,7 +77,7 @@ variable "pipe_type" {
 }
 
 variable "segment_id" {
-  description = "public network segment_id"
+  description = "public network segment_id from data source vdc"
   default = "xxxxxxxxxxxxxxxxxxxxxxxx"
 }
 

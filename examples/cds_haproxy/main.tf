@@ -7,50 +7,51 @@
 
 
 resource cds_haproxy my_haproxy {
-	region_id = var.haproxy_zones[8]
+	region_id 		= "XXXXXXXX"
+	//region_id 	= var.haproxy_zones[8]
     # vdc_id base_pipe_id 从 vdc 获取
-	//vdc_id = "XXXXXXXX"
-	//base_pipe_id = "XXXXXXXX"
-	vdc_id            = var.vdc_id
-    base_pipe_id      = var.base_pipe_id
-	instance_name = var.instance_name
+	//vdc_id 		= "XXXXXXXX"
+	//base_pipe_id  = "XXXXXXXX"
+	vdc_id          = var.vdc_id
+    base_pipe_id    = var.base_pipe_id
+	instance_name   = var.instance_name
     # paas_goods_id 从data.json PaasGoodsId 获取
 	cpu = var.cpu
 	ram = var.ram
 	ips = [
 		{
             # pipe_id pipe_type vdc网络
-			pipe_id = var.pipe_id
-			pipe_type = var.pipe_type
+			pipe_id    = var.pipe_id
+			pipe_type  = var.pipe_type
 			segment_id = var.segment_id
 		}
 	]
 	http_listeners = [{
 		server_timeout_unit = var.server_timeout_unit
-		server_timeout = var.server_timeout
-		sticky_session = var.sticky_session
-		acl_white_list = var.acl_white_list
-		listener_mode = var.listener_mode
-		max_conn = var.max_conn
+		server_timeout      = var.server_timeout
+		sticky_session      = var.sticky_session
+		acl_white_list      = var.acl_white_list
+		listener_mode       = var.listener_mode
+		max_conn            = var.max_conn
 		connect_timeout_unit = var.connect_timeout_unit
-		scheduler = var.scheduler
-		connect_timeout = var.connect_timeout
-		client_timeout = var.client_timeout
-		listener_name = var.listener_name
+		scheduler           = var.scheduler
+		connect_timeout     = var.connect_timeout
+		client_timeout      = var.client_timeout
+		listener_name       = var.listener_name
 		client_timeout_unit = var.client_timeout_unit
-		listener_port = var.listener_port
+		listener_port       = var.listener_port
 		backend_server = [{
-			ip = var.backend_server_ip
+			ip       = var.backend_server_ip
 			max_conn = var.backend_server_max_conn
-			port = var.backend_server_port
-			weight = var.backend_server_weight
+			port     = var.backend_server_port
+			weight   = var.backend_server_weight
 		}]
 		certificate_ids = []
 	}]
 }
 
 data cds_data_source_haproxy "my_haproxy_data" {
-    instance_name = cds_haproxy.my_haproxy.instance_name
-    region_id = cds_haproxy.my_haproxy.region_id
+    instance_name      = cds_haproxy.my_haproxy.instance_name
+    region_id          = cds_haproxy.my_haproxy.region_id
 	result_output_file = "data.json"
 }
