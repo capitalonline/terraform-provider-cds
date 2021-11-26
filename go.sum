@@ -73,8 +73,8 @@ github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx2
 github.com/bombsimon/wsl v1.2.5/go.mod h1:43lEF/i0kpXbLCeDXL9LMT8c92HyBywXb0AsgMHYngM=
 github.com/bradfitz/go-smtpd v0.0.0-20170404230938-deb6d6237625/go.mod h1:HYsPBTaaSFSlLx/70C2HPIMNZpVV8+vt/A+FMnYP11g=
 github.com/bsm/go-vlq v0.0.0-20150828105119-ec6e8d4f5f4e/go.mod h1:N+BjUcTjSxc2mtRGSCPsat1kze3CUtvJN3/jTXlp29k=
-github.com/capitalonline/cds-gic-sdk-go v0.2.5 h1:nWoEnlXBTr37N9iau1z4poCstu77MdGGME8K23U7bU8=
-github.com/capitalonline/cds-gic-sdk-go v0.2.5/go.mod h1:QeWWNu41V2YhFj0Jz16H7nSDsLL6pWolxvMPKkOJc3k=
+github.com/capitalonline/cds-gic-sdk-go v0.2.6 h1:Wybj7ZOpnp0ujMhyclcPpbCCJeufRA9zrKwuh7z5lWo=
+github.com/capitalonline/cds-gic-sdk-go v0.2.6/go.mod h1:QeWWNu41V2YhFj0Jz16H7nSDsLL6pWolxvMPKkOJc3k=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/cheggaaa/pb v1.0.27/go.mod h1:pQciLPpbU0oxA0h+VJYYLxO+XeDQb5pZijXscXHm81s=
