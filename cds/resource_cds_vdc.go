@@ -191,6 +191,10 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+
 		taskId := response.TaskId
 
 		_, err = taskService.DescribeTask(ctx, *taskId)
@@ -199,9 +203,6 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 
-		// if *response.Code != "Success" {
-		// 	return errors.New(*response.Message)
-		// }
 	}
 
 	if d.HasChange("delete_public_ip") {
@@ -212,6 +213,11 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 		if err != nil {
 			return err
 		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+
 		taskId := response.TaskId
 		_, err = taskService.DescribeTask(ctx, *taskId)
 
@@ -219,9 +225,6 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 			err = fmt.Errorf("[taskId]:%v api[%s] request body [%s], 任务执行失败,请检查参数", *taskId, request.GetAction(), request.ToJsonString())
 			return err
 		}
-		// if *response.Code != "Success" {
-		// 	return errors.New(*response.Message)
-		// }
 	}
 
 	if d.HasChange("public_network") {
