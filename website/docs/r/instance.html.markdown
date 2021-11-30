@@ -34,11 +34,41 @@ resource "cds_instance" "instance_example" {
     size = 200
     iops = 20
   }
-  data_disks {
-    size  =  100
-    type  =  "ssd_disk"
-    iops  =  10
-  }
+
+  #data_disks = [{   
+  #    iops = 5
+  #    size = 100
+  #    type = "ssd_disk"
+  # },
+  # {
+  #    iops = 0
+  #    size = 120
+  #    type = "high_disk"
+  # }
+  #]
+
+  #update_data_disks = [
+  #  {   disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxx"
+  #      iops = 22
+  #      size = 122
+  #      type = "ssd_disk"
+  #  },
+  #  {   disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxx"
+  #      iops = 33
+  #      size = 133
+  #      type = "ssd_disk"
+  #  },
+  #]
+
+  #delete_data_disks = [
+  #  {
+  #    disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  #  }, 
+  #  {
+  #    disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  #  },    
+  #]
+  
   security_group_binding {
     type = "private"
     subnet_id = "private 1"
@@ -66,10 +96,19 @@ The following arguments are supported
 * `private_ip` - (Optional) Private ip.
   * `private_id` - (Required)Private subnet ID.
   * `address` - (Required)ip address. Automatically assign input: auto, the default is not written as not assigning private network ip.
-* `data_disks` - (Optional) Data Disks.
+* `system_disk` - (Optional) System Disk . If you not set system_disk , Default when created size = 20 type = system_disk ,iops = 0
+  * `size` - The size of the disk in GiBs.
+  * `type` - The type of the disk. Allow values: system_disk, ssd_system_disk.
+  * `iops` - The size of the disk iops int, type equal ssd_system_disk can set iops, type equal system_disk can not set iops (iops must equal 0)
+* `data_disks` - (Optional) Data Disks. Add at creation time and append after creation 
   * `size` - The size of the disk in GiBs.
   * `type` - The type of the disk. Allow values: big_disk, high_disk, ssd_disk.
   * `iops` - The size of the disk iops int. 
+* `update_data_disks` - (Optional) modify Data Disks
+  * `disk_id` - The id of data disk , from data source instance
+  * `type` - The type of the disk. Allow values: big_disk, high_disk, ssd_disk.   
+  * `size` - The size of the disk in GiBs.
+  * `iops` - The size of the disk iops int,type equal ssd_disk can modify iops.
 * `security_group_binding` - (Optional) Instance binding security group.
   * `type` -(Required) Specify a public or private network binding security group. Allow values: private, public.
   * `subnet_id` - (Required)Subnet ID.

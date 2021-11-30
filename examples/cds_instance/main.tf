@@ -57,17 +57,59 @@ resource "cds_instance" "my_instance2" {
     private_id = cds_private_subnet.my_private_subnet_1.id
     address    = "auto"
   }
+
+  # type  system_disk | ssd_system_disk
+  # if type = system_disk ,you can not set and modify iops ,iops must set 0
+  # if type = ssd_system_disk ,you can set and modify iops
+  # if you not set system_disk , Default when created size = 20 type = system_disk ,iops = 0
   system_disk = {
     type = var.system_disk_type
     size = 100
     iops = 5
   }
   
-  #data_disks {   
-  #  iops = 10
-  #  size = 200
-  #  type = "ssd_disk"
-  #}
+  # you can set data_disks at create instance ,or after append data_disks
+  
+  #data_disks = [{   
+  #    iops = 5
+  #    size = 100
+  #    type = "ssd_disk"
+  # },
+  # {
+  #    iops = 0
+  #    size = 120
+  #    type = "high_disk"
+  # }
+  #]
+
+  # you can modify data disk iops and size 
+  # if you want modify iops ,the type must be ssd_disk,
+  # if type = high_disk ,the iops must equal 0
+  #update_data_disks = [
+  #  {   disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxx"
+  #      iops = 22
+  #      size = 122
+  #      type = "ssd_disk"
+  #  },
+  #  {   disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxx"
+  #      iops = 33
+  #      size = 133
+  #      type = "ssd_disk"
+  #  },
+  #]
+
+  # you can delete data disks by disk_id 
+  # disk_id from data cds_data_source_instance
+  #delete_data_disks = [
+  #  {
+  #    disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  #  }, 
+  #  {
+  #    disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  #  },    
+  #]
+  
+  
 
   security_group_binding {
     type              = "private"

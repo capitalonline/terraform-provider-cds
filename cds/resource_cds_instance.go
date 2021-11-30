@@ -138,8 +138,9 @@ func resourceCdsCcsInstance() *schema.Resource {
 				},
 			},
 			"system_disk": {
-				Type:        schema.TypeMap,
-				ConfigMode:  schema.SchemaConfigModeAuto,
+				Type:       schema.TypeMap,
+				ConfigMode: schema.SchemaConfigModeAuto,
+				// ConfigMode:  schema.SchemaConfigModeAttr,
 				Optional:    true,
 				Description: "System disk info.",
 				Elem: &schema.Resource{
@@ -167,9 +168,33 @@ func resourceCdsCcsInstance() *schema.Resource {
 				MaxItems:   15,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"size": {
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "high_disk",
+						},
+						"iops": {
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"update_data_disks": {
+				Type:       schema.TypeList,
+				ConfigMode: schema.SchemaConfigModeAttr,
+				Optional:   true,
+				MinItems:   1,
+				MaxItems:   15,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
 						"disk_id": {
 							Type:     schema.TypeString,
-							Computed: true,
+							Optional: true,
 						},
 						"size": {
 							Type:     schema.TypeInt,
@@ -182,6 +207,21 @@ func resourceCdsCcsInstance() *schema.Resource {
 						},
 						"iops": {
 							Type:     schema.TypeInt,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"delete_data_disks": {
+				Type:       schema.TypeList,
+				ConfigMode: schema.SchemaConfigModeAttr,
+				Optional:   true,
+				MinItems:   1,
+				MaxItems:   15,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"disk_id": {
+							Type:     schema.TypeString,
 							Optional: true,
 						},
 					},
@@ -349,10 +389,17 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 			return err
 		}
 		createInstanceRequest.SystemDisk = &sysdisk
+	} else {
+		var sysdisk = instance.SystemDisk{}
+		sysdisk.IOPS = common.IntPtr(0)
+		sysdisk.Type = common.StringPtr("high_disk")
+		sysdisk.Size = common.IntPtr(20)
+		createInstanceRequest.SystemDisk = &sysdisk
 	}
 
-	if dataDisks, ok := d.GetOk("data_disks"); ok {
-		disks := dataDisks.([]interface{})
+	//添加数据盘
+	if addDataDisks, ok := d.GetOk("data_disks"); ok {
+		disks := addDataDisks.([]interface{})
 		for i := range disks {
 			disk := disks[i].(map[string]interface{})
 			createInstanceRequest.DataDisks = append(createInstanceRequest.DataDisks, &instance.DataDisk{
@@ -454,21 +501,22 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 	d.Set("instance_status", *instanceInfo.InstanceStatus)
 
 	// for ResizeDisk/DeleteDisk
-	var listDataDisks []map[string]interface{}
-	for _, p := range instanceInfo.Disks.DataDisks {
-		diskMapping := map[string]interface{}{
-			"disk_id": p.DiskId,
-			"type":    p.DiskType,
-			"size":    p.Size,
-			"iops":    p.Iops,
+	/*
+		var listDataDisks []map[string]interface{}
+		for _, p := range instanceInfo.Disks.DataDisks {
+			diskMapping := map[string]interface{}{
+				// "disk_id": p.DiskId,
+				"type": p.DiskType,
+				"size": p.Size,
+				"iops": p.Iops,
+			}
+			listDataDisks = append(listDataDisks, diskMapping)
 		}
-		listDataDisks = append(listDataDisks, diskMapping)
-	}
-	if len(listDataDisks) > 0 && listDataDisks != nil {
-		if err := d.Set("data_disks", listDataDisks); err != nil {
-			return err
-		}
-	}
+		if len(listDataDisks) > 0 && listDataDisks != nil {
+			if err := d.Set("data_disks", listDataDisks); err != nil {
+				return err
+			}
+		}*/
 
 	sysDisk := instanceInfo.Disks.SystemDisk
 	if sysDisk != nil {
@@ -652,9 +700,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 				})
 				securityGroupService.JoinSecurityGroup(ctx, request)
 			}
-
 		}
-
 	}
 
 	if d.HasChange("system_disk") {
@@ -665,69 +711,53 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 			return err
 		}
 
-		extendSdRequest := instance.NewExtendSystemDiskRequest()
-		extendSdRequest.InstanceId = common.StringPtr(id)
+		updateFlag := true
+		//没有检测到更新不进行输入
+		if sysdisk.Size == nil && sysdisk.IOPS == nil && sysdisk.Type == nil {
+			updateFlag = false
+		}
+		if updateFlag {
+			extendSdRequest := instance.NewExtendSystemDiskRequest()
+			extendSdRequest.InstanceId = common.StringPtr(id)
 
-		extendSdRequest.Size = sysdisk.Size
-		extendSdRequest.IOPS = sysdisk.IOPS
+			extendSdRequest.Size = sysdisk.Size
+			extendSdRequest.IOPS = sysdisk.IOPS
 
-		extendSdResponse, err := instanceService.client.UseCvmClient().ExtendSystemDisk(extendSdRequest)
-		if err != nil {
-			return err
+			extendSdResponse, err := instanceService.client.UseCvmClient().ExtendSystemDisk(extendSdRequest)
+			if err != nil {
+				return err
+			}
+
+			log.Printf("system disk update action:[%v],request[%v],response[%v],err[%v]",
+				extendSdRequest.GetAction(), extendSdRequest.ToJsonString(), extendSdResponse.ToJsonString(), err)
+
+			taskId := extendSdResponse.TaskId
+			_, err = taskService.DescribeTask(ctx, *taskId)
+			if err != nil {
+				return err
+			}
 		}
 
-		log.Printf("system disk update action:[%v],request[%v],response[%v],err[%v]",
-			extendSdRequest.GetAction(), extendSdRequest.ToJsonString(), extendSdResponse.ToJsonString(), err)
-
-		taskId := extendSdResponse.TaskId
-		_, err = taskService.DescribeTask(ctx, *taskId)
-		if err != nil {
-			return err
-		}
 	}
 
 	if d.HasChange("data_disks") {
-		d.SetPartial("data_disks")
-		od, nd := d.GetChange("data_disks")
-		o := make([]map[string]interface{}, 0)
+		_, nd := d.GetChange("data_disks")
 		n := make([]map[string]interface{}, 0)
-		for _, v := range od.([]interface{}) {
-			o = append(o, v.(map[string]interface{}))
-		}
 		for _, v := range nd.([]interface{}) {
 			n = append(n, v.(map[string]interface{}))
 		}
-		log.Printf("old_data_disks:%v,new_data_disks:%v", o, n)
 		addList := make([]*instance.DataDisk, 0)
-		delList := make([]string, 0)
-		editList := make([]map[string]interface{}, 0)
-
 		for _, v := range n {
 			//添加磁盘
-			if v["disk_id"].(string) == "" {
-				i := v["size"].(int)
-				temp := instance.DataDisk{
-					Size: &i,
-					Type: common.StringPtr(v["type"].(string)),
-					IOPS: common.IntPtr(v["iops"].(int)),
-				}
-				addList = append(addList, &temp)
+			i := v["size"].(int)
+			temp := instance.DataDisk{
+				Size: &i,
+				Type: common.StringPtr(v["type"].(string)),
+				IOPS: common.IntPtr(v["iops"].(int)),
 			}
-		}
+			addList = append(addList, &temp)
 
-		//删除磁盘
-		for _, v := range o {
-			flag, value := In_slice_value(v, n, "disk_id")
-			if !flag {
-				delList = append(delList, v["disk_id"].(string))
-			} else {
-				//判断size和iops是否改变
-				if value["size"].(int) != v["size"].(int) || value["iops"].(int) != v["iops"].(int) {
-					editList = append(editList, value)
-				}
-			}
 		}
-		log.Printf("addList:%v,delList:%v,editList:%v", addList, delList, editList)
 
 		if len(addList) > 0 {
 			diskRequest := instance.NewCreateDiskRequest()
@@ -744,19 +774,14 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 			}
 		}
 
-		if len(delList) > 0 {
-			diskRequest := instance.NewDeleteDiskRequest()
-			diskRequest.InstanceId = common.StringPtr(id)
-			diskRequest.DiskIds = common.StringPtrs(delList)
-			respose, err := instanceService.client.UseCvmClient().DeleteDisk(diskRequest)
-			if err != nil {
-				return err
-			}
-			taskId := respose.TaskId
-			_, err = taskService.DescribeTask(ctx, *taskId)
-			if err != nil {
-				return err
-			}
+	}
+
+	if d.HasChange("update_data_disks") {
+		_, nd := d.GetChange("update_data_disks")
+
+		editList := make([]map[string]interface{}, 0)
+		for _, v := range nd.([]interface{}) {
+			editList = append(editList, v.(map[string]interface{}))
 		}
 
 		if len(editList) > 0 {
@@ -778,73 +803,30 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 			}
 		}
 	}
-	/*
-		if d.HasChange("data_disks") {
-			d.SetPartial("data_disks")
-			od, nd := d.GetChange("data_disks")
-			o := make([]map[string]interface{}, 0)
-			n := make([]map[string]interface{}, 0)
-			for _, v := range od.([]interface{}) {
-				o = append(o, v.(map[string]interface{}))
-			}
-			for _, v := range nd.([]interface{}) {
-				n = append(n, v.(map[string]interface{}))
-			}
-			addList := make([]*instance.DataDisk, 0)
-			delList := make([]string, 0)
-			editList := make([]map[string]interface{}, 0)
-			if len(o) > len(n) {
-				for _, v := range o {
-					if !In_slice(v, n, "size") {
-						delList = append(delList, v["disk_id"].(string))
-					}
-				}
-				diskRequest := instance.NewDeleteDiskRequest()
-				diskRequest.InstanceId = common.StringPtr(id)
-				diskRequest.DiskIds = common.StringPtrs(delList)
-				_, err := instanceService.client.UseCvmClient().DeleteDisk(diskRequest)
-				if err != nil {
-					return err
-				}
-			} else if len(o) < len(n) {
-				for _, v := range n {
-					if !In_slice(v, o, "size") {
-						i := v["size"].(int)
-						temp := instance.DataDisk{
-							Size: &i,
-							Type: common.StringPtr(v["type"].(string)),
-							IOPS: common.IntPtr(v["iops"].(int)),
-						}
-						addList = append(addList, &temp)
-					}
-				}
-				diskRequest := instance.NewCreateDiskRequest()
-				diskRequest.InstanceId = common.StringPtr(id)
-				diskRequest.DataDisks = addList
-				_, err := instanceService.client.UseCvmClient().CreateDisk(diskRequest)
-				if err != nil {
-					return err
-				}
-			} else {
-				for _, v := range n {
-					if !(In_slice(v, o, "size")) {
-						editList = append(editList, v)
-					}
-				}
-				for _, v := range editList {
-					request := instance.NewResizeDiskRequest()
-					request.InstanceId = common.StringPtr(id)
-					request.DataSize = common.IntPtr(v["size"].(int))
-					request.DiskId = common.StringPtr(v["disk_id"].(string))
-					request.IOPS = common.IntPtr(v["iops"].(int))
-					_, err := instanceService.client.UseCvmClient().ResizeDisk(request)
-					if err != nil {
-						return err
-					}
-				}
-			}
 
-		}*/
+	if d.HasChange("delete_data_disks") {
+		_, nd := d.GetChange("delete_data_disks")
+		delList := make([]string, 0)
+		for _, v := range nd.([]interface{}) {
+			value := v.(map[string]interface{})
+			delList = append(delList, value["disk_id"].(string))
+		}
+
+		if len(delList) > 0 {
+			diskRequest := instance.NewDeleteDiskRequest()
+			diskRequest.InstanceId = common.StringPtr(id)
+			diskRequest.DiskIds = common.StringPtrs(delList)
+			respose, err := instanceService.client.UseCvmClient().DeleteDisk(diskRequest)
+			if err != nil {
+				return err
+			}
+			taskId := respose.TaskId
+			_, err = taskService.DescribeTask(ctx, *taskId)
+			if err != nil {
+				return err
+			}
+		}
+	}
 
 	d.Partial(false)
 	time.Sleep(5 * time.Second)
