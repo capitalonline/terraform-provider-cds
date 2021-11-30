@@ -392,7 +392,7 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 	} else {
 		var sysdisk = instance.SystemDisk{}
 		sysdisk.IOPS = common.IntPtr(0)
-		sysdisk.Type = common.StringPtr("high_disk")
+		sysdisk.Type = common.StringPtr("system_disk")
 		sysdisk.Size = common.IntPtr(20)
 		createInstanceRequest.SystemDisk = &sysdisk
 	}
