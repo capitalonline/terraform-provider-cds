@@ -94,6 +94,7 @@ variable "sticky_session" {
 }
 
 variable "acl_white_list" {
+  description = "Set a whitelist, for example 192.168.12.1,192.168.1.1/20"
   default = "192.168.9.1"
 }
 

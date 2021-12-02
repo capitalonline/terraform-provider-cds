@@ -100,7 +100,7 @@ func readResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 	data.Set("instance_name", *response.Data[0].InstanceName)
 	data.Set("region_id", *response.Data[0].RegionId)
 	data.Set("ip", *response.Data[0].IP)
-
+	data.Set("disk_value", *response.Data[0].Disks)
 	return nil
 }
 
@@ -193,21 +193,30 @@ func updateResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 
 	request := mysql.NewModifyDBInstanceSpecRequest()
 
-	request.DiskType = common.StringPtr(data.Get("disk_type").(string))
-	request.DiskValue = common.IntPtr(data.Get("disk_value").(int))
-	request.PaasGoodsId = common.IntPtr(paasGoodsId)
 	request.InstanceUuid = common.StringPtr(data.Id())
 
 	var hasChange bool
 
-	if data.HasChange("cpu") {
+	if data.HasChange("cpu") || data.HasChange("ram") {
+		request.PaasGoodsId = common.IntPtr(paasGoodsId)
 		hasChange = true
 	}
-	if data.HasChange("ram") {
-		hasChange = true
-	}
+
 	if data.HasChange("disk_value") {
 		hasChange = true
+		o_disk_value, n_disk_value := data.GetChange("disk_value")
+		o_val, ok := o_disk_value.(int)
+		if !ok {
+			return fmt.Errorf("old disk value %v is not int", o_disk_value)
+		}
+		n_val, ok := n_disk_value.(int)
+
+		if !ok {
+			return fmt.Errorf("new disk value %v is not int", n_disk_value)
+		}
+		add_disk := n_val - o_val
+		request.DiskType = common.StringPtr(data.Get("disk_type").(string))
+		request.DiskValue = common.IntPtr(add_disk)
 	}
 
 	if hasChange {

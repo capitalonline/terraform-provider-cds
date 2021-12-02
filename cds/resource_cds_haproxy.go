@@ -379,11 +379,17 @@ func createResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 				Weight:  &backendServerEntry.Weight,
 			})
 		}
+
+		acl := make([]*string, 0)
+		if strings.TrimSpace(httpListener.AclWhiteList) != "" {
+			acl = common.StringPtrs(strings.Split(strings.TrimSpace(httpListener.AclWhiteList), ","))
+		}
+
 		httpListenerEntry := &haproxy.DescribeLoadBalancerStrategysHttpListeners{
 			ServerTimeoutUnit:  &httpListener.ServerTimeoutUnit,
 			ServerTimeout:      &httpListener.ServerTimeout,
 			StickySession:      &httpListener.StickySession,
-			AclWhiteList:       common.StringPtrs(strings.Split(strings.TrimSpace(httpListener.AclWhiteList), ",")),
+			AclWhiteList:       acl,
 			ListenerMode:       &httpListener.ListenerMode,
 			MaxConn:            &httpListener.MaxConn,
 			ConnectTimeout:     &httpListener.ConnectTimeout,
@@ -415,10 +421,16 @@ func createResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 				Weight:  &backendServerEntry.Weight,
 			})
 		}
+
+		acl := make([]*string, 0)
+		if strings.TrimSpace(tcpListener.AclWhiteList) != "" {
+			acl = common.StringPtrs(strings.Split(strings.TrimSpace(tcpListener.AclWhiteList), ","))
+		}
+
 		tcpListenerEntry := &haproxy.DescribeLoadBalancerStrategysTcpListeners{
 			ServerTimeoutUnit:  &tcpListener.ServerTimeoutUnit,
 			ServerTimeout:      &tcpListener.ServerTimeout,
-			AclWhiteList:       common.StringPtrs(strings.Split(strings.TrimSpace(tcpListener.AclWhiteList), ",")),
+			AclWhiteList:       acl,
 			ListenerMode:       &tcpListener.ListenerMode,
 			MaxConn:            &tcpListener.MaxConn,
 			ConnectTimeout:     &tcpListener.ConnectTimeout,
@@ -644,10 +656,11 @@ func createModitifyStrategyRequest(data *schema.ResourceData) *haproxy.ModifyLoa
 				CertificateIds: certificateIds,
 			}
 
-			if dataMap["acl_white_list"] != nil {
+			if dataMap["acl_white_list"] != nil && dataMap["acl_white_list"].(string) != "" {
 				listener.AclWhiteList = common.StringPtrs(strings.Split(dataMap["acl_white_list"].(string), ","))
 			} else {
-				listener.AclWhiteList = []*string{}
+				acl := make([]*string, 0)
+				listener.AclWhiteList = acl
 			}
 			if dataMap["client_timeout"] != nil {
 				listener.ClientTimeout = common.StringPtr(dataMap["client_timeout"].(string))
@@ -717,9 +730,13 @@ func createModitifyStrategyRequest(data *schema.ResourceData) *haproxy.ModifyLoa
 				BackendServer: backendServers,
 			}
 
-			if dataMap["acl_white_list"] != nil {
+			if dataMap["acl_white_list"] != nil && dataMap["acl_white_list"].(string) != "" {
 				listener.AclWhiteList = common.StringPtrs(strings.Split(dataMap["acl_white_list"].(string), ","))
+			} else {
+				acl := make([]*string, 0)
+				listener.AclWhiteList = acl
 			}
+
 			if dataMap["client_timeout"] != nil {
 				listener.ClientTimeout = common.StringPtr(dataMap["client_timeout"].(string))
 			}
