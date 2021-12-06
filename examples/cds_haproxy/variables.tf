@@ -73,6 +73,7 @@ variable "pipe_id" {
 }
 
 variable "pipe_type" {
+  description = "public|private"
   default = "private"
 }
 

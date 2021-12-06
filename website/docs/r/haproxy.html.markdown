@@ -22,11 +22,19 @@ resource "cds_haproxy" "haproxy_example" {
     base_pipe_id        = var.base_pipe_id
     cpu                 = 1
     ram                 = 2
-    ips = [{
-        pipe_type  = var.pipe_type
+    ips = [
+      {
+        pipe_type  = "private"
         pipe_id    = var.pipe_id
         segment_id = var.segment.id
-    }]
+      },
+      #This parameter is required if you want to create a public network
+      {
+        pipe_type  = "public"
+        pipe_id    = var.pipe_id
+        segment_id = var.segment_id
+      }
+    ]
     http_listeners = [{
       acl_white_list = ""
       backend_server = [{
@@ -90,7 +98,7 @@ The following arguments are supported
 * `vdc_id` - (Required,Unmodifiable) Instance belongs to the virtual data center.
 * `base_pipe_id` - (Required,Unmodifiable) Vdc private network id, the haproxy instance will create id by this [Get PipeId](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1describevdc)
 * `ips` - (Required,Unmodifiable) The network used by haproxy [All Instance Type](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E4%B8%BB%E6%9C%BA%E7%B1%BB%E5%9E%8B).
-  * `pipe_type` - (Required) The network of the haproxy type. The options are public and private
+  * `pipe_type` - (Required) The network of the haproxy type. The options are public and private.Public and private network information is required to create a public network.When creating a private network, only the private network information is required.
   * `pipe_id` - (Required) The netwrok of the haproxy id. [Get PipeId](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1describevdc)
   * `segment_id` - (Optional) When the haproxy type is public, it needs to be provided. [Get SegmentId](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1describevdc)
 * `paas_goods_id` - (Required,Unmodifiable) Product ID that support haproxy in specific region [List of product id that support haproxy in specific regions](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#1describezones)
