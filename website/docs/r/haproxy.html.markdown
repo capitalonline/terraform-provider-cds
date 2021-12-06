@@ -25,13 +25,15 @@ resource "cds_haproxy" "haproxy_example" {
     ips = [
       {
         pipe_type  = "private"
+        #PrivateNetwork PrivateId from data source vdc
         pipe_id    = var.pipe_id
         segment_id = var.segment.id
       },
       #This parameter is required if you want to create a public network
       {
         pipe_type  = "public"
-        pipe_id    = var.pipe_id
+        #PublicNetwork PublicId from data source vdc
+        pipe_id    = var.public_pipe_id
         segment_id = var.segment_id
       }
     ]

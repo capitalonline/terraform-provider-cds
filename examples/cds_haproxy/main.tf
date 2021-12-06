@@ -21,13 +21,15 @@ resource cds_haproxy my_haproxy {
 	ips = [
 		{
             # pipe_id pipe_type vdc网络
+			# pipe_id is PrivateNetwork PrivateId from vdc info 
 			pipe_id    = var.pipe_id
 			pipe_type  = "private"
 			segment_id = var.segment_id
 		},
 		#This parameter is required if you want to create a public network(如创建公网，则需要)
 		{
-			pipe_id    = var.pipe_id
+			# pipe_id is PublicNetwork PublicId from vdc info 
+			pipe_id    = var.public_pipe_id
 			pipe_type  = "public"
 			segment_id = var.segment_id
 		}
