@@ -72,6 +72,11 @@ variable "pipe_id" {
   default = "xxxxxxxxxxxxxxxxxxxxxxxx"
 }
 
+variable "public_pipe_id" {
+  description = "PublicNetwork PublicId from data source vdc"
+  default = "xxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
 variable "pipe_type" {
   description = "public|private"
   default = "private"

@@ -25,13 +25,15 @@ resource "cds_haproxy" "haproxy_example" {
     ips = [
       {
         pipe_type  = "private"
+        #PrivateNetwork PrivateId from data source vdc
         pipe_id    = var.pipe_id
         segment_id = var.segment.id
       },
       #This parameter is required if you want to create a public network
       {
         pipe_type  = "public"
-        pipe_id    = var.pipe_id
+        #PublicNetwork PublicId from data source vdc
+        pipe_id    = var.public_pipe_id
         segment_id = var.segment_id
       }
     ]
@@ -102,14 +104,14 @@ The following arguments are supported
   * `pipe_id` - (Required) The netwrok of the haproxy id. [Get PipeId](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1describevdc)
   * `segment_id` - (Optional) When the haproxy type is public, it needs to be provided. [Get SegmentId](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1describevdc)
 * `paas_goods_id` - (Required,Unmodifiable) Product ID that support haproxy in specific region [List of product id that support haproxy in specific regions](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#1describezones)
-* `http_listeners` - (Required) HTTP configuration list.
+* `http_listeners` - (Optional) HTTP configuration list.
   * `acl_white_list` - (Required) White list setting, this is a string use , to split.
   * `backend_server` - (Required) Backend server configuration.
     * `ip` - (Required) Backend server IP address.
     * `port` - (Required) Backend server port.
     * `weight` - (Required) Backend server weight. 1-256
     * `max_conn` - (Required) Maximum number of backend server connections.
-  * `certificate_ids` - (Required) Bind certificate, set empty array without binding.
+  * `certificate_ids` - (Optional) Bind certificate, set empty array without binding.
      * `certificate_id` - (Required) The certificate id.
      * `certificate_name` - (Required)  The certificate name.
    * `client_timeout` - (Required) Set the time for client connection timeout.
@@ -124,7 +126,7 @@ The following arguments are supported
    * `max_conn` - (Required) The maximum number of connections on the proxy side.
    * `scheduler` - (Required) Scheduling strategy [roundrobin, leastconn, static-rr, source]
    * `sticky_session` - (Required) Turn on call back hold [on, off]
-* `tcp_listeners` - (Required) TCP configuration list.
+* `tcp_listeners` - (Optional) TCP configuration list.
   * `acl_white_list` - (Required) White list setting, this is a string use , to split.
   * `backend_server` - (Required) Backend server configuration.
     * `ip` - (Required) Backend server IP address.
