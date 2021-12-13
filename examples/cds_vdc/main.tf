@@ -18,5 +18,5 @@ data "cds_data_source_vdc" "my_vdc_data" {
     id                 = cds_vdc.my_vdc.id
     vdc_name           = cds_vdc.my_vdc.vdc_name
     result_output_file = "data.json" 
+    #vdc_list    computed by terraform apply
 }
-

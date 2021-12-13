@@ -59,7 +59,9 @@ resource cds_haproxy my_haproxy {
 }
 
 data cds_data_source_haproxy "my_haproxy_data" {
+	instance_uuid      = "xxxxxxxxxxxxx" 
     instance_name      = cds_haproxy.my_haproxy.instance_name
     region_id          = cds_haproxy.my_haproxy.region_id
 	result_output_file = "data.json"
+	#ha_list  computed by terraform apply
 }
