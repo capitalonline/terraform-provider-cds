@@ -1,7 +1,7 @@
 # create certificate
 
 resource cds_certificate my_cds_certificate {
-  certificate_name  = "my_cert1"
+  certificate_name  = "my_cert"
   certificate       = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   private_key       = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 }
