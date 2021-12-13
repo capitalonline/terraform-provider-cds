@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"terraform-provider-cds/cds/connectivity"
+	"terraform-provider-cds/cds/utils"
 	u "terraform-provider-cds/cds/utils"
 
 	"github.com/capitalonline/cds-gic-sdk-go/vdc"
@@ -285,4 +286,52 @@ func (me *VdcService) DeletePublicIp(ctx context.Context, request *vdc.DeletePub
 	ratelimit.Check(request.GetAction())
 
 	return me.client.UseVdcGetClient().DeletePublicIpNetwork(request)
+}
+
+func flattenPrivateNetworkMappings(list []*vdc.PrivateNetwork) []map[string]interface{} {
+	result := make([]map[string]interface{}, 0, len(list))
+
+	for _, v := range list {
+		privateNetwork := map[string]interface{}{
+			"private_id":   utils.PString(v.PrivateId),
+			"status":       utils.PString(v.Status),
+			"name":         utils.PString(v.Name),
+			"unuse_ip_num": utils.PInt(v.UnuseIpNum),
+			"segments":     v.Segments,
+		}
+		result = append(result, privateNetwork)
+	}
+	return result
+}
+
+func flattenPublicNetworkMappings(list []*vdc.PublicNetworkInfo) []map[string]interface{} {
+	result := make([]map[string]interface{}, 0, len(list))
+	for _, v := range list {
+		publicNetwork := map[string]interface{}{
+			"public_id":    utils.PString(v.PublicId),
+			"status":       utils.PString(v.Status),
+			"qos":          utils.PInt(v.Qos),
+			"name":         utils.PString(v.Name),
+			"unuse_ip_num": utils.PInt(v.UnuseIpNum),
+			"segments":     flattenPublicNetworkSegmentsMappings(*v.Segments),
+		}
+		result = append(result, publicNetwork)
+	}
+
+	return result
+}
+
+func flattenPublicNetworkSegmentsMappings(list []vdc.PublicSegment) []map[string]interface{} {
+	result := make([]map[string]interface{}, 0, len(list))
+	for _, v := range list {
+		segment := map[string]interface{}{
+			"mask":       utils.PInt(v.Mask),
+			"gateway":    utils.PString(v.Gateway),
+			"segment_id": utils.PString(v.SegmentId),
+			"address":    utils.PString(v.Address),
+		}
+		result = append(result, segment)
+	}
+
+	return result
 }

@@ -39,3 +39,4 @@ The following arguments are supported:
 
 * `id` - (Required) The ID of the VDC.
 * `result_output_file` - (Required) Save the VDC information to the path.
+* `vdc_list` - (Computed) The list of the VDC info , By calculation,Don't have to fill out.

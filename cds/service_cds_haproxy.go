@@ -204,3 +204,91 @@ func (me *HaproxyService) UploadCACertificate(ctx context.Context, request *hapr
 	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
 	return response, err
 }
+
+func flattenHaproxyInstanceVipsMapping(vips []*haproxy.DescribeLoadBalancersVips) []map[string]interface{} {
+	listVip := make([]map[string]interface{}, 0, len(vips))
+	for _, vip := range vips {
+		data := map[string]interface{}{
+			"ip":   vip.IP,
+			"type": vip.Type,
+		}
+		listVip = append(listVip, data)
+	}
+	return listVip
+}
+
+func flattenHaproxyStrategyBackendServerMapping(list []*haproxy.DescribeLoadBalancerStrategysBackendServer) []map[string]interface{} {
+	result := make([]map[string]interface{}, 0, len(list))
+	for _, v := range list {
+		data := map[string]interface{}{
+			"ip":       *v.IP,
+			"max_conn": *v.MaxConn,
+			"port":     *v.Port,
+			"weight":   *v.Weight,
+		}
+		result = append(result, data)
+	}
+	return result
+}
+
+func flattenHaproxyStrategyCertificateIdsMapping(list []*haproxy.DescribeLoadBalancerStrategysCertificateIds) []map[string]interface{} {
+	result := make([]map[string]interface{}, 0, len(list))
+	for _, v := range list {
+		data := map[string]interface{}{
+			"certificate_id":   *v.CertificateId,
+			"certificate_name": *v.CertificateName,
+		}
+		result = append(result, data)
+	}
+	return result
+}
+
+func flattenHaproxyStrategyHttpMapping(httpListeners []*haproxy.DescribeLoadBalancerStrategysHttpListeners) []map[string]interface{} {
+	result := make([]map[string]interface{}, 0, len(httpListeners))
+	for _, v := range httpListeners {
+		data := map[string]interface{}{
+			"acl_white_list":       v.AclWhiteList,
+			"backend_server":       flattenHaproxyStrategyBackendServerMapping(v.BackendServer),
+			"certificate_ids":      flattenHaproxyStrategyCertificateIdsMapping(v.CertificateIds),
+			"client_timeout":       *v.ClientTimeout,
+			"client_timeout_unit":  *v.ClientTimeoutUnit,
+			"connect_timeout":      *v.ClientTimeout,
+			"connect_timeout_unit": *v.ConnectTimeoutUnit,
+			"listener_mode":        *v.ListenerMode,
+			"listener_name":        *v.ListenerName,
+			"listener_port":        *v.ListenerPort,
+			"max_conn":             *v.MaxConn,
+			"scheduler":            *v.Scheduler,
+			"server_timeout":       *v.ServerTimeout,
+			"server_timeout_unit":  *v.ServerTimeoutUnit,
+			"sticky_session":       *v.StickySession,
+		}
+		result = append(result, data)
+	}
+
+	return result
+}
+
+func flattenHaproxyStrategyTcpMapping(tcpListeners []*haproxy.DescribeLoadBalancerStrategysTcpListeners) []map[string]interface{} {
+	result := make([]map[string]interface{}, 0, len(tcpListeners))
+	for _, v := range tcpListeners {
+		data := map[string]interface{}{
+			"acl_white_list":       v.AclWhiteList,
+			"backend_server":       flattenHaproxyStrategyBackendServerMapping(v.BackendServer),
+			"client_timeout":       *v.ClientTimeout,
+			"client_timeout_unit":  *v.ClientTimeoutUnit,
+			"connect_timeout":      *v.ClientTimeout,
+			"connect_timeout_unit": *v.ConnectTimeoutUnit,
+			"listener_mode":        *v.ListenerMode,
+			"listener_name":        *v.ListenerName,
+			"listener_port":        *v.ListenerPort,
+			"max_conn":             *v.MaxConn,
+			"scheduler":            *v.Scheduler,
+			"server_timeout":       *v.ServerTimeout,
+			"server_timeout_unit":  *v.ServerTimeoutUnit,
+		}
+		result = append(result, data)
+	}
+
+	return result
+}
