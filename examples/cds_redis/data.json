@@ -1,0 +1,687 @@
+{
+	"availableDB": {
+		"ProductName": "redis",
+		"Products": [
+			{
+				"Architectures": [
+					{
+						"ArchitectureName": "经济型主从",
+						"ArchitectureType": 3,
+						"ComputeRoles": [
+							{
+								"ComputeName": "通用型",
+								"ComputeType": 0,
+								"Standards": {
+									"AttachDisk": [
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "SSD",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "ssd_disk"
+										},
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "性能型",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "high_disk"
+										}
+									],
+									"CpuRam": [
+										{
+											"CPU": 0,
+											"Name": "1G",
+											"PaasGoodsId": 12461,
+											"RAM": 1
+										},
+										{
+											"CPU": 0,
+											"Name": "2G",
+											"PaasGoodsId": 12464,
+											"RAM": 2
+										},
+										{
+											"CPU": 0,
+											"Name": "4G",
+											"PaasGoodsId": 12467,
+											"RAM": 4
+										},
+										{
+											"CPU": 0,
+											"Name": "8G",
+											"PaasGoodsId": 12470,
+											"RAM": 8
+										},
+										{
+											"CPU": 0,
+											"Name": "16G",
+											"PaasGoodsId": 12473,
+											"RAM": 16
+										},
+										{
+											"CPU": 0,
+											"Name": "32G",
+											"PaasGoodsId": 12476,
+											"RAM": 32
+										},
+										{
+											"CPU": 0,
+											"Name": "64G",
+											"PaasGoodsId": 12479,
+											"RAM": 64
+										}
+									]
+								}
+							}
+						],
+						"EnginesType": [],
+						"NetworkLinks": [
+							{
+								"DescDetail": "默认链路：服务实例占用VDC私有网络IP地址，适用于对延迟敏感类型的应用。",
+								"LinkType": "default_link",
+								"Name": "默认链路"
+							}
+						],
+						"SubProductName": "Redis 经济型主从"
+					}
+				],
+				"Version": "2.8"
+			},
+			{
+				"Architectures": [
+					{
+						"ArchitectureName": "经济型主从",
+						"ArchitectureType": 3,
+						"ComputeRoles": [
+							{
+								"ComputeName": "通用型",
+								"ComputeType": 0,
+								"Standards": {
+									"AttachDisk": [
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "SSD",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "ssd_disk"
+										},
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "性能型",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "high_disk"
+										}
+									],
+									"CpuRam": [
+										{
+											"CPU": 0,
+											"Name": "1G",
+											"PaasGoodsId": 18509,
+											"RAM": 1
+										},
+										{
+											"CPU": 0,
+											"Name": "2G",
+											"PaasGoodsId": 18512,
+											"RAM": 2
+										},
+										{
+											"CPU": 0,
+											"Name": "4G",
+											"PaasGoodsId": 18515,
+											"RAM": 4
+										},
+										{
+											"CPU": 0,
+											"Name": "8G",
+											"PaasGoodsId": 18518,
+											"RAM": 8
+										},
+										{
+											"CPU": 0,
+											"Name": "16G",
+											"PaasGoodsId": 18521,
+											"RAM": 16
+										},
+										{
+											"CPU": 0,
+											"Name": "32G",
+											"PaasGoodsId": 18524,
+											"RAM": 32
+										},
+										{
+											"CPU": 0,
+											"Name": "64G",
+											"PaasGoodsId": 18527,
+											"RAM": 64
+										}
+									]
+								}
+							}
+						],
+						"EnginesType": [],
+						"NetworkLinks": [
+							{
+								"DescDetail": "默认链路：服务实例占用VDC私有网络IP地址，适用于对延迟敏感类型的应用。",
+								"LinkType": "default_link",
+								"Name": "默认链路"
+							}
+						],
+						"SubProductName": "Redis 经济型主从"
+					},
+					{
+						"ArchitectureName": "集群",
+						"ArchitectureType": 2,
+						"ComputeRoles": [
+							{
+								"ComputeName": "通用型",
+								"ComputeType": 0,
+								"Standards": {
+									"AttachDisk": [
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "SSD",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "ssd_disk"
+										},
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "性能型",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "high_disk"
+										}
+									],
+									"CpuRam": [
+										{
+											"CPU": 0,
+											"Name": "8G",
+											"PaasGoodsId": 20675,
+											"RAM": 8
+										},
+										{
+											"CPU": 0,
+											"Name": "12G",
+											"PaasGoodsId": 20678,
+											"RAM": 12
+										},
+										{
+											"CPU": 0,
+											"Name": "20G",
+											"PaasGoodsId": 20681,
+											"RAM": 20
+										},
+										{
+											"CPU": 0,
+											"Name": "32G",
+											"PaasGoodsId": 20684,
+											"RAM": 32
+										},
+										{
+											"CPU": 0,
+											"Name": "64G",
+											"PaasGoodsId": 20687,
+											"RAM": 64
+										},
+										{
+											"CPU": 0,
+											"Name": "128G",
+											"PaasGoodsId": 20690,
+											"RAM": 128
+										},
+										{
+											"CPU": 0,
+											"Name": "256G",
+											"PaasGoodsId": 20693,
+											"RAM": 256
+										}
+									]
+								}
+							}
+						],
+						"EnginesType": [],
+						"NetworkLinks": [
+							{
+								"DescDetail": "默认链路：服务实例占用VDC私有网络IP地址，适用于对延迟敏感类型的应用。",
+								"LinkType": "default_link",
+								"Name": "默认链路"
+							}
+						],
+						"SubProductName": "Redis 集群版"
+					}
+				],
+				"Version": "4.0"
+			},
+			{
+				"Architectures": [
+					{
+						"ArchitectureName": "主从",
+						"ArchitectureType": 1,
+						"ComputeRoles": [
+							{
+								"ComputeName": "通用型",
+								"ComputeType": 0,
+								"Standards": {
+									"AttachDisk": [
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "SSD",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "ssd_disk"
+										},
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "性能型",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "high_disk"
+										}
+									],
+									"CpuRam": [
+										{
+											"CPU": 0,
+											"Name": "1G",
+											"PaasGoodsId": 12923,
+											"RAM": 1
+										},
+										{
+											"CPU": 0,
+											"Name": "2G",
+											"PaasGoodsId": 12926,
+											"RAM": 2
+										},
+										{
+											"CPU": 0,
+											"Name": "4G",
+											"PaasGoodsId": 12929,
+											"RAM": 4
+										},
+										{
+											"CPU": 0,
+											"Name": "8G",
+											"PaasGoodsId": 12932,
+											"RAM": 8
+										},
+										{
+											"CPU": 0,
+											"Name": "16G",
+											"PaasGoodsId": 12935,
+											"RAM": 16
+										},
+										{
+											"CPU": 0,
+											"Name": "32G",
+											"PaasGoodsId": 12938,
+											"RAM": 32
+										},
+										{
+											"CPU": 0,
+											"Name": "64G",
+											"PaasGoodsId": 12941,
+											"RAM": 64
+										}
+									]
+								}
+							}
+						],
+						"EnginesType": [],
+						"NetworkLinks": [
+							{
+								"DescDetail": "默认链路：服务实例占用VDC私有网络IP地址，适用于对延迟敏感类型的应用。",
+								"LinkType": "default_link",
+								"Name": "默认链路"
+							}
+						],
+						"SubProductName": "Redis 主从版"
+					},
+					{
+						"ArchitectureName": "集群",
+						"ArchitectureType": 2,
+						"ComputeRoles": [
+							{
+								"ComputeName": "通用型",
+								"ComputeType": 0,
+								"Standards": {
+									"AttachDisk": [
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "SSD",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "ssd_disk"
+										},
+										{
+											"BasicIops": "",
+											"DiskMax": 2000,
+											"DiskMaxExpand": 2000,
+											"DiskMin": 100,
+											"DiskName": "性能型",
+											"DiskStep": 100,
+											"DiskUnit": "G",
+											"DiskValue": "high_disk"
+										}
+									],
+									"CpuRam": [
+										{
+											"CPU": 0,
+											"Name": "8G",
+											"PaasGoodsId": 13385,
+											"RAM": 8
+										},
+										{
+											"CPU": 0,
+											"Name": "12G",
+											"PaasGoodsId": 13388,
+											"RAM": 12
+										},
+										{
+											"CPU": 0,
+											"Name": "20G",
+											"PaasGoodsId": 13391,
+											"RAM": 20
+										},
+										{
+											"CPU": 0,
+											"Name": "32G",
+											"PaasGoodsId": 13394,
+											"RAM": 32
+										},
+										{
+											"CPU": 0,
+											"Name": "64G",
+											"PaasGoodsId": 13397,
+											"RAM": 64
+										},
+										{
+											"CPU": 0,
+											"Name": "128G",
+											"PaasGoodsId": 13400,
+											"RAM": 128
+										},
+										{
+											"CPU": 0,
+											"Name": "256G",
+											"PaasGoodsId": 13403,
+											"RAM": 256
+										}
+									]
+								}
+							}
+						],
+						"EnginesType": [],
+						"NetworkLinks": [
+							{
+								"DescDetail": "默认链路：服务实例占用VDC私有网络IP地址，适用于对延迟敏感类型的应用。",
+								"LinkType": "default_link",
+								"Name": "默认链路"
+							}
+						],
+						"SubProductName": "Redis 集群版"
+					}
+				],
+				"Version": "5.0"
+			}
+		],
+		"RegionId": "CN_Beijing_A"
+	},
+	"instances": [
+		{
+			"RelationService": null,
+			"CloneServices": null,
+			"AppName": null,
+			"Cpu": null,
+			"IP": "10.240.17.13",
+			"Port": 9736,
+			"Ram": 4096,
+			"RegionId": "CN_Beijing_A",
+			"VdcId": "c26529b9-f455-47d7-b10c-7eb1f1f72bd0",
+			"MasterInfo": "",
+			"LinkType": "default_link",
+			"LinkTypeStr": "默认链路",
+			"SubProductName": "Redis 经济型主从",
+			"Version": "2.8",
+			"Status": "RUNNING",
+			"StatusStr": "运行中",
+			"InstanceName": "my_redis_test_e",
+			"InstanceUuid": "86b9ded8-3f11-4bea-9232-a571a6de0fbf",
+			"CreatedTime": "2022-01-17 15:06:30",
+			"VdcName": "程畅beijing_A",
+			"DisplayName": "中国大陆-北京-可用区A",
+			"ResourceId": "1637da5d-e097-450a-98be-84fa4f25eaa5",
+			"RoGroups": null
+		}
+	],
+	"regions": [
+		{
+			"CityId": "8737606f-306d-11e7-9796-0050569b4d9c",
+			"CityName": "东京",
+			"IsSaling": 1,
+			"RegionId": "APAC_Tokyo_A",
+			"RegionName": "亚太地区",
+			"SiteName": "东京1"
+		},
+		{
+			"CityId": "3082f45e-306e-11e7-9796-0050569b4d9c",
+			"CityName": "洛杉矶",
+			"IsSaling": 1,
+			"RegionId": "US_LosAngeles_A",
+			"RegionName": "北美地区",
+			"SiteName": "洛杉矶1"
+		},
+		{
+			"CityId": "7b98a5d1-306e-11e7-9796-0050569b4d9c",
+			"CityName": "法兰克福",
+			"IsSaling": 1,
+			"RegionId": "EUR_Germany_A",
+			"RegionName": "欧洲地区",
+			"SiteName": "德国1"
+		},
+		{
+			"CityId": "27b57297-306d-11e7-9796-0050569b4d9c",
+			"CityName": "中国香港",
+			"IsSaling": 1,
+			"RegionId": "CN_Hongkong_A",
+			"RegionName": "亚太地区",
+			"SiteName": "香港1"
+		},
+		{
+			"CityId": "a8937b00-306d-11e7-9796-0050569b4d9c",
+			"CityName": "新加坡",
+			"IsSaling": 1,
+			"RegionId": "APAC_Singapore_A",
+			"RegionName": "亚太地区",
+			"SiteName": "新加坡1"
+		},
+		{
+			"CityId": "154ed19e-306e-11e7-9796-0050569b4d9c",
+			"CityName": "纽约",
+			"IsSaling": 0,
+			"RegionId": "US_NewYork_A",
+			"RegionName": "北美地区",
+			"SiteName": "纽约1"
+		},
+		{
+			"CityId": "ea3ca775-306c-11e7-9796-0050569b4d9c",
+			"CityName": "北京",
+			"IsSaling": 1,
+			"RegionId": "CN_Beijing_B",
+			"RegionName": "中国大陆",
+			"SiteName": "北京2"
+		},
+		{
+			"CityId": "ea3ca775-306c-11e7-9796-0050569b4d9c",
+			"CityName": "北京",
+			"IsSaling": 1,
+			"RegionId": "CN_Beijing_E",
+			"RegionName": "中国大陆",
+			"SiteName": "北京5"
+		},
+		{
+			"CityId": "ea3ca775-306c-11e7-9796-0050569b4d9c",
+			"CityName": "北京",
+			"IsSaling": 1,
+			"RegionId": "CN_Beijing_A",
+			"RegionName": "中国大陆",
+			"SiteName": "北京1"
+		},
+		{
+			"CityId": "e48e2312-306d-11e7-9796-0050569b4d9c",
+			"CityName": "达拉斯",
+			"IsSaling": 1,
+			"RegionId": "US_Dallas_A",
+			"RegionName": "北美地区",
+			"SiteName": "达拉斯1"
+		},
+		{
+			"CityId": "713d3745-306d-11e7-9796-0050569b4d9c",
+			"CityName": "中国台湾",
+			"IsSaling": 1,
+			"RegionId": "CN_Taipei_A",
+			"RegionName": "亚太地区",
+			"SiteName": "台北1"
+		},
+		{
+			"CityId": "123d0d01-306d-11e7-9796-0050569b4d9c",
+			"CityName": "无锡",
+			"IsSaling": 1,
+			"RegionId": "CN_Wuxi_A",
+			"RegionName": "中国大陆",
+			"SiteName": "无锡1"
+		},
+		{
+			"CityId": "87fcbbd6-be0a-11e7-9d6b-0242ac110004",
+			"CityName": "首尔",
+			"IsSaling": 1,
+			"RegionId": "APAC_Seoul_A",
+			"RegionName": "亚太地区",
+			"SiteName": "首尔1"
+		},
+		{
+			"CityId": "ea3ca775-306c-11e7-9796-0050569b4d9c",
+			"CityName": "北京",
+			"IsSaling": 0,
+			"RegionId": "CN_Beijing_C",
+			"RegionName": "中国大陆",
+			"SiteName": "北京3"
+		},
+		{
+			"CityId": "c11a5abe-3f7e-11e7-86b1-0242ac11000e",
+			"CityName": "广州",
+			"IsSaling": 1,
+			"RegionId": "CN_Guangzhou_A",
+			"RegionName": "中国大陆",
+			"SiteName": "广州1"
+		},
+		{
+			"CityId": "b44355d0-65e7-11e7-8ea9-0050569b651c",
+			"CityName": "上海",
+			"IsSaling": 1,
+			"RegionId": "CN_Shanghai_A",
+			"RegionName": "中国大陆",
+			"SiteName": "上海1"
+		},
+		{
+			"CityId": "ea3ca775-306c-11e7-9796-0050569b4d9c",
+			"CityName": "北京",
+			"IsSaling": 1,
+			"RegionId": "CN_Beijing_H",
+			"RegionName": "中国大陆",
+			"SiteName": "北京8"
+		},
+		{
+			"CityId": "e48e2312-306d-11e7-9796-0050569b4d9c",
+			"CityName": "达拉斯",
+			"IsSaling": 1,
+			"RegionId": "US_Dallas_J",
+			"RegionName": "北美地区",
+			"SiteName": "达拉斯10"
+		},
+		{
+			"CityId": "7b98a5d1-306e-11e7-9796-0050569b4d9c",
+			"CityName": "法兰克福",
+			"IsSaling": 1,
+			"RegionId": "EUR_Germany_B",
+			"RegionName": "欧洲地区",
+			"SiteName": "德国2"
+		},
+		{
+			"CityId": "a8937b00-306d-11e7-9796-0050569b4d9c",
+			"CityName": "新加坡",
+			"IsSaling": 1,
+			"RegionId": "APAC_Singapore_D",
+			"RegionName": "亚太地区",
+			"SiteName": "新加坡4"
+		},
+		{
+			"CityId": "97f6884e-1502-11eb-8847-0242ac150007",
+			"CityName": "弗吉尼亚",
+			"IsSaling": 1,
+			"RegionId": "US_Virginia_A",
+			"RegionName": "北美地区",
+			"SiteName": "弗吉尼亚1"
+		},
+		{
+			"CityId": "b44355d0-65e7-11e7-8ea9-0050569b651c",
+			"CityName": "上海",
+			"IsSaling": 1,
+			"RegionId": "CN_Shanghai_C",
+			"RegionName": "中国大陆",
+			"SiteName": "上海3"
+		},
+		{
+			"CityId": "e48e2312-306d-11e7-9796-0050569b4d9c",
+			"CityName": "达拉斯",
+			"IsSaling": 0,
+			"RegionId": "US_Dallas_G",
+			"RegionName": "北美地区",
+			"SiteName": "达拉斯7"
+		},
+		{
+			"CityId": "98438564-d141-11e9-aa0f-d25e2adb706c",
+			"CityName": "孟买",
+			"IsSaling": 1,
+			"RegionId": "APAC_Mumbai_A",
+			"RegionName": "亚太地区",
+			"SiteName": "孟买1"
+		},
+		{
+			"CityId": "5fdebe04-1781-11ec-95cd-96d224464860",
+			"CityName": "圣保罗",
+			"IsSaling": 1,
+			"RegionId": "SR_SaintPaul_A",
+			"RegionName": "南美地区",
+			"SiteName": "圣保罗1"
+		}
+	]
+}

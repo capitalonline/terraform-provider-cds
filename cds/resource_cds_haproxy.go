@@ -380,6 +380,14 @@ func createResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 			})
 		}
 
+		certificateIds := make([]*haproxy.DescribeLoadBalancerStrategysCertificateIds, 0)
+		for _, certificate := range httpListener.CertificateIds {
+			certificateIds = append(certificateIds, &haproxy.DescribeLoadBalancerStrategysCertificateIds{
+				CertificateId:   &certificate.CertificateId,
+				CertificateName: &certificate.CertificateName,
+			})
+		}
+
 		acl := make([]*string, 0)
 		if strings.TrimSpace(httpListener.AclWhiteList) != "" {
 			acl = common.StringPtrs(strings.Split(strings.TrimSpace(httpListener.AclWhiteList), ","))
@@ -400,6 +408,7 @@ func createResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 			ListenerName:       &httpListener.ListenerName,
 			ListenerPort:       &httpListener.ListenerPort,
 			BackendServer:      backendServer,
+			CertificateIds:     certificateIds,
 		}
 
 		strategyRequest.HttpListeners = append(strategyRequest.HttpListeners, httpListenerEntry)

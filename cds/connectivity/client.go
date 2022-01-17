@@ -6,6 +6,7 @@ import (
 	"github.com/capitalonline/cds-gic-sdk-go/haproxy"
 	"github.com/capitalonline/cds-gic-sdk-go/instance"
 	"github.com/capitalonline/cds-gic-sdk-go/mysql"
+	"github.com/capitalonline/cds-gic-sdk-go/redis"
 	"github.com/capitalonline/cds-gic-sdk-go/security_group"
 	"github.com/capitalonline/cds-gic-sdk-go/security_group_rule"
 	"github.com/capitalonline/cds-gic-sdk-go/task"
@@ -29,6 +30,8 @@ type CdsClient struct {
 	haproxyGetConn *haproxy.Client
 	mysqlConn      *mysql.Client
 	mysqlGetConn   *mysql.Client
+	redisConn      *redis.Client
+	redisGetConn   *redis.Client
 }
 
 func NewCdsClient(secretId, secretKey, region string) *CdsClient {
@@ -201,4 +204,31 @@ func clientProfile(method string) *profile.ClientProfile {
 	cpf := profile.NewClientProfile()
 	cpf.HttpProfile.ReqMethod = method
 	return cpf
+}
+
+func (me *CdsClient) UseRedisClient() *redis.Client {
+	if me.redisConn != nil {
+		return me.redisConn
+	}
+
+	credential := common.NewCredential(me.SecretId, me.SecretKey)
+	client, _ := redis.NewClient(credential, me.Region, clientProfile("POST"))
+
+	var round LogRoundTripper
+	client.WithHttpTransport(&round)
+	me.redisConn = client
+	return me.redisConn
+}
+
+func (me *CdsClient) UseRedisGetClient() *redis.Client {
+	if me.redisGetConn != nil {
+		return me.redisGetConn
+	}
+
+	credential := common.NewCredential(me.SecretId, me.SecretKey)
+	client, _ := redis.NewClient(credential, me.Region, clientProfile("GET"))
+	var round LogRoundTripper
+	client.WithHttpTransport(&round)
+	me.redisGetConn = client
+	return me.redisGetConn
 }
