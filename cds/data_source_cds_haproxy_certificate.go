@@ -23,7 +23,7 @@ func dataSourceHaproxyCertificate() *schema.Resource {
 			},
 			"result_output_file": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: "Used to save results.",
 			},
 			"ha_cert_list": {
