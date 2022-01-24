@@ -8,7 +8,7 @@ description: |-
 
 # Redis
 
-Provide resources to create, update or delete Mysql.
+Provide resources to create, update or delete redis.
 
 ## Example Usage
 

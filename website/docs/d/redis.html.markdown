@@ -13,7 +13,7 @@ This data source provides a json file of instances in a Redis
 ## Example Usage
 
 ```hcl
-data cds_data_source_mysql "mysql_data" {
+data cds_data_source_redis "redis_data" {
     region_id           = "CN_Beijing_A"
     instance_uuid       = "XXXXXXX"
     instance_name       = "XXXXXXX"
