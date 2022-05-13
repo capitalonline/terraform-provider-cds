@@ -262,6 +262,10 @@ func resourceCdsCcsInstance() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
+			"image_password": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -407,6 +411,14 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 				Size: common.IntPtr(disk["size"].(int)),
 				IOPS: common.IntPtr(disk["iops"].(int)),
 			})
+		}
+	}
+
+	// 镜像密码
+	if imagePassword, ok := d.GetOk("image_password"); ok {
+		passwd := imagePassword.(string)
+		if len(passwd) > 0 {
+			createInstanceRequest.ImagePassword = common.StringPtr(passwd)
 		}
 	}
 

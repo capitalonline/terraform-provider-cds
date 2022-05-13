@@ -143,7 +143,7 @@ func (me *VdcService) DeletePublicNetwork(
 	if err == nil {
 		log.Printf("[DEBUG]%s api[%s] , request body [%s], response body[%s]\n",
 			logId, request.GetAction(), request.ToJsonString(), response.ToJsonString())
-		taskId = *response.TaskId
+		//taskId = *response.TaskId
 		return
 	}
 
