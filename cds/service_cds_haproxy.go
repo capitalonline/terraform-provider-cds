@@ -171,7 +171,8 @@ func (me *HaproxyService) DescribeCACertificate(ctx context.Context, request *ha
 	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
 
 	response, err := me.client.UseHaproxyGetClient().DescribeCACertificate(request)
-	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	log.Println(fmt.Sprintf(
+		"[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
 	return response, err
 }
 
@@ -201,6 +202,21 @@ func (me *HaproxyService) UploadCACertificate(ctx context.Context, request *hapr
 	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
 
 	response, err := me.client.UseHaproxyClient().UploadCACertificate(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+// Modify Haproxy name
+func (me *HaproxyService) ModifyLoadBalancerName(ctx context.Context, request *haproxy.ModifyLoadBalancerNameRequest) (*haproxy.ModifyLoadBalancerNameResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+
+	response, err := me.client.UseHaproxyClient().ModifyLoadBalancerName(request)
 	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
 	return response, err
 }
@@ -262,6 +278,8 @@ func flattenHaproxyStrategyHttpMapping(httpListeners []*haproxy.DescribeLoadBala
 			"server_timeout":       *v.ServerTimeout,
 			"server_timeout_unit":  *v.ServerTimeoutUnit,
 			"sticky_session":       *v.StickySession,
+			"session_persistence":  v.SessionPersistence,
+			"option":               v.Option,
 		}
 		result = append(result, data)
 	}

@@ -159,3 +159,76 @@ func (me *MySQLService) DescribeDBInstances(ctx context.Context, request *mysql.
 	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
 	return response, err
 }
+
+func (me *MySQLService) ModifyDBParameter(ctx context.Context, request *mysql.ModifyDBParameterRequest) (*mysql.ModifyDBParameterResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+
+	response, err := me.client.UseMySQLClient().ModifyDBParameter(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+func (me *MySQLService) CreateBackup(ctx context.Context, request *mysql.CreateBackupRequest) (*mysql.CreateBackupResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseMySQLClient().CreateBackup(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+func (me *MySQLService) ModifyDbBackupPolicy(ctx context.Context, request *mysql.ModifyDbBackupPolicyRequest) (*mysql.ModifyDbBackupPolicyResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseMySQLClient().ModifyDbBackupPolicy(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+func (me *MySQLService) CreatePrivilegedAccount(ctx context.Context, request *mysql.CreatePrivilegedAccountRequest) (*mysql.CreatePrivilegedAccountResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseMySQLClient().CreatePrivilegedAccount(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonSting(), response.ToJsonString()))
+	return response, err
+}
+
+func (me *MySQLService) DescribeDBAccount(ctx context.Context, request *mysql.DescribeDBAccountRequest) (*mysql.DescribeDBAccountResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseMySQLGetClient().DescribeDBAccount(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+func (me *MySQLService) ModifyDbPrivilege(ctx context.Context, request *mysql.ModifyDbPrivilegeRequest) (*mysql.ModifyDbPrivilegeResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseMySQLClient().ModifyDbPrivilege(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}

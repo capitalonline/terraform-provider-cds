@@ -47,3 +47,20 @@ variable "compute_type" {
   description = "compute type 0:common type"  
   default = "0"
 }
+
+variable "backup_type" {
+  type = string
+  description = "backup type  backup_type|logical-backup"
+  default = "logical-backup"
+}
+
+variable "backup_desc" {
+  type = string
+  default = ""
+}
+
+variable "backup_db_list" {
+  type = string
+  description = "db list,split with ','"
+  default = "database1,database2"
+}

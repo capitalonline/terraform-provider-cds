@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/capitalonline/cds-gic-sdk-go/common"
@@ -19,6 +21,10 @@ func resourceCdsMySQL() *schema.Resource {
 		Update: updateResourceCdsMySQL,
 		Delete: deleteResourceCdsMySQL,
 		Schema: map[string]*schema.Schema{
+			"instance_uuid": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"region_id": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -66,6 +72,82 @@ func resourceCdsMySQL() *schema.Resource {
 			"ip": {
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"parameters": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Computed:    true,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				Description: "mysql instance parameters",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"value": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"time_zone": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"backup": {
+				Type:        schema.TypeMap,
+				Optional:    true,
+				Computed:    true,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				Description: "create backup",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"backup_type": {
+							Type:     schema.TypeString,
+							Computed: true,
+							Required: true,
+						},
+						"desc": {
+							Type:     schema.TypeString,
+							Computed: true,
+							Optional: true,
+						},
+						"db_list": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"data_backups": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"time_slot": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"date_list": {
+							Type:     schema.TypeString,
+							Computed: true,
+							Optional: true,
+						},
+						"sign": {
+							Type:     schema.TypeInt,
+							Computed: true,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -126,6 +208,9 @@ func createResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 	request.DiskValue = common.IntPtr(data.Get("disk_value").(int))
 	amount := 1
 	request.Amount = common.IntPtr(amount)
+	if timeZone, ok := data.GetOk("time_zone"); ok {
+		request.TimeZone = common.StringPtr(timeZone.(string))
+	}
 	response, err := mysqlService.CreateMySQL(ctx, request)
 	if err != nil {
 		return err
@@ -141,11 +226,95 @@ func createResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 	instanceUuid := response.Data.InstancesUuid[0]
 
 	data.SetId(instanceUuid)
-
+	data.Set("instance_uuid", instanceUuid)
 	if err := waitMysqlRunning(ctx, mysqlService, instanceUuid); err != nil {
 		return err
 	}
+	if dbParameters, ok := data.GetOk("parameters"); ok {
+		parameterList := dbParameters.([]interface{})
+		request := mysql.NewModifyDBParameterRequest()
+		request.InstanceUuid = common.StringPtr(instanceUuid)
+		var parameters = make([]*mysql.ModifyDBParameterParameters, 0, len(instanceUuid))
+		for _, item := range parameterList {
+			parameterMap := item.(map[string]interface{})
+			parameters = append(parameters, &mysql.ModifyDBParameterParameters{
+				Name:  common.StringPtr(parameterMap["name"].(string)),
+				Value: common.StringPtr(parameterMap["value"].(string)),
+			})
+		}
+		request.Parameters = parameters
+		if request.Parameters != nil && len(request.Parameters) > 0 {
+			response, err := mysqlService.ModifyDBParameter(ctx, request)
+			if err != nil {
+				return err
+			}
+			if *response.Code != "Success" {
+				return fmt.Errorf("modify db parameters failed, error: %s", err.Error())
+			}
+		}
+		if err := waitMysqlRunning(ctx, mysqlService, instanceUuid); err != nil {
+			return err
+		}
+	}
+	if backup, ok := data.GetOk("backup"); ok {
+		request := mysql.NewCreateBackupRequest()
+		backupMap := backup.(map[string]interface{})
+		request.InstanceUuid = common.StringPtr(instanceUuid)
+		if backupMap["backup_type"] != nil {
+			request.BackupType = common.StringPtr(backupMap["backup_type"].(string))
+		}
+		if backupMap["desc"] != nil {
+			request.Desc = common.StringPtr(backupMap["desc"].(string))
+		}
+		if backupMap["db_list"] != nil {
+			dbStr := backupMap["db_list"].(string)
+			dbStr = strings.Trim(strings.Trim(dbStr, "["), "]")
+			dbList := strings.Split(dbStr, ",")
+			request.DBList = dbList
 
+		}
+		response, err := mysqlService.CreateBackup(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			fmt.Errorf("create backup failed, response: %v", response)
+		}
+		if err := waitMysqlRunning(ctx, mysqlService, instanceUuid); err != nil {
+			return err
+		}
+	}
+	if dataBackups, ok := data.GetOk("data_backups"); ok {
+		request := mysql.NewModifyDbBackupPolicyRequest()
+		backupMap := dataBackups.(map[string]interface{})
+		request.InstanceUuid = common.StringPtr(instanceUuid)
+		var dataBackups = new(mysql.ModifyDbBackupPolicyDataBackups)
+		if backupMap["time_slot"] != nil {
+			dataBackups.TimeSlot = common.StringPtr(backupMap["time_slot"].(string))
+		}
+		if backupMap["sign"] != nil {
+			signStr := backupMap["sign"].(string)
+			sign, _ := strconv.Atoi(signStr)
+			dataBackups.Sign = common.IntPtr(sign)
+		}
+		if backupMap["date_list"] != nil {
+			dbStr := backupMap["date_list"].(string)
+			dbStr = strings.Trim(strings.Trim(dbStr, "["), "]")
+			dataList := strings.Split(dbStr, ",")
+			dataBackups.DateList = dataList
+		}
+		request.DataBackups = dataBackups
+		response, err := mysqlService.ModifyDbBackupPolicy(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			fmt.Errorf("create backup failed, response: %v", response)
+		}
+		if err := waitMysqlRunning(ctx, mysqlService, instanceUuid); err != nil {
+			return err
+		}
+	}
 	return readResourceCdsMySQL(data, meta)
 }
 
@@ -229,6 +398,100 @@ func updateResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 			return errors.New(*response.Message)
 		}
 
+		if err := waitMysqlRunning(ctx, mysqlService, data.Id()); err != nil {
+			return err
+		}
+	}
+	if data.HasChange("parameters") {
+		_, dbParameters := data.GetChange("parameters")
+		request := mysql.NewModifyDBParameterRequest()
+		request.InstanceUuid = common.StringPtr(data.Id())
+		parametersList := dbParameters.([]interface{})
+		parameters := make([]*mysql.ModifyDBParameterParameters, 0, len(parametersList))
+		for _, item := range parametersList {
+			parameter := item.(map[string]interface{})
+			parameters = append(parameters, &mysql.ModifyDBParameterParameters{
+				Name:  common.StringPtr(parameter["name"].(string)),
+				Value: common.StringPtr(parameter["value"].(string)),
+			})
+		}
+		if len(parameters) > 0 {
+			request.Parameters = parameters
+			response, err := mysqlService.ModifyDBParameter(ctx, request)
+			if err != nil {
+				return err
+			}
+			if *response.Code != "Success" {
+				return fmt.Errorf("modify db parameters failed, error: %s", err.Error())
+			}
+		}
+		if err := waitMysqlRunning(ctx, mysqlService, data.Id()); err != nil {
+			return err
+		}
+	}
+	if data.HasChange("backup") {
+		_, newBackup := data.GetChange("backup")
+		request := mysql.NewCreateBackupRequest()
+		backupMap := newBackup.(map[string]interface{})
+		request.InstanceUuid = common.StringPtr(data.Id())
+		if backupMap["backup_type"] != nil {
+			request.BackupType = common.StringPtr(backupMap["backup_type"].(string))
+		}
+		if backupMap["desc"] != nil {
+			request.Desc = common.StringPtr(backupMap["desc"].(string))
+		}
+		if backupMap["db_list"] != nil {
+			dbStr := backupMap["db_list"].(string)
+			dbStr = strings.Trim(strings.Trim(dbStr, "["), "]")
+			dbList := strings.Split(dbStr, ",")
+			request.DBList = dbList
+
+		}
+		response, err := mysqlService.CreateBackup(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			fmt.Errorf("create backup failed, response: %v", response)
+		}
+		if err := waitMysqlRunning(ctx, mysqlService, data.Id()); err != nil {
+			return err
+		}
+	}
+	// auto backup policy
+	if data.HasChange("data_backups") {
+		_, dataBackupsMap := data.GetChange("data_backups")
+		request := mysql.NewModifyDbBackupPolicyRequest()
+		backupMap := dataBackupsMap.(map[string]interface{})
+		request.InstanceUuid = common.StringPtr(data.Id())
+		var dataBackups = new(mysql.ModifyDbBackupPolicyDataBackups)
+		if backupMap["time_slot"] != nil {
+			dataBackups.TimeSlot = common.StringPtr(backupMap["time_slot"].(string))
+		}
+		if backupMap["sign"] != nil {
+			sign, ok := backupMap["sign"].(int)
+			if ok {
+				dataBackups.Sign = common.IntPtr(sign)
+			} else {
+				signStr, _ := backupMap["sign"].(string)
+				sign, _ = strconv.Atoi(signStr)
+				dataBackups.Sign = common.IntPtr(sign)
+			}
+		}
+		if backupMap["date_list"] != nil {
+			dbStr := backupMap["date_list"].(string)
+			dbStr = strings.Trim(strings.Trim(dbStr, "["), "]")
+			dataList := strings.Split(dbStr, ",")
+			dataBackups.DateList = dataList
+			request.DataBackups = dataBackups
+		}
+		response, err := mysqlService.ModifyDbBackupPolicy(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			fmt.Errorf("create backup failed, response: %v", response)
+		}
 		if err := waitMysqlRunning(ctx, mysqlService, data.Id()); err != nil {
 			return err
 		}
