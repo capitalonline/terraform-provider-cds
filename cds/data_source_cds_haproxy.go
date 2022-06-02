@@ -303,6 +303,68 @@ func dataSourceHaproxy() *schema.Resource {
 										Computed:    true,
 										Description: "sticky session",
 									},
+									"session_persistence": {
+										Type:       schema.TypeList,
+										Computed:   true,
+										ConfigMode: schema.SchemaConfigModeAttr,
+										MaxItems:   1,
+										MinItems:   0,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"key": {
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+												"mode": {
+													Type:     schema.TypeInt,
+													Computed: true,
+												},
+												"timer": {
+													Type:       schema.TypeMap,
+													Computed:   true,
+													ConfigMode: schema.SchemaConfigModeAttr,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+															"max_idle": {
+																Type:     schema.TypeInt,
+																Computed: true,
+															},
+															"max_life": {
+																Type:     schema.TypeInt,
+																Computed: true,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+									"option": {
+										Type:       schema.TypeMap,
+										ConfigMode: schema.SchemaConfigModeAttr,
+										Computed:   true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"httpchk": {
+													Type:       schema.TypeMap,
+													Computed:   true,
+													ConfigMode: schema.SchemaConfigModeAttr,
+													Elem: &schema.Resource{
+														Schema: map[string]*schema.Schema{
+															"method": {
+																Type:     schema.TypeString,
+																Computed: true,
+															},
+															"uri": {
+																Type:     schema.TypeString,
+																Computed: true,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
 								},
 							},
 						},

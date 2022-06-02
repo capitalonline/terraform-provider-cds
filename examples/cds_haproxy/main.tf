@@ -55,6 +55,25 @@ resource cds_haproxy my_haproxy {
 			weight   = var.backend_server_weight
 		}]
 		certificate_ids = []
+
+#		The parameters option is a list,only one element at most
+#		option = [{
+#			httpchk = {
+#				method = "GET"
+#				uri = "/health"
+#			}
+#		}]
+#		The parameters session_persistence is a list,only one element at most
+#		session_persistence  = [
+#			{
+#				key = "test"
+#				mode = 1
+#				timer = {
+#					max_idle=33
+#					max_life=44
+#				}
+#			}
+#		]
 	}]
 }
 

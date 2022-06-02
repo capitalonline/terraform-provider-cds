@@ -40,6 +40,43 @@ func dataSourceCdsMySQL() *schema.Resource {
 				Required:    true,
 				Description: "Used to save results.",
 			},
+			"readonly_instances": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				Description: "create readonly instances ",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"instance_name": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"paas_goods_id": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"test_group_id": {
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+						"disk_type": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"disk_value": {
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+						"amount": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -114,6 +151,14 @@ func dataSourceCdsMySQLRead(d *schema.ResourceData, meta interface{}) error {
 		}
 
 		result["modify_instance_spec"] = avarilableModifyInstanceResponse.Data
+	}
+
+	req := mysql.NewDescribeAvailableReadOnlyConfigRequest()
+	instanceUuid, _ := d.GetOk("instance_uuid")
+	req.InstanceUuid = common.StringPtr(instanceUuid.(string))
+	resp, err := mySQLService.GetAvailableReadOnlyConfig(ctx, req)
+	if err == nil && *resp.Code == "Success" {
+		result["available_read_only_config"] = resp.Data
 	}
 
 	output, ok := d.GetOk("result_output_file")

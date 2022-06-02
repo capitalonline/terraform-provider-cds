@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -173,6 +174,70 @@ func resourceCdsHaproxy() *schema.Resource {
 						"sticky_session": {
 							Type:     schema.TypeString,
 							Optional: true,
+						},
+						"session_persistence": {
+							Type:        schema.TypeList,
+							Optional:    true,
+							MaxItems:    1,
+							ConfigMode:  schema.SchemaConfigModeAttr,
+							Description: "Session persistence",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"key": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"mode": {
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"timer": {
+										Type:        schema.TypeMap,
+										Optional:    true,
+										ConfigMode:  schema.SchemaConfigModeAttr,
+										Description: "Timer is",
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"max_idle": {
+													Type:     schema.TypeInt,
+													Required: false,
+												},
+												"max_life": {
+													Type:     schema.TypeInt,
+													Required: false,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"option": {
+							Type:        schema.TypeList,
+							ConfigMode:  schema.SchemaConfigModeAttr,
+							Optional:    true,
+							Description: "Option",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"httpchk": {
+										Type:       schema.TypeMap,
+										Optional:   true,
+										ConfigMode: schema.SchemaConfigModeAttr,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"method": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"uri": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
 						},
 					},
 				},
@@ -392,7 +457,30 @@ func createResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 		if strings.TrimSpace(httpListener.AclWhiteList) != "" {
 			acl = common.StringPtrs(strings.Split(strings.TrimSpace(httpListener.AclWhiteList), ","))
 		}
-
+		var sessionPersistence *haproxy.DescribeLoadBalancerStrategysSessionPersistence
+		if httpListener.SessionPersistence != nil && len(httpListener.SessionPersistence) > 0 {
+			inputParams := httpListener.SessionPersistence[0]
+			sessionPersistence = new(haproxy.DescribeLoadBalancerStrategysSessionPersistence)
+			sessionPersistence.Key = common.StringPtr(inputParams.Key)
+			sessionPersistence.Mode = common.IntPtr(inputParams.Mode)
+			timer := &haproxy.DescribeLoadBalancerStrategysTimer{
+				MaxIdle: common.IntPtr(inputParams.Timer.MaxIdle),
+				MaxLife: common.IntPtr(inputParams.Timer.MaxLife),
+			}
+			sessionPersistence.Timer = timer
+		}
+		var option *haproxy.DescribeLoadBalancerStrategysOption
+		if httpListener.Option != nil && len(httpListener.Option) > 0 {
+			inputParams := httpListener.Option[0]
+			option = new(haproxy.DescribeLoadBalancerStrategysOption)
+			method := inputParams.Httpchk.Method
+			uri := inputParams.Httpchk.Uri
+			httpchk := &haproxy.DescribeLoadBalancerStrategysOptionHttpchk{
+				Method: common.StringPtr(method),
+				Uri:    common.StringPtr(uri),
+			}
+			option.Httpchk = httpchk
+		}
 		httpListenerEntry := &haproxy.DescribeLoadBalancerStrategysHttpListeners{
 			ServerTimeoutUnit:  &httpListener.ServerTimeoutUnit,
 			ServerTimeout:      &httpListener.ServerTimeout,
@@ -409,6 +497,8 @@ func createResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 			ListenerPort:       &httpListener.ListenerPort,
 			BackendServer:      backendServer,
 			CertificateIds:     certificateIds,
+			SessionPersistence: sessionPersistence,
+			Option:             option,
 		}
 
 		strategyRequest.HttpListeners = append(strategyRequest.HttpListeners, httpListenerEntry)
@@ -497,6 +587,18 @@ func updateResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 		hasChange = true
 		inter, _ := data.GetOk("ram")
 		ram = inter.(int)
+	}
+	if data.HasChange("instance_name") {
+		str, _ := data.GetOk("instance_name")
+		name := str.(string)
+		instanceUuid := data.Id()
+		request := haproxy.NewModifyLoadBalancerNameRequest()
+		request.InstanceUuid = common.StringPtr(instanceUuid)
+		request.InstanceName = common.StringPtr(name)
+		_, err := haproxyService.ModifyLoadBalancerName(context.Background(), request)
+		if err != nil {
+			return err
+		}
 	}
 
 	inter, _ := data.GetOk("region_id")
@@ -707,6 +809,52 @@ func createModitifyStrategyRequest(data *schema.ResourceData) *haproxy.ModifyLoa
 			if dataMap["sticky_session"] != nil {
 				listener.StickySession = common.StringPtr(dataMap["sticky_session"].(string))
 			}
+			if dataMap["session_persistence"] != nil {
+				sessionPersistenceList := dataMap["session_persistence"].([]interface{})
+				if sessionPersistenceList != nil && len(sessionPersistenceList) > 0 {
+					paramsMap := sessionPersistenceList[0].(map[string]interface{})
+					sessionPersistence := new(haproxy.DescribeLoadBalancerStrategysSessionPersistence)
+					if paramsMap["key"] != nil {
+						key := paramsMap["key"].(string)
+						sessionPersistence.Key = common.StringPtr(key)
+					}
+					if paramsMap["mode"] != nil {
+						mode := paramsMap["mode"].(int)
+						sessionPersistence.Mode = common.IntPtr(mode)
+					}
+					if paramsMap["timer"] != nil {
+						timerMap := paramsMap["timer"].(map[string]interface{})
+						if timerMap["max_idle"] != nil && timerMap["max_life"] != nil {
+							maxIdle, _ := strconv.Atoi(timerMap["max_idle"].(string))
+							maxLife, _ := strconv.Atoi(timerMap["max_life"].(string))
+							sessionPersistence.Timer = &haproxy.DescribeLoadBalancerStrategysTimer{
+								MaxIdle: common.IntPtr(maxIdle),
+								MaxLife: common.IntPtr(maxLife),
+							}
+						}
+					}
+					listener.SessionPersistence = sessionPersistence
+				}
+			}
+			if dataMap["option"] != nil {
+				optionList := dataMap["option"].([]interface{})
+				if optionList != nil && len(optionList) > 0 {
+					optionMap := optionList[0].(map[string]interface{})
+					if optionMap["httpchk"] != nil {
+						httpchkMap := optionMap["httpchk"].(map[string]interface{})
+						if httpchkMap["method"] != nil && httpchkMap["uri"] != nil {
+							method := httpchkMap["method"].(string)
+							uri := httpchkMap["uri"].(string)
+							listener.Option = &haproxy.DescribeLoadBalancerStrategysOption{
+								Httpchk: &haproxy.DescribeLoadBalancerStrategysOptionHttpchk{
+									Method: common.StringPtr(method),
+									Uri:    common.StringPtr(uri),
+								},
+							}
+						}
+					}
+				}
+			}
 			listeners = append(listeners, listener)
 		}
 		request.HttpListeners = listeners
@@ -811,6 +959,20 @@ type HaproxyStrategyHttpListenerProviderInput struct {
 		CertificateId   string `json:"certificate_id"`
 		CertificateName string `json:"certificate_name"`
 	} `json:"certificate_ids"`
+	SessionPersistence []struct {
+		Key   string `json:"Key"`
+		Mode  int    `json:"Mode"`
+		Timer struct {
+			MaxIdle int `json:"MaxIdle"`
+			MaxLife int `json:"MaxLife"`
+		} `json:"Timer"`
+	} `json:"SessionPersistence"`
+	Option []struct {
+		Httpchk struct {
+			Method string `json:"Method"`
+			Uri    string `json:"Uri"`
+		} `json:"Httpchk"`
+	} `json:"Option"`
 }
 
 type HaproxyStrategyTcpListenerProviderInput struct {

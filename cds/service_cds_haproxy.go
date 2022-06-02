@@ -205,6 +205,21 @@ func (me *HaproxyService) UploadCACertificate(ctx context.Context, request *hapr
 	return response, err
 }
 
+// Modify Haproxy name
+func (me *HaproxyService) ModifyLoadBalancerName(ctx context.Context, request *haproxy.ModifyLoadBalancerNameRequest) (*haproxy.ModifyLoadBalancerNameResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+
+	response, err := me.client.UseHaproxyClient().ModifyLoadBalancerName(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
 func flattenHaproxyInstanceVipsMapping(vips []*haproxy.DescribeLoadBalancersVips) []map[string]interface{} {
 	listVip := make([]map[string]interface{}, 0, len(vips))
 	for _, vip := range vips {
@@ -262,6 +277,8 @@ func flattenHaproxyStrategyHttpMapping(httpListeners []*haproxy.DescribeLoadBala
 			"server_timeout":       *v.ServerTimeout,
 			"server_timeout_unit":  *v.ServerTimeoutUnit,
 			"sticky_session":       *v.StickySession,
+			"session_persistence":  v.SessionPersistence,
+			"option":               v.Option,
 		}
 		result = append(result, data)
 	}

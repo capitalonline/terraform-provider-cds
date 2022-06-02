@@ -69,6 +69,14 @@ resource cds_haproxy my_haproxy {
 					}
 				  ]
 				  certificate_ids = []
+				  session_persistence  = {
+        			"key"  = "sdfhisdhf9"
+        			"mode" = 0
+        			"timer" = {
+					  max_idle = 10,
+					  max_life = 1000,
+        			}
+				  }
 				}
 			]
 		}

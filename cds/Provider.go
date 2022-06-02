@@ -58,6 +58,8 @@ func Provider() terraform.ResourceProvider {
 			"cds_haproxy":        resourceCdsHaproxy(),
 			"cds_certificate":    resourceCdsCert(),
 			"cds_mysql":          resourceCdsMySQL(),
+			"cds_mysql_readonly": resourceCdsMySQLReadonly(),
+			"cds_mysql_account":  resourceCdsMySQLAccount(),
 			"cds_redis":          resourceCdsRedis(),
 			"cds_mongodb":        resourceCdsMongodb(),
 		},
