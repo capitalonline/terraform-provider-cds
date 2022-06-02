@@ -41,9 +41,8 @@ func dataSourceCdsMySQL() *schema.Resource {
 				Description: "Used to save results.",
 			},
 			"readonly_instances": {
-				Type:     schema.TypeList,
-				Optional: true,
-				//Computed:    true,
+				Type:        schema.TypeList,
+				Optional:    true,
 				ConfigMode:  schema.SchemaConfigModeAttr,
 				Description: "create readonly instances ",
 				Elem: &schema.Resource{

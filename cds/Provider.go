@@ -47,9 +47,8 @@ func Provider() terraform.ResourceProvider {
 			"cds_data_source_haproxy":        dataSourceHaproxy(),
 			"cds_data_source_certificate":    dataSourceHaproxyCertificate(),
 			"cds_data_source_mysql":          dataSourceCdsMySQL(),
-			//"cds_data_source_mysql_account": dataSourceCdsMySQLAccount(),
-			"cds_data_source_redis":   dataSourceCdsRedis(),
-			"cds_data_source_mongodb": dataSourceCdsMongodb(),
+			"cds_data_source_redis":          dataSourceCdsRedis(),
+			"cds_data_source_mongodb":        dataSourceCdsMongodb(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"cds_vdc":            resourceCdsVdc(),
