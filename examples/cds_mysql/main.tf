@@ -38,7 +38,7 @@ resource "cds_mysql" "mysql_example" {
 resource "cds_mysql_account" "user1" {
     instance_uuid= cds_mysql.mysql_example.id
     account_name = "testuser"
-    password = "testPassword123"
+    password = "xxxxxxxx"
     account_type = "Normal"
     description = "测试账号"
 #  to give permission

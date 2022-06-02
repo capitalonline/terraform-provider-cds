@@ -125,17 +125,6 @@ func createResourceCdsMySQLAccount(data *schema.ResourceData, meta interface{}) 
 
 func readResourceCdsMySQLAccount(data *schema.ResourceData, meta interface{}) error {
 	defer logElapsed("resource.cds_mysql_account.read")()
-	//
-	//logId := getLogId(contextNil)
-	//ctx := context.WithValue(context.TODO(), "logId", logId)
-	//
-	////result := map[string]interface{}{}
-	//
-	//mySQLService := MySQLService{client: meta.(*CdsClient).apiConn}
-	//instanceUuid := data.Get("instance_uuid")
-	//request := mysql.NewDescribeDBAccountRequest()
-	//request.InstanceUuid = common.StringPtr(instanceUuid.(string))
-	//response, err := mySQLService.DescribeDBAccount(ctx, request)
 	userId := data.Get("account_name")
 	data.SetId(userId.(string))
 	return nil

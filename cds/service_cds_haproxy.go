@@ -171,8 +171,7 @@ func (me *HaproxyService) DescribeCACertificate(ctx context.Context, request *ha
 	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
 
 	response, err := me.client.UseHaproxyGetClient().DescribeCACertificate(request)
-	log.Println(fmt.Sprintf(
-		"[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
 	return response, err
 }
 
