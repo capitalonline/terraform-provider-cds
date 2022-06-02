@@ -103,7 +103,6 @@ func createResourceCdsMySQLAccount(data *schema.ResourceData, meta interface{}) 
 		options := make([]*mysql.ModifyDbPrivilegeOperation, 0, len(optionList))
 		for _, item := range optionList {
 			option := item.(map[string]interface{})
-
 			options = append(options, &mysql.ModifyDbPrivilegeOperation{
 				DBName:    common.StringPtr(option["db_name"].(string)),
 				Privilege: common.StringPtr(option["privilege"].(string)),
@@ -145,13 +144,11 @@ func updateResourceCdsMySQLAccount(data *schema.ResourceData, meta interface{}) 
 		_, newData := data.GetChange("operations")
 		optionList := newData.([]interface{})
 		req := mysql.NewModifyDbPrivilegeRequest()
-
 		req.InstanceUuid = common.StringPtr(instanceUuid.(string))
 		req.AccountName = common.StringPtr(accountName.(string))
 		options := make([]*mysql.ModifyDbPrivilegeOperation, 0, len(optionList))
 		for _, item := range optionList {
 			option := item.(map[string]interface{})
-
 			options = append(options, &mysql.ModifyDbPrivilegeOperation{
 				DBName:    common.StringPtr(option["db_name"].(string)),
 				Privilege: common.StringPtr(option["privilege"].(string)),

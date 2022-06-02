@@ -176,9 +176,8 @@ func resourceCdsHaproxy() *schema.Resource {
 							Optional: true,
 						},
 						"session_persistence": {
-							Type:     schema.TypeList,
-							Optional: true,
-							//MinItems:    0,
+							Type:        schema.TypeList,
+							Optional:    true,
 							MaxItems:    1,
 							ConfigMode:  schema.SchemaConfigModeAttr,
 							Description: "Session persistence",

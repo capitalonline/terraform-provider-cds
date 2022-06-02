@@ -271,7 +271,6 @@ func createResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 			dbStr = strings.Trim(strings.Trim(dbStr, "["), "]")
 			dbList := strings.Split(dbStr, ",")
 			request.DBList = dbList
-
 		}
 		response, err := mysqlService.CreateBackup(ctx, request)
 		if err != nil {
@@ -445,7 +444,6 @@ func updateResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 			dbStr = strings.Trim(strings.Trim(dbStr, "["), "]")
 			dbList := strings.Split(dbStr, ",")
 			request.DBList = dbList
-
 		}
 		response, err := mysqlService.CreateBackup(ctx, request)
 		if err != nil {

@@ -24,7 +24,6 @@ func resourceCdsMySQLReadonly() *schema.Resource {
 			"instance_name": {
 				Type:     schema.TypeString,
 				Required: true,
-				//Computed: true,
 			},
 			"paas_goods_id": {
 				Type:     schema.TypeInt,
@@ -103,7 +102,6 @@ func createResourceCdsMySQLReadonly(data *schema.ResourceData, meta interface{})
 	if err := waitMysqlReadonlyRunning(ctx, mysqlService, *request.InstanceUuid, data.Id()); err != nil {
 		return err
 	}
-
 	return readResourceCdsMySQLReadonly(data, meta)
 }
 
@@ -128,7 +126,6 @@ func waitMysqlReadonlyRunning(ctx context.Context, service MySQLService, instanc
 		if err != nil {
 			return err
 		}
-
 		if *response.Code != "Success" {
 			return errors.New(*response.Message)
 		}
