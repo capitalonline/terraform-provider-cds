@@ -57,8 +57,7 @@ func (me *InstanceService) DescribeInstance(ctx context.Context, request *instan
 	ratelimit.Check(request.GetAction())
 	result, err := me.client.UseCvmClient().DescribeInstance(request)
 	if err == nil {
-		log.Printf("[DEBUG]%s api[%s] , request body [%s], response body[%s]\n",
-			logId, request.GetAction(), request.ToJsonString(), response.ToJsonString())
+		log.Printf("[DEBUG]%s api[%s] , request body [%s], response body[%s]\n", logId, request.GetAction(), request.ToJsonString(), result.ToJsonString())
 		response = *result
 		return
 	}

@@ -59,15 +59,14 @@ func resourceCdsCcsInstance() *schema.Resource {
 			},
 			"password": &schema.Schema{
 				Type:      schema.TypeString,
-				Optional:  true,
+				Required:  true,
 				ForceNew:  true,
 				Sensitive: true,
 			},
 			"public_key": &schema.Schema{
-				Type:          schema.TypeString,
-				Optional:      true,
-				ForceNew:      true,
-				ConflictsWith: []string{"password"},
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
 			},
 			"instance_type": &schema.Schema{
 				Type:     schema.TypeString,
@@ -457,17 +456,10 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 				}
 				taskId, _ := securityGroupService.JoinSecurityGroup(ctx, joinRequest)
 				log.Println("task: ", taskId)
-				//if errRet != nil {
-				//	return errRet
-				//}
-				//_, errRet = taskService.DescribeTask(ctx, taskId)
-				//if errRet != nil {
-				//	return errRet
-				//}
 			}
 		}
 	}
-	time.Sleep(5 * time.Second)
+	waitInstanceRunning(context.Background(), instanceService, nowId)
 	return resourceCdsCcsInstanceRead(d, meta)
 }
 
@@ -511,24 +503,6 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 	// for instance status
 	log.Printf("DEBUG_INSTANCEINFO: status: %#v", *instanceInfo.InstanceStatus)
 	d.Set("instance_status", *instanceInfo.InstanceStatus)
-
-	// for ResizeDisk/DeleteDisk
-	/*
-		var listDataDisks []map[string]interface{}
-		for _, p := range instanceInfo.Disks.DataDisks {
-			diskMapping := map[string]interface{}{
-				// "disk_id": p.DiskId,
-				"type": p.DiskType,
-				"size": p.Size,
-				"iops": p.Iops,
-			}
-			listDataDisks = append(listDataDisks, diskMapping)
-		}
-		if len(listDataDisks) > 0 && listDataDisks != nil {
-			if err := d.Set("data_disks", listDataDisks); err != nil {
-				return err
-			}
-		}*/
 
 	sysDisk := instanceInfo.Disks.SystemDisk
 	if sysDisk != nil {
@@ -626,7 +600,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		if err != nil {
 			return err
 		}
-		time.Sleep(50 * time.Second)
+		waitInstanceUpdated(context.Background(), instanceService, id)
 	}
 
 	// modify ModifyInstanceSpec: cpu, ram
@@ -648,7 +622,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		if err != nil {
 			return err
 		}
-		time.Sleep(5 * time.Second)
+		waitInstanceUpdated(context.Background(), instanceService, id)
 	}
 
 	if d.HasChange("security_group_binding") {
@@ -693,7 +667,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 				}
 			}
 		}
-		time.Sleep(10 * time.Second)
+		waitInstanceUpdated(context.Background(), instanceService, id)
 		for _, ing := range newIngress {
 			newbind := ing.(map[string]interface{})
 			request := security_group.NewJoinSecurityGroupRequest()
@@ -749,7 +723,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 				return err
 			}
 		}
-
+		waitInstanceUpdated(context.Background(), instanceService, id)
 	}
 
 	if d.HasChange("data_disks") {
@@ -841,7 +815,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	d.Partial(false)
-	time.Sleep(5 * time.Second)
+	waitInstanceUpdated(context.Background(), instanceService, id)
 	return resourceCdsCcsInstanceRead(d, meta)
 }
 
@@ -951,4 +925,53 @@ func resourceCdsInstanceUpdatePrivateIp(
 	}
 
 	return nil
+}
+
+func waitInstanceRunning(ctx context.Context, service InstanceService, instanceUuid string) error {
+	request := instance.NewDescribeInstanceRequest()
+	request.InstanceId = &instanceUuid
+
+	for {
+		time.Sleep(time.Second * 15)
+		response, err := service.DescribeInstance(ctx, request)
+		if err != nil {
+			return err
+		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+		for _, entry := range response.Data.Instances {
+			if *entry.InstanceStatus == "running" && *entry.InstanceId == instanceUuid {
+				return nil
+			}
+		}
+	}
+}
+
+func waitInstanceUpdated(ctx context.Context, service InstanceService, instanceUuid string) error {
+	request := instance.NewDescribeInstanceRequest()
+	request.InstanceId = &instanceUuid
+
+	for {
+		time.Sleep(time.Second * 15)
+		response, err := service.DescribeInstance(ctx, request)
+		if err != nil {
+			return err
+		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+		for _, entry := range response.Data.Instances {
+			if *entry.InstanceId == instanceUuid {
+				if *entry.InstanceStatus == "error" {
+					return errors.New("updating instance failed")
+				}
+				if *entry.InstanceStatus != "updating" {
+					return nil
+				}
+			}
+		}
+	}
 }
