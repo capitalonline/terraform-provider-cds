@@ -30,7 +30,6 @@ func resourceCdsCcsInstance() *schema.Resource {
 			"region_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
 				Default:  "CN_Beijing_A",
 			},
 			"instance_name": &schema.Schema{
@@ -41,13 +40,11 @@ func resourceCdsCcsInstance() *schema.Resource {
 			"vdc_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 			"image_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Default:  "Ubuntu_16.04_64",
 				Optional: true,
-				ForceNew: true,
 			},
 			"cpu": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -60,37 +57,30 @@ func resourceCdsCcsInstance() *schema.Resource {
 			"password": &schema.Schema{
 				Type:      schema.TypeString,
 				Optional:  true,
-				ForceNew:  true,
 				Sensitive: true,
 			},
 			"public_key": &schema.Schema{
-				Type:          schema.TypeString,
-				Optional:      true,
-				ForceNew:      true,
-				ConflictsWith: []string{"password"},
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"instance_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 			"instance_charge_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "PostPaid",
-				ForceNew: true,
 			},
 			"auto_renew": &schema.Schema{
 				Type:     schema.TypeInt,
 				Default:  1,
 				Optional: true,
-				ForceNew: true,
 			},
 			"prepaid_month": &schema.Schema{
 				Type:     schema.TypeInt,
 				Default:  1,
 				Optional: true,
-				ForceNew: true,
 			},
 			"amount": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -605,6 +595,13 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 	id := idArray[0]
 	d.Partial(true)
 
+	if d.HasChange("region_id") || d.HasChange("vdc_id") || d.HasChange("public_key") {
+		return errors.New("region_id/vdc_id/public_key does not support modify")
+	}
+	if d.HasChange("image_id") || d.HasChange("password") || d.HasChange("instance_type") ||
+		d.HasChange("instance_charge_type") || d.HasChange("auto_renew") || d.HasChange("prepaid_month") {
+		return errors.New(" image_id/password/instance_type/instance_charge_type/auto_renew/prepaid_month/amount does not support modify in this version")
+	}
 	// modify instance name
 	if d.HasChange("instance_name") {
 		d.SetPartial("instance_name")
