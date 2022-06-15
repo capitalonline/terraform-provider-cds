@@ -586,6 +586,13 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		return errors.New(info)
 	}
 
+	if d.HasChange("region_id") || d.HasChange("vdc_id") || d.HasChange("public_key") {
+		return errors.New("region_id/vdc_id/public_key does not support modify")
+	}
+	if d.HasChange("image_id") || d.HasChange("password") || d.HasChange("instance_type") ||
+		d.HasChange("instance_charge_type") || d.HasChange("auto_renew") || d.HasChange("prepaid_month") {
+		return errors.New(" image_id/password/instance_type/instance_charge_type/auto_renew/prepaid_month/amount does not support modify in this version")
+	}
 	// modify instance name
 	if d.HasChange("instance_name") {
 		d.SetPartial("instance_name")
