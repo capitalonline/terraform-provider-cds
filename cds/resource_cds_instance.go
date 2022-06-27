@@ -30,7 +30,6 @@ func resourceCdsCcsInstance() *schema.Resource {
 			"region_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
 				Default:  "CN_Beijing_A",
 			},
 			"instance_name": &schema.Schema{
@@ -41,13 +40,11 @@ func resourceCdsCcsInstance() *schema.Resource {
 			"vdc_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 			"image_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Default:  "Ubuntu_16.04_64",
 				Optional: true,
-				ForceNew: true,
 			},
 			"cpu": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -59,37 +56,31 @@ func resourceCdsCcsInstance() *schema.Resource {
 			},
 			"password": &schema.Schema{
 				Type:      schema.TypeString,
-				Required:  true,
-				ForceNew:  true,
+				Optional:  true,
 				Sensitive: true,
 			},
 			"public_key": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
 			},
 			"instance_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 			"instance_charge_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "PostPaid",
-				ForceNew: true,
 			},
 			"auto_renew": &schema.Schema{
 				Type:     schema.TypeInt,
 				Default:  1,
 				Optional: true,
-				ForceNew: true,
 			},
 			"prepaid_month": &schema.Schema{
 				Type:     schema.TypeInt,
 				Default:  1,
 				Optional: true,
-				ForceNew: true,
 			},
 			"amount": &schema.Schema{
 				Type:     schema.TypeInt,
@@ -131,6 +122,7 @@ func resourceCdsCcsInstance() *schema.Resource {
 						},
 						"interface_id": &schema.Schema{
 							Type:     schema.TypeString,
+							Optional: true,
 							Computed: true,
 						},
 					},
@@ -578,6 +570,21 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 	}
 	id := idArray[0]
 	d.Partial(true)
+	if d.HasChange("region_id") {
+		info := "openapi does not support modification region_id"
+		log.Println(info)
+		return errors.New(info)
+	}
+	if d.HasChange("vdc_id") {
+		info := "openapi does not support modification vdc_id"
+		log.Println(info)
+		return errors.New(info)
+	}
+	if d.HasChange("public_key") {
+		info := "openapi does not support modification public_key"
+		log.Println(info)
+		return errors.New(info)
+	}
 
 	// modify instance name
 	if d.HasChange("instance_name") {
@@ -604,7 +611,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	// modify ModifyInstanceSpec: cpu, ram
-	if d.HasChange("cpu") || d.HasChange("ram") {
+	if d.HasChange("cpu") || d.HasChange("ram") || d.HasChange("instance_type") {
 		d.SetPartial("cpu")
 		d.SetPartial("ram")
 		_, newCpu := d.GetChange("cpu")
@@ -614,7 +621,12 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		request.InstanceId = common.StringPtr(id)
 		request.Cpu = common.IntPtr(newCpu.(int))
 		request.Ram = common.IntPtr(newRam.(int))
-
+		if d.HasChange("instance_type") {
+			instanceType := d.Get("instance_type")
+			if instanceType != nil {
+				request.InstanceType = common.StringPtr(instanceType.(string))
+			}
+		}
 		requestdata, _ := json.Marshal(request)
 		log.Printf("DEBUG_REQUEST: %s", string(requestdata))
 
@@ -690,19 +702,30 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	if d.HasChange("system_disk") {
-		_, nsd := d.GetChange("system_disk")
+		osd, nsd := d.GetChange("system_disk")
 		var sysdisk = instance.SystemDisk{}
 		err := u.Mapstructure(nsd.(map[string]interface{}), &sysdisk)
 		if err != nil {
 			return err
 		}
-
-		updateFlag := true
-		//没有检测到更新不进行输入
-		if sysdisk.Size == nil && sysdisk.IOPS == nil && sysdisk.Type == nil {
-			updateFlag = false
+		var oldSysdisk = instance.SystemDisk{}
+		err = u.Mapstructure(osd.(map[string]interface{}), &oldSysdisk)
+		if err != nil {
+			return err
 		}
-		if updateFlag {
+		var changed bool = false
+		// 变更后的值为nil或者
+		if sysdisk.Type != nil && *sysdisk.Type != *oldSysdisk.Type {
+			changed = true
+		}
+		if sysdisk.Size != nil && *sysdisk.Size != *oldSysdisk.Size {
+			changed = true
+		}
+		if sysdisk.IOPS != nil && *sysdisk.IOPS != *oldSysdisk.IOPS {
+			changed = true
+		}
+
+		if changed {
 			extendSdRequest := instance.NewExtendSystemDiskRequest()
 			extendSdRequest.InstanceId = common.StringPtr(id)
 
@@ -723,7 +746,6 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 				return err
 			}
 		}
-		waitInstanceUpdated(context.Background(), instanceService, id)
 	}
 
 	if d.HasChange("data_disks") {
@@ -813,7 +835,68 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 			}
 		}
 	}
+	// reset instances password
+	if d.HasChange("password") {
+		_, nd := d.GetChange("password")
+		request := instance.NewResetInstancesPasswordRequest()
+		request.InstanceIds = common.StringPtr(id)
+		request.Password = common.StringPtr(nd.(string))
+		response, err := instanceService.ResetInstancesPassword(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			log.Println("Reset instances password failed")
+		}
+		waitInstanceUpdated(ctx, instanceService, id)
+	}
+	// reset image
+	if d.HasChange("image_id") {
+		imageId := d.Get("image_id")
+		request := instance.NewResetImageRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.ImageId = common.StringPtr(imageId.(string))
+		if password, ok := d.GetOk("password"); ok {
+			request.Password = common.StringPtr(password.(string))
+		}
+		if imagePassword, ok := d.GetOk("image_password"); ok {
+			request.ImagePassword = common.StringPtr(imagePassword.(string))
+		}
+		if publicKey, ok := d.GetOk("public_key"); ok {
+			request.PublicKey = common.StringPtr(publicKey.(string))
+		}
+		response, err := instanceService.ResetImage(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			log.Println("Reset instances password failed")
+		}
+		waitTaskFinished(ctx, taskService, *response.TaskId)
+	}
 
+	if d.HasChange("instance_charge_type") || d.HasChange("auto_renew") || d.HasChange("prepaid_month") {
+		instanceChargeType := d.Get("instance_charge_type")
+		autoRenew := d.Get("auto_renew")
+		prepaidMonth := d.Get("prepaid_month")
+		request := instance.NewModifyInstanceChargeTypeRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.InstanceChargeType = common.StringPtr(instanceChargeType.(string))
+		if autoRenew != nil {
+			request.AutoRenew = common.IntPtr(autoRenew.(int))
+		}
+		if prepaidMonth != nil {
+			request.PrepaidMonth = common.IntPtr(prepaidMonth.(int))
+		}
+		response, err := instanceService.ModifyInstanceChargeType(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			log.Println("Reset instances password failed")
+		}
+		waitTaskFinished(ctx, taskService, *response.TaskId)
+	}
 	d.Partial(false)
 	waitInstanceUpdated(context.Background(), instanceService, id)
 	return resourceCdsCcsInstanceRead(d, meta)
@@ -912,12 +995,17 @@ func resourceCdsInstanceUpdatePrivateIp(
 			editList = append(editList, v)
 		}
 	}
+	var password string = ""
+	if value, ok := d.GetOk("password"); ok {
+		password = value.(string)
+	}
 	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
 	for _, v := range editList {
 		request := instance.NewModifyIpRequest()
 		request.InstanceId = common.StringPtr(id)
 		request.InterfaceId = common.StringPtr(v["interface_id"].(string))
 		request.Address = common.StringPtr(v["address"].(string))
+		request.Password = common.StringPtr(password)
 		_, err := instanceService.client.UseCvmClient().ModifyIpAddress(request)
 		if err != nil {
 			return err
@@ -974,4 +1062,19 @@ func waitInstanceUpdated(ctx context.Context, service InstanceService, instanceU
 			}
 		}
 	}
+}
+
+func waitTaskFinished(ctx context.Context, service TaskService, taskId string) error {
+	//for {
+	time.Sleep(time.Second * 15)
+	response, err := service.DescribeTask(ctx, taskId)
+	if err != nil {
+		return err
+	}
+
+	if *response.Code != "Success" {
+		return errors.New(*response.Message)
+	}
+	return nil
+	//}
 }

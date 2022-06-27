@@ -22,7 +22,6 @@ func resourceCdsPrivateSubnet() *schema.Resource {
 			"vdc_id": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: false,
 			},
 			"name": {
 				Type:        schema.TypeString,
@@ -117,6 +116,10 @@ func resourceCdsPrivateSubnetRead(d *schema.ResourceData, meta interface{}) erro
 	return nil
 }
 func resourceCdsPrivateSubnetUpdate(d *schema.ResourceData, meta interface{}) error {
+	if d.HasChange("vdc_id") {
+		old, _ := d.GetChange("vdc_id")
+		d.Set("vdc_id", old)
+	}
 	return errors.New("Private network does not support modification")
 }
 func resourceCdsPrivateSubnetDelete(d *schema.ResourceData, meta interface{}) error {
