@@ -992,17 +992,15 @@ func resourceCdsInstanceUpdatePrivateIp(
 			editList = append(editList, v)
 		}
 	}
-	var password string = ""
-	if value, ok := d.GetOk("password"); ok {
-		password = value.(string)
-	}
 	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
 	for _, v := range editList {
 		request := instance.NewModifyIpRequest()
 		request.InstanceId = common.StringPtr(id)
 		request.InterfaceId = common.StringPtr(v["interface_id"].(string))
 		request.Address = common.StringPtr(v["address"].(string))
-		request.Password = common.StringPtr(password)
+		if value, ok := d.GetOk("password"); ok {
+			request.Password = common.StringPtr(value.(string))
+		}
 		_, err := instanceService.client.UseCvmClient().ModifyIpAddress(request)
 		if err != nil {
 			return err
