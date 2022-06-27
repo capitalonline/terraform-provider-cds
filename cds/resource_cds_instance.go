@@ -1060,7 +1060,6 @@ func waitInstanceUpdated(ctx context.Context, service InstanceService, instanceU
 }
 
 func waitTaskFinished(ctx context.Context, service TaskService, taskId string) error {
-	//for {
 	time.Sleep(time.Second * 15)
 	response, err := service.DescribeTask(ctx, taskId)
 	if err != nil {
@@ -1071,5 +1070,4 @@ func waitTaskFinished(ctx context.Context, service TaskService, taskId string) e
 		return errors.New(*response.Message)
 	}
 	return nil
-	//}
 }
