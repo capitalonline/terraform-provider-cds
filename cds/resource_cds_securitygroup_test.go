@@ -57,8 +57,6 @@ func TestAccSecurityGroup_update(t *testing.T) {
 
 func testAccSecurityGroupExists(r string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		//logId := getLogId(contextNil)
-		//ctx := context.WithValue(context.TODO(), "logId", logId)
 
 		rs, ok := s.RootModule().Resources[r]
 		if !ok {

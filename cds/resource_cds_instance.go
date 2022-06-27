@@ -689,7 +689,6 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 					InstanceId: common.StringPtr(id),
 					PublicId:   common.StringPtr(newbind["subnet_id"].(string)),
 				})
-				// TODO 需要解决偶发接口重复调用
 				securityGroupService.JoinSecurityGroup(ctx, request)
 			} else if newbind["type"].(string) == "private" {
 				request.BindData = append(request.BindData, &security_group.BindData{
@@ -943,7 +942,6 @@ func resourceCdsCcsInstanceDelete(d *schema.ResourceData, meta interface{}) erro
 		}
 
 	}
-	//todo 等待解绑安全组
 	time.Sleep(30 * time.Second)
 	request := instance.NewDeleteInstanceRequest()
 	for _, value := range idArray {
@@ -953,7 +951,6 @@ func resourceCdsCcsInstanceDelete(d *schema.ResourceData, meta interface{}) erro
 	if err != nil {
 		return err
 	}
-	//todo 等待删除实例，删除动作当前不提供taskid
 	time.Sleep(30 * time.Second)
 	return nil
 }

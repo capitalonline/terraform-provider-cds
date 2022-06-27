@@ -315,10 +315,6 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 					request := vdc.NewModifyPublicNetworkRequest()
 					request.PublicId = common.StringPtr(publicId)
 					request.Qos = common.StringPtr(value[1].(string))
-					var qos = value[1].(string)
-					if qos == "0" || qos == "" {
-						return errors.New("Qos can not be \"0\" or \"\"")
-					}
 					_, errRet := vdcService.ModifyPublicNetwork(ctx, request)
 					if errRet != nil {
 						return errRet

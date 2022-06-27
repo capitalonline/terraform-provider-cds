@@ -53,8 +53,6 @@ func TestAccInstance_update(t *testing.T) {
 
 func testAccInstanceExists(r string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		//logId := getLogId(contextNil)
-		//ctx := context.WithValue(context.TODO(), "logId", logId)
 
 		rs, ok := s.RootModule().Resources[r]
 		if !ok {
@@ -68,26 +66,6 @@ func testAccInstanceExists(r string) resource.TestCheckFunc {
 }
 
 func testAccInstanceDestroy(s *terraform.State) error {
-	//logId := getLogId(contextNil)
-	//ctx := context.WithValue(context.TODO(), "logId", logId)
-	//
-	//service := SecurityGroupService{client: testAccProvider.Meta().(*CdsClient).apiConn}
-	//for _, rs := range s.RootModule().Resources {
-	//	if rs.Type != "cds_instance" {
-	//		continue
-	//	}
-	//	time.Sleep(5 * time.Second)
-	//	request := security_group.NewDescribeSecurityGroupRequest()
-	//	request.SecurityGroupId = common.StringPtr(rs.Primary.ID)
-	//	has, err := service.DescribeSecurityGroup(ctx, request)
-	//	if err != nil {
-	//		return err
-	//	}
-	//	if len(has.Data.SecurityGroup) == 0 {
-	//		return nil
-	//	}
-	//	return fmt.Errorf("vpc not delete ok")
-	//}
 	return nil
 }
 
