@@ -122,6 +122,7 @@ func resourceCdsCcsInstance() *schema.Resource {
 						},
 						"interface_id": &schema.Schema{
 							Type:     schema.TypeString,
+							Optional: true,
 							Computed: true,
 						},
 					},
@@ -447,17 +448,10 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 				}
 				taskId, _ := securityGroupService.JoinSecurityGroup(ctx, joinRequest)
 				log.Println("task: ", taskId)
-				//if errRet != nil {
-				//	return errRet
-				//}
-				//_, errRet = taskService.DescribeTask(ctx, taskId)
-				//if errRet != nil {
-				//	return errRet
-				//}
 			}
 		}
 	}
-	time.Sleep(5 * time.Second)
+	waitInstanceRunning(context.Background(), instanceService, nowId)
 	return resourceCdsCcsInstanceRead(d, meta)
 }
 
@@ -501,24 +495,6 @@ func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error 
 	// for instance status
 	log.Printf("DEBUG_INSTANCEINFO: status: %#v", *instanceInfo.InstanceStatus)
 	d.Set("instance_status", *instanceInfo.InstanceStatus)
-
-	// for ResizeDisk/DeleteDisk
-	/*
-		var listDataDisks []map[string]interface{}
-		for _, p := range instanceInfo.Disks.DataDisks {
-			diskMapping := map[string]interface{}{
-				// "disk_id": p.DiskId,
-				"type": p.DiskType,
-				"size": p.Size,
-				"iops": p.Iops,
-			}
-			listDataDisks = append(listDataDisks, diskMapping)
-		}
-		if len(listDataDisks) > 0 && listDataDisks != nil {
-			if err := d.Set("data_disks", listDataDisks); err != nil {
-				return err
-			}
-		}*/
 
 	sysDisk := instanceInfo.Disks.SystemDisk
 	if sysDisk != nil {
@@ -594,13 +570,20 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 	}
 	id := idArray[0]
 	d.Partial(true)
-
-	if d.HasChange("region_id") || d.HasChange("vdc_id") || d.HasChange("public_key") {
-		return errors.New("region_id/vdc_id/public_key does not support modify")
+	if d.HasChange("region_id") {
+		info := "openapi does not support modification region_id"
+		log.Println(info)
+		return errors.New(info)
 	}
-	if d.HasChange("image_id") || d.HasChange("password") || d.HasChange("instance_type") ||
-		d.HasChange("instance_charge_type") || d.HasChange("auto_renew") || d.HasChange("prepaid_month") {
-		return errors.New(" image_id/password/instance_type/instance_charge_type/auto_renew/prepaid_month/amount does not support modify in this version")
+	if d.HasChange("vdc_id") {
+		info := "openapi does not support modification vdc_id"
+		log.Println(info)
+		return errors.New(info)
+	}
+	if d.HasChange("public_key") {
+		info := "openapi does not support modification public_key"
+		log.Println(info)
+		return errors.New(info)
 	}
 	// modify instance name
 	if d.HasChange("instance_name") {
@@ -623,11 +606,11 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		if err != nil {
 			return err
 		}
-		time.Sleep(50 * time.Second)
+		waitInstanceUpdated(context.Background(), instanceService, id)
 	}
 
 	// modify ModifyInstanceSpec: cpu, ram
-	if d.HasChange("cpu") || d.HasChange("ram") {
+	if d.HasChange("cpu") || d.HasChange("ram") || d.HasChange("instance_type") {
 		d.SetPartial("cpu")
 		d.SetPartial("ram")
 		_, newCpu := d.GetChange("cpu")
@@ -637,7 +620,12 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		request.InstanceId = common.StringPtr(id)
 		request.Cpu = common.IntPtr(newCpu.(int))
 		request.Ram = common.IntPtr(newRam.(int))
-
+		if d.HasChange("instance_type") {
+			instanceType := d.Get("instance_type")
+			if instanceType != nil {
+				request.InstanceType = common.StringPtr(instanceType.(string))
+			}
+		}
 		requestdata, _ := json.Marshal(request)
 		log.Printf("DEBUG_REQUEST: %s", string(requestdata))
 
@@ -645,7 +633,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		if err != nil {
 			return err
 		}
-		time.Sleep(5 * time.Second)
+		waitInstanceUpdated(context.Background(), instanceService, id)
 	}
 
 	if d.HasChange("security_group_binding") {
@@ -690,7 +678,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 				}
 			}
 		}
-		time.Sleep(10 * time.Second)
+		waitInstanceUpdated(context.Background(), instanceService, id)
 		for _, ing := range newIngress {
 			newbind := ing.(map[string]interface{})
 			request := security_group.NewJoinSecurityGroupRequest()
@@ -700,7 +688,6 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 					InstanceId: common.StringPtr(id),
 					PublicId:   common.StringPtr(newbind["subnet_id"].(string)),
 				})
-				// TODO 需要解决偶发接口重复调用
 				securityGroupService.JoinSecurityGroup(ctx, request)
 			} else if newbind["type"].(string) == "private" {
 				request.BindData = append(request.BindData, &security_group.BindData{
@@ -713,19 +700,30 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	if d.HasChange("system_disk") {
-		_, nsd := d.GetChange("system_disk")
+		osd, nsd := d.GetChange("system_disk")
 		var sysdisk = instance.SystemDisk{}
 		err := u.Mapstructure(nsd.(map[string]interface{}), &sysdisk)
 		if err != nil {
 			return err
 		}
-
-		updateFlag := true
-		//没有检测到更新不进行输入
-		if sysdisk.Size == nil && sysdisk.IOPS == nil && sysdisk.Type == nil {
-			updateFlag = false
+		var oldSysdisk = instance.SystemDisk{}
+		err = u.Mapstructure(osd.(map[string]interface{}), &oldSysdisk)
+		if err != nil {
+			return err
 		}
-		if updateFlag {
+		var changed bool = false
+		// 变更后的值为nil或者
+		if sysdisk.Type != nil && *sysdisk.Type != *oldSysdisk.Type {
+			changed = true
+		}
+		if sysdisk.Size != nil && *sysdisk.Size != *oldSysdisk.Size {
+			changed = true
+		}
+		if sysdisk.IOPS != nil && *sysdisk.IOPS != *oldSysdisk.IOPS {
+			changed = true
+		}
+
+		if changed {
 			extendSdRequest := instance.NewExtendSystemDiskRequest()
 			extendSdRequest.InstanceId = common.StringPtr(id)
 
@@ -746,7 +744,6 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 				return err
 			}
 		}
-
 	}
 
 	if d.HasChange("data_disks") {
@@ -836,9 +833,70 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 			}
 		}
 	}
+	// reset instances password
+	if d.HasChange("password") {
+		_, nd := d.GetChange("password")
+		request := instance.NewResetInstancesPasswordRequest()
+		request.InstanceIds = common.StringPtr(id)
+		request.Password = common.StringPtr(nd.(string))
+		response, err := instanceService.ResetInstancesPassword(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			log.Println("Reset instances password failed")
+		}
+		waitInstanceUpdated(ctx, instanceService, id)
+	}
+	// reset image
+	if d.HasChange("image_id") {
+		imageId := d.Get("image_id")
+		request := instance.NewResetImageRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.ImageId = common.StringPtr(imageId.(string))
+		if password, ok := d.GetOk("password"); ok {
+			request.Password = common.StringPtr(password.(string))
+		}
+		if imagePassword, ok := d.GetOk("image_password"); ok {
+			request.ImagePassword = common.StringPtr(imagePassword.(string))
+		}
+		if publicKey, ok := d.GetOk("public_key"); ok {
+			request.PublicKey = common.StringPtr(publicKey.(string))
+		}
+		response, err := instanceService.ResetImage(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			log.Println("Reset instances password failed")
+		}
+		waitTaskFinished(ctx, taskService, *response.TaskId)
+	}
 
+	if d.HasChange("instance_charge_type") || d.HasChange("auto_renew") || d.HasChange("prepaid_month") {
+		instanceChargeType := d.Get("instance_charge_type")
+		autoRenew := d.Get("auto_renew")
+		prepaidMonth := d.Get("prepaid_month")
+		request := instance.NewModifyInstanceChargeTypeRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.InstanceChargeType = common.StringPtr(instanceChargeType.(string))
+		if autoRenew != nil {
+			request.AutoRenew = common.IntPtr(autoRenew.(int))
+		}
+		if prepaidMonth != nil {
+			request.PrepaidMonth = common.IntPtr(prepaidMonth.(int))
+		}
+		response, err := instanceService.ModifyInstanceChargeType(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			log.Println("Reset instances password failed")
+		}
+		waitTaskFinished(ctx, taskService, *response.TaskId)
+	}
 	d.Partial(false)
-	time.Sleep(5 * time.Second)
+	waitInstanceUpdated(context.Background(), instanceService, id)
 	return resourceCdsCcsInstanceRead(d, meta)
 }
 
@@ -883,7 +941,6 @@ func resourceCdsCcsInstanceDelete(d *schema.ResourceData, meta interface{}) erro
 		}
 
 	}
-	//todo 等待解绑安全组
 	time.Sleep(30 * time.Second)
 	request := instance.NewDeleteInstanceRequest()
 	for _, value := range idArray {
@@ -893,7 +950,6 @@ func resourceCdsCcsInstanceDelete(d *schema.ResourceData, meta interface{}) erro
 	if err != nil {
 		return err
 	}
-	//todo 等待删除实例，删除动作当前不提供taskid
 	time.Sleep(30 * time.Second)
 	return nil
 }
@@ -941,11 +997,76 @@ func resourceCdsInstanceUpdatePrivateIp(
 		request.InstanceId = common.StringPtr(id)
 		request.InterfaceId = common.StringPtr(v["interface_id"].(string))
 		request.Address = common.StringPtr(v["address"].(string))
+		if value, ok := d.GetOk("password"); ok {
+			request.Password = common.StringPtr(value.(string))
+		}
 		_, err := instanceService.client.UseCvmClient().ModifyIpAddress(request)
 		if err != nil {
 			return err
 		}
 	}
 
+	return nil
+}
+
+func waitInstanceRunning(ctx context.Context, service InstanceService, instanceUuid string) error {
+	request := instance.NewDescribeInstanceRequest()
+	request.InstanceId = &instanceUuid
+
+	for {
+		time.Sleep(time.Second * 15)
+		response, err := service.DescribeInstance(ctx, request)
+		if err != nil {
+			return err
+		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+		for _, entry := range response.Data.Instances {
+			if *entry.InstanceStatus == "running" && *entry.InstanceId == instanceUuid {
+				return nil
+			}
+		}
+	}
+}
+
+func waitInstanceUpdated(ctx context.Context, service InstanceService, instanceUuid string) error {
+	request := instance.NewDescribeInstanceRequest()
+	request.InstanceId = &instanceUuid
+
+	for {
+		time.Sleep(time.Second * 15)
+		response, err := service.DescribeInstance(ctx, request)
+		if err != nil {
+			return err
+		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+		for _, entry := range response.Data.Instances {
+			if *entry.InstanceId == instanceUuid {
+				if *entry.InstanceStatus == "error" {
+					return errors.New("updating instance failed")
+				}
+				if *entry.InstanceStatus != "updating" {
+					return nil
+				}
+			}
+		}
+	}
+}
+
+func waitTaskFinished(ctx context.Context, service TaskService, taskId string) error {
+	time.Sleep(time.Second * 15)
+	response, err := service.DescribeTask(ctx, taskId)
+	if err != nil {
+		return err
+	}
+
+	if *response.Code != "Success" {
+		return errors.New(*response.Message)
+	}
 	return nil
 }

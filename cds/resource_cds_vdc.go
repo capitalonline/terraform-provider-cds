@@ -105,7 +105,7 @@ func resourceCdsVdcCreate(d *schema.ResourceData, meta interface{}) error {
 
 	taskId, err := vdcService.CreateVdc(ctx, name, region, publicNetwork)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	detail, err := taskService.DescribeTask(ctx, taskId)
@@ -294,9 +294,18 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 						return errRet
 					}
 				} else if newNum < oldNum && u.ContainsInt(validNums, newNum) {
-					// TODO: Delete public network IP
+					oldValue, newValue := d.GetChange("public_network")
+					oldMap := oldValue.(map[string]interface{})
+					newMap := newValue.(map[string]interface{})
+					newMap["ipnum"] = oldMap["ipnum"]
+					d.Set("public_network", newMap)
 					return errors.New("Public network IP can not be deleted with Terraform currently.")
 				} else {
+					oldValue, newValue := d.GetChange("public_network")
+					oldMap := oldValue.(map[string]interface{})
+					newMap := newValue.(map[string]interface{})
+					newMap["ipnum"] = oldMap["ipnum"]
+					d.Set("public_network", newMap)
 					return errors.New("ipnum is invalid!")
 				}
 			case "name":

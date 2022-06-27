@@ -16,6 +16,8 @@ resource "cds_vdc" "my_vdc" {
 // create private subnet for vdc
 resource "cds_private_subnet" "my_private_subnet_1" {
   vdc_id  = cds_vdc.my_vdc.id
+  # The field 'name' is optional,
+  # but it is best to specify this field to distinguish between multiple private networks
   name    = "private_25"
   type    = "auto"
   address = "192.168.0.0"
@@ -49,7 +51,6 @@ resource "cds_instance" "my_instance2" {
   cpu           = 4
   ram           = 4
   vdc_id        = cds_vdc.my_vdc.id
-  # password 和 public_key 二选一
   # public_key = file("/home/guest/.ssh/test.pub")
   # password is required after v1.3.1
   password  = "123abc,.;"

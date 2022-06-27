@@ -2,6 +2,7 @@ package cds
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -57,12 +58,47 @@ func (me *InstanceService) DescribeInstance(ctx context.Context, request *instan
 	ratelimit.Check(request.GetAction())
 	result, err := me.client.UseCvmClient().DescribeInstance(request)
 	if err == nil {
-		log.Printf("[DEBUG]%s api[%s] , request body [%s], response body[%s]\n",
-			logId, request.GetAction(), request.ToJsonString(), response.ToJsonString())
+		log.Printf("[DEBUG]%s api[%s] , request body [%s], response body[%s]\n", logId, request.GetAction(), request.ToJsonString(), result.ToJsonString())
 		response = *result
 		return
 	}
 
 	errRet = err
 	return
+}
+
+func (me *InstanceService) ResetInstancesPassword(ctx context.Context, request *instance.ResetInstancesPasswordRequest) (*instance.ResetInstancesPasswordResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseCvmClient().ResetInstancesPassword(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+func (me *InstanceService) ResetImage(ctx context.Context, request *instance.ResetImageRequest) (*instance.ResetImageResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseCvmClient().ResetImage(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+func (me *InstanceService) ModifyInstanceChargeType(ctx context.Context, request *instance.ModifyInstanceChargeTypeRequest) (*instance.ModifyInstanceChargeTypeResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseCvmClient().ModifyInstanceChargeType(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
 }

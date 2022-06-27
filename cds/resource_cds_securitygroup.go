@@ -452,7 +452,7 @@ func resourceCdsSecurityGroupUpdateRules(
 		ns := n.(*schema.Set)
 		cs := c.(*schema.Set)
 
-		// TODO: Currently there's no rule updating logic
+		//  Currently there's no rule updating logic
 		// If any rule were updated, we take it as new rule.
 		// since it's complicated to judge between updating and adding.
 		// Additionly, not all rule options could be modified by API.
