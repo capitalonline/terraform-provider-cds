@@ -92,7 +92,7 @@ The following arguments are supported
 * `password` - (Required,Unmodifiable) Password to an instance is a string of 8 to 30 characters. It must contain uppercase/lowercase letters, numerals and special symbols.
 * `public_ip` - (Required,Unmodifiable) The public ip of the instance.
 * `amount` - (Optional,Unmodifiable) Number of instances created in batch, maximum 50.
-* `operate_instance_status` - (Optional) The status of the instance. Allow values: reboot, stop.
+* `operate_instance_status` - (Optional) The status of the instance. Allow values: reboot, stop, run.
 * `private_ip` - (Optional) Private ip.
   * `private_id` - (Required)Private subnet ID.
   * `address` - (Required)ip address. Automatically assign input: auto, the default is not written as not assigning private network ip.
@@ -113,3 +113,4 @@ The following arguments are supported
   * `type` -(Required) Specify a public or private network binding security group. Allow values: private, public.
   * `subnet_id` - (Required)Subnet ID.
   * `security_group_id` - (Required) Security group ID.
+* `image_password` - The password of image

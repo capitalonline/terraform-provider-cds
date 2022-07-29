@@ -26,6 +26,11 @@ data cds_data_source_haproxy "my_haproxy_data" {
 data cds_data_source_certificate "my_certificate" {
     result_output_file = data.json
 }
+
+output "test" {
+  # output or use my_haproxy_data's ip
+  value = data.cds_data_source_haproxy.my_haproxy_data.ip
+}
 ```
 
 ## Argument Reference

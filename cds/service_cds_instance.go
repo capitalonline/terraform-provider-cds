@@ -102,3 +102,39 @@ func (me *InstanceService) ModifyInstanceChargeType(ctx context.Context, request
 	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
 	return response, err
 }
+
+func (me *InstanceService) StopInstance(ctx context.Context, request *instance.StopInstanceRequest) (*instance.StopInstanceResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseCvmGetClient().StopInstance(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+func (me *InstanceService) StartInstance(ctx context.Context, request *instance.StartInstanceRequest) (*instance.StartInstanceResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseCvmGetClient().StartInstance(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
+
+func (me *InstanceService) RebootInstance(ctx context.Context, request *instance.RebootInstanceRequest) (*instance.RebootInstanceResponse, error) {
+	logId := getLogId(ctx)
+	ratelimit.Check(request.GetAction())
+	// add a random delay to avoid concurrency with Terraform "count" way
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err := me.client.UseCvmGetClient().RebootInstance(request)
+	log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s]", logId, request.GetAction(), request.ToJsonString(), response.ToJsonString()))
+	return response, err
+}
