@@ -15,6 +15,7 @@ const (
 
 func Provider() terraform.ResourceProvider {
 	// The actual Provider
+
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"secret_id": {

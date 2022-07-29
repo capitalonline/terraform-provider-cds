@@ -622,6 +622,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 					}
 					if *resp.Code != "Success" {
 						log.Println("start instances failed")
+						return errors.New(fmt.Sprintf("run instance failed,api err:%s", *resp.Message))
 					}
 				}
 			case "stop":
@@ -634,6 +635,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 					}
 					if *resp.Code != "Success" {
 						log.Println("stop instances failed")
+						return errors.New(fmt.Sprintf("run instance failed,api err:%s", *resp.Message))
 					}
 				}
 			case "reboot":
@@ -645,6 +647,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 				}
 				if *resp.Code != "Success" {
 					log.Println("reboot instances failed")
+					return errors.New(fmt.Sprintf("run instance failed,api err:%s", *resp.Message))
 				}
 			default:
 				return errors.New("invalid value for 'operate_instance_status',required stop/run/reboot")
@@ -1142,7 +1145,7 @@ func waitTaskFinished(ctx context.Context, service TaskService, taskId string) e
 func waitInstanceFinish(ctx context.Context, service InstanceService, instanceUuid string) error {
 	request := instance.NewDescribeInstanceRequest()
 	request.InstanceId = &instanceUuid
-
+	now := time.Now()
 	for {
 		time.Sleep(time.Second * 15)
 		response, err := service.DescribeInstance(ctx, request)
@@ -1162,6 +1165,9 @@ func waitInstanceFinish(ctx context.Context, service InstanceService, instanceUu
 					return nil
 				}
 			}
+		}
+		if now.Add(time.Hour * 2).After(time.Now()) {
+			return errors.New("operate elapsed to many time,more than two hours")
 		}
 	}
 }

@@ -57,7 +57,7 @@ resource "cds_instance" "my_instance2" {
   # image_password is optional
   image_password = "123abc,.;"
   # operate_instance_status required value 'run' or 'stop' or 'reboot'
-  # operate_instance_status = "run"
+  operate_instance_status = "run"
   public_ip = "auto"
   private_ip {
     private_id = cds_private_subnet.my_private_subnet_1.id
