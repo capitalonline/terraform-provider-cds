@@ -635,7 +635,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 					}
 					if *resp.Code != "Success" {
 						log.Println("stop instances failed")
-						return errors.New(fmt.Sprintf("run instance failed,api err:%s", *resp.Message))
+						return errors.New(fmt.Sprintf("stop instance failed,api err:%s", *resp.Message))
 					}
 				}
 			case "reboot":
@@ -647,7 +647,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 				}
 				if *resp.Code != "Success" {
 					log.Println("reboot instances failed")
-					return errors.New(fmt.Sprintf("run instance failed,api err:%s", *resp.Message))
+					return errors.New(fmt.Sprintf("reboot instance failed,api err:%s", *resp.Message))
 				}
 			default:
 				return errors.New("invalid value for 'operate_instance_status',required stop/run/reboot")
