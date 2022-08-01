@@ -1166,7 +1166,7 @@ func waitInstanceFinish(ctx context.Context, service InstanceService, instanceUu
 				}
 			}
 		}
-		if now.Add(time.Hour * 2).After(time.Now()) {
+		if now.Add(time.Hour * 2).Before(time.Now()) {
 			return errors.New("operate elapsed to many time,more than two hours")
 		}
 	}

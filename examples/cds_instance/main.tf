@@ -130,3 +130,9 @@ data cds_data_source_instance "my_instance_data" {
     vdc_id =  cds_instance.my_instance2.vdc_id
     result_output_file = "data.json"
 }
+
+data cds_data_source_vdc "my_vdc_data" {
+  id = cds_vdc.my_vdc.id
+  vdc_name = cds_vdc.my_vdc.vdc_name
+  result_output_file = "data.json"
+}
