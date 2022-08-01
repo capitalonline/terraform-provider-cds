@@ -56,6 +56,8 @@ resource "cds_instance" "my_instance2" {
   password  = "123abc,.;"
   # image_password is optional
   image_password = "123abc,.;"
+  # operate_instance_status required value 'run' or 'stop' or 'reboot'
+  operate_instance_status = "run"
   public_ip = "auto"
   private_ip {
     private_id = cds_private_subnet.my_private_subnet_1.id
@@ -127,4 +129,10 @@ data cds_data_source_instance "my_instance_data" {
     instance_id = cds_instance.my_instance2.id
     vdc_id =  cds_instance.my_instance2.vdc_id
     result_output_file = "data.json"
+}
+
+data cds_data_source_vdc "my_vdc_data" {
+  id = cds_vdc.my_vdc.id
+  vdc_name = cds_vdc.my_vdc.vdc_name
+  result_output_file = "data.json"
 }

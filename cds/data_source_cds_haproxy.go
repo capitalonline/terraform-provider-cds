@@ -563,6 +563,10 @@ func dataSourceHaproxyRead(d *schema.ResourceData, meta interface{}) error {
 			"tcp_listeners":    flattenHaproxyStrategyTcpMapping(strategtResponse.Data.TcpListeners),
 		}
 		haproxyList = append(haproxyList, mapping)
+
+		if ha.InstanceUuid != nil && *ha.InstanceUuid == instance_uuid && ha.IP != nil {
+			d.Set("ip", ha.IP)
+		}
 	}
 
 	id := fmt.Sprintf("%s%s%s%s%s", instance_uuid, ip, instanceName, startTime, endTime)

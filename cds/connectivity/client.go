@@ -24,6 +24,7 @@ type CdsClient struct {
 	sgConn         *security_group.Client
 	sgGetConn      *security_group.Client
 	vmConn         *instance.Client
+	vmGetConn      *instance.Client
 	taskConn       *task.Client
 	sgrConn        *security_group_rule.Client
 	sgrGetConn     *security_group_rule.Client
@@ -107,15 +108,15 @@ func (me *CdsClient) UseCvmClient() *instance.Client {
 }
 
 func (me *CdsClient) UseCvmGetClient() *instance.Client {
-	if me.vmConn != nil {
-		return me.vmConn
+	if me.vmGetConn != nil {
+		return me.vmGetConn
 	}
 	credential := common.NewCredential(me.SecretId, me.SecretKey)
 	client, _ := instance.NewClient(credential, me.Region, clientProfile("GET"))
 	var round LogRoundTripper
 	client.WithHttpTransport(&round)
-	me.vmConn = client
-	return me.vmConn
+	me.vmGetConn = client
+	return me.vmGetConn
 }
 
 func (me *CdsClient) UseSecurityRuleClient() *security_group_rule.Client {
