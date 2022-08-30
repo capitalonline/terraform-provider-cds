@@ -27,6 +27,22 @@ resource "cds_vdc" "example" {
     "type" = "Bandwidth_BGP"
   }
 }
+
+# update vdc
+# The following fields can be modified: vdc_name、add_public_ip、delete_public_ip、public_network
+resource "cds_vdc" "example" {
+#  Modified field vdc_name will rename the vdc.
+  vdc_name = "new-vdc-name"
+
+#  Modified field 'add_public_ip' will add a public IP segment to the purchased public network.
+#  The value is the number of Ip addresses to be purchased.
+  add_public_ip = 4
+#  Modified field 'delete_public_ip' will delete an IP segment under the Vdc public network.
+#  The value is the IP segment id will be deleted.
+  delete_public_ip = "xxx"
+}
+
+
 ```
 
 ## Argument Reference
@@ -43,5 +59,6 @@ The following arguments are supported:
   * `billingmethod` - (Required,Unmodifiable) Billing method.
   * `autorenew` - (Required) Whether to automatically renew,1 is the automatic renewal fee (default), 0 is not automatic renewal.
   * `type` - (Required,Unmodifiable) The type of the public subnet, refer to [All Type](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E5%B8%A6%E5%AE%BD%E7%B1%BB%E5%9E%8B).
-* `add_public_ip` - (Optional) Add public ip num.
+* `add_public_ip` - (Optional) Add public ip num. Valid value: in [4,8,16,32,64].
 * `delete_public_ip` - (Optional) Delete public Ip segment id.
+* `public_id` - (Optional,Unmodifiable) Public Network id.

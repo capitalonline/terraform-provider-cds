@@ -45,6 +45,29 @@ The following arguments are supported:
 * `end_time` - (Optional) The HaProxy instance end time to filter.
 * `result_output_file` - (Required) Save all instance information under the VDC to the path.
 * `ha_list` - (Computed) The list of haproxy info , By calculation , Don't have to fill out.
+* `region_id` (Required) The region of HaProxy.
+* `ha_list` - (Computed) List of HaProxy instances of the query .
+  * `cpu` - (Computed) The cpu number of HaProxy.
+  * `create_time` - (Computed) The created time  of HaProxy.
+  * `display_name` - (Computed) The site name.
+  * `ip` - (Computed) The ip of HaProxy.
+  * `instance_name` - (Computed) HaProxy instance name.
+  * `instance_uuid` - (Computed) HaProxy instance uuid.
+  * `link_type` - (Computed) A maximum number of disks can be created at a time.
+  * `link_type_str` - (Computed) Link Type Name.
+  * `master_info` - (Computed) In a slave cluster, read-only services have a value.
+  * `port` - (Computed) Port to connect.
+  * `ram` - (Computed) The ram of HaProxy.
+  * `region_id` - (Computed) The region_id of HaProxy.
+  * `resource_id` - (Computed) Bill id, unique identifier for querying a bill.
+  * `status` - (Computed) Instance status.
+  * `status_str` - (Computed) Indicates the Chinese version of the status.
+  * `sub_product_name` - (Computed)  The name of the sub-product.
+  * `vdc_id` - (Computed) Data center ID.
+  * `vdc_name` - (Computed) Data center name.
+  * `version` - (Computed) The service version.
+  * `project_name` - (Computed) The project name.
+  * `vips` - (Computed) Load balancing multiple VIP addresses.
 
 # Certificate
 * `ha_cert_list` - (Computed) The list of the ha Certificate , By calculation , Don't have to fill out.

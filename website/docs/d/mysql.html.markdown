@@ -29,3 +29,7 @@ The following arguments are supported:
 * `instance_name` - (Optional) The Mysql instance name to filter.
 * `ip` - (Optional) The Mysql instance ip to filter.
 * `result_output_file` - (Required) Save all instance information to the path.
+* `readonly_instances` - (Optional)  List of readonly instances.
+  * `instance_name` - (Optional) Name of the readonly instance.
+  * `disk_type` - (Optional) Disk type of the readonly instance.
+  * `disk_value` - (Optional) Disk size of the readonly instance.

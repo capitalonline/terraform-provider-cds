@@ -54,7 +54,7 @@ resource "cds_haproxy" "haproxy_example" {
       connect_timeout = ""
       connect_timeout_unit = ""
       server_timeout = ""
-      server_timeout_unit
+      server_timeout_unit = ""
       listener_mode = ""
       listener_name = ""
       listener_port = 8080
@@ -75,7 +75,7 @@ resource "cds_haproxy" "haproxy_example" {
       connect_timeout = ""
       connect_timeout_unit = ""
       server_timeout = ""
-      server_timeout_unit
+      server_timeout_unit = ""
       listener_mode = ""
       listener_name = ""
       listener_port = 8080
@@ -114,18 +114,28 @@ The following arguments are supported
   * `certificate_ids` - (Optional) Bind certificate, set empty array without binding.
      * `certificate_id` - (Required) The certificate id.
      * `certificate_name` - (Required)  The certificate name.
-   * `client_timeout` - (Required) Set the time for client connection timeout.
-   * `client_timeout_unit` - (Required) Set the time unit for client connection timeout ['m', 'ms'].
-   * `connect_timeout` - (Required) Set the time for client connection timeout.
-   * `connect_timeout_unit` - (Required) Set the time unit for client connection timeout.
-   * `server_timeout` - (Required) Set the time for server connection timeout.
-   * `server_timeout_unit` - (Required) Set the time unit for server connection timeout.
-   * `listener_mode` - (Required) Listener mode.
-   * `listener_name` - (Required) The name of the listening strategy is used to generate the configuration file. The name cannot be the same.
-   * `listener_port` - (Required) Listener port.
-   * `max_conn` - (Required) The maximum number of connections on the proxy side.
-   * `scheduler` - (Required) Scheduling strategy [roundrobin, leastconn, static-rr, source]
-   * `sticky_session` - (Required) Turn on call back hold [on, off]
+  * `client_timeout` - (Required) Set the time for client connection timeout.
+  * `client_timeout_unit` - (Required) Set the time unit for client connection timeout ['m', 'ms'].
+  * `connect_timeout` - (Required) Set the time for client connection timeout.
+  * `connect_timeout_unit` - (Required) Set the time unit for client connection timeout.
+  * `server_timeout` - (Required) Set the time for server connection timeout.
+  * `server_timeout_unit` - (Required) Set the time unit for server connection timeout.
+  * `listener_mode` - (Required) Listener mode.
+  * `listener_name` - (Required) The name of the listening strategy is used to generate the configuration file. The name cannot be the same.
+  * `listener_port` - (Required) Listener port.
+  * `max_conn` - (Required) The maximum number of connections on the proxy side.
+  * `scheduler` - (Required) Scheduling strategy [roundrobin, leastconn, static-rr, source]
+  * `sticky_session` - (Required) Turn on call back hold [on, off]
+  * `session_persistence` - (Optional) The persistence settings of the session.
+    * `key` - (Optional) The key of Cookie.
+    * `mode` - (Optional) The mode of the session persistence. [details](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#13modifyloadbalancerstrategys)
+    * `timer` - (Optional) Set the duration of the session persistence.
+      * `max_idle` - (Optional) If the hold time is exceeded and there is no new request in the connection, the session persistence is automatically broken.The default value is 0, indicating that the session is maintained even if the session is idle. In range of [0-7200]
+      * `max_life` - (Optional) Set the maximum duration for which a session can be held.
+  * `option` - (Optional)  Advanced configuration.
+    * `httpchk` - (Optional) The settings of health check.
+      * `method` - (Optional) The method for health check. Default value is 'GET'. Valid values ["GET","HEAD","OPTIONS"]
+      * `uri` - (uri) The uri for health check.
 * `tcp_listeners` - (Optional) TCP configuration list.
   * `acl_white_list` - (Required) White list setting, this is a string use , to split.
   * `backend_server` - (Required) Backend server configuration.

@@ -40,5 +40,6 @@ The following arguments are supported
 * `disk_value` - (Required) Mongodb disk value 
 * `password` - (Required) mongodb password   
 * `mongodb_version` - (Required) mongodb version, select by 4.0.3 , 3.6.7 , 3.2.21
+* `ip` - (Optional) The ip address of the instance. Known after created.
 
 
