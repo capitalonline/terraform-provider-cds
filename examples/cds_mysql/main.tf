@@ -17,6 +17,8 @@ resource "cds_mysql" "mysql_example" {
           value = "8888"
         }
     ]
+    # set mysql instance time_zone
+    time_zone = "+08:00"
 
     #  Set  backup
     backup = {

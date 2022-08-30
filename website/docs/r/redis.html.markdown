@@ -36,4 +36,5 @@ The following arguments are supported
 * `ram` - (Required) Redis ram/G
 * `redis_version` - (Required) Redis version, Please refer to data.json availableDB
 * `password` - (Required) Redis password   
+* `ip` - (Optional) Redis Ip address.
 
