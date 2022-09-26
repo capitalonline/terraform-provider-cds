@@ -58,11 +58,15 @@ resource "cds_instance" "my_instance2" {
   image_password = "123abc,.;"
   # operate_instance_status required value 'run' or 'stop' or 'reboot'
   operate_instance_status = "run"
+  # user self-defined data,must be encoded by base64
+  user_data = ["IyEvYmluL3NoCmVjaG8gIkhlbGxvIFdvcmxkIg==",#!/bin/sh echo "Hello World"
+    "IyEvYmluL3NoCmVjaG8gIm5hbWVzZXJ2ZXIgOC44LjguOCIgfCB0ZWUgL2V0Yy9yZXNvbHYuY29uZg==",]#!/bin/sh echo "nameserver 8.8.8.8" | tee /etc/resolv.conf
   public_ip = "auto"
   private_ip {
     private_id = cds_private_subnet.my_private_subnet_1.id
     address    = "auto"
   }
+
 
   # type  system_disk | ssd_system_disk
   # if type = system_disk ,you can not set and modify iops ,iops must set 0
@@ -136,3 +140,5 @@ data cds_data_source_vdc "my_vdc_data" {
   vdc_name = cds_vdc.my_vdc.vdc_name
   result_output_file = "data.json"
 }
+
+

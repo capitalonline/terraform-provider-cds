@@ -257,6 +257,13 @@ func resourceCdsCcsInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"user_data": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -410,6 +417,25 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 		passwd := imagePassword.(string)
 		if len(passwd) > 0 {
 			createInstanceRequest.ImagePassword = common.StringPtr(passwd)
+		}
+	}
+	//add user_data params
+	if userdatas, ok := d.GetOk("user_data"); ok {
+		datas, ok := userdatas.([]interface{})
+		if ok == false {
+			return errors.New("param:user_data conversion errors")
+		}
+
+		var items []string
+		for _, v := range datas {
+			if vs, ok := v.(string); ok {
+				items = append(items, vs)
+			} else {
+				return errors.New("param:user_data elems conversion errors")
+			}
+		}
+		if len(items) > 0 {
+			createInstanceRequest.UserData = common.StringPtrs(items)
 		}
 	}
 
@@ -925,6 +951,26 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		request := instance.NewResetImageRequest()
 		request.InstanceId = common.StringPtr(id)
 		request.ImageId = common.StringPtr(imageId.(string))
+		//add user_data params
+		if userdatas, ok := d.GetOk("user_data"); ok {
+			datas, ok := userdatas.([]interface{})
+			if ok == false {
+				return errors.New("param:user_data conversion errors")
+			}
+
+			var items []string
+			for _, v := range datas {
+				if vs, ok := v.(string); ok {
+					items = append(items, vs)
+				} else {
+					return errors.New("param:user_data elems conversion errors")
+				}
+			}
+			if len(items) > 0 {
+				request.UserData = common.StringPtrs(items)
+			}
+		}
+
 		if password, ok := d.GetOk("password"); ok {
 			request.Password = common.StringPtr(password.(string))
 		}
