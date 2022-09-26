@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -956,7 +955,6 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		request.ImageId = common.StringPtr(imageId.(string))
 		//添加userdata参数
 		if userdatas, ok := d.GetOk("user_data"); ok {
-			os.Stdout.Write(userdatas.([]byte))
 			datas, ok := userdatas.([]interface{})
 			if ok == false {
 				return errors.New("param:user_data conversion errors")
