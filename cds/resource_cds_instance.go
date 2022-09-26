@@ -258,9 +258,7 @@ func resourceCdsCcsInstance() *schema.Resource {
 				Optional: true,
 			},
 			"user_data": &schema.Schema{
-				Type: schema.TypeList,
-				//ConfigMode: schema.SchemaConfigModeAuto,
-				//Computed:   true,
+				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -953,7 +951,7 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		request := instance.NewResetImageRequest()
 		request.InstanceId = common.StringPtr(id)
 		request.ImageId = common.StringPtr(imageId.(string))
-		//添加userdata参数
+		//add user_data params
 		if userdatas, ok := d.GetOk("user_data"); ok {
 			datas, ok := userdatas.([]interface{})
 			if ok == false {
