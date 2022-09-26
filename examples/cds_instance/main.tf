@@ -129,7 +129,7 @@ resource "cds_instance" "my_instance2" {
   #utc = true
 }
 
-data cds_data_source_instance "my_instanced_ata" {
+data cds_data_source_instance "my_instance_data" {
     instance_id = cds_instance.my_instance2.id
     vdc_id =  cds_instance.my_instance2.vdc_id
     result_output_file = "data.json"
