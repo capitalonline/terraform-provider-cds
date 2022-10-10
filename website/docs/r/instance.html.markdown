@@ -24,6 +24,8 @@ resource "cds_instance" "instance_example" {
   vdc_id              = cds_vdc.my_vdc.id
   password            = var.password
   public_ip           = var.public_address
+  user_data = ["IyEvYmluL3NoCmVjaG8gIkhlbGxvIFdvcmxkIg==",
+     "IyEvYmluL3NoCmVjaG8gIm5hbWVzZXJ2ZXIgOC44LjguOCIgfCB0ZWUgL2V0Yy9yZXNvbHYuY29uZg==",]
   operate_instance_status = var.operate_instance_status
   private_ip          = {
     "private_id" = cds_private_subnet.my_private_subnet_1.id,
@@ -92,6 +94,7 @@ The following arguments are supported
 * `password` - (Required,Unmodifiable) Password to an instance is a string of 8 to 30 characters. It must contain uppercase/lowercase letters, numerals and special symbols.
 * `public_ip` - (Required,Unmodifiable) The public ip of the instance.
 * `amount` - (Optional,Unmodifiable) Number of instances created in batch, maximum 50.
+* `user_data` - (Optional) User defined data, the format must be base64 encoding
 * `operate_instance_status` - (Optional) The status of the instance. Allow values: reboot, stop, run.
 * `private_ip` - (Optional) Private ip.
   * `private_id` - (Required)Private subnet ID.
