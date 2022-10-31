@@ -2,6 +2,7 @@ package cds
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -141,7 +142,9 @@ func resourceCdsVdcRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("vdc_name", *response.Data[0].VdcName)
 	d.Set("region_id", *response.Data[0].RegionId)
 	if len(response.Data[0].PublicNetwork) > 0 {
-		d.Set("public_id", *response.Data[0].PublicNetwork[0].PublicId)
+		if _, ok := d.GetOk("public_id"); !ok {
+			d.Set("public_id", *response.Data[0].PublicNetwork[0].PublicId)
+		}
 	} else {
 		return errors.New("not public id")
 	}
@@ -249,9 +252,11 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 				return terformErr
 			}
 			_, err := vdcService.client.UseVdcClient().AddPublicNetwork(request)
+
 			if err != nil {
 				return err
 			}
+			_ = waitVdcUpdateFinished(ctx, vdcService, id)
 			return nil
 		}
 		// Delete public network
@@ -265,6 +270,7 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 					if errRet != nil {
 						return errRet
 					}
+					_ = waitVdcUpdateFinished(ctx, vdcService, id)
 				}
 			}
 			return nil
@@ -289,9 +295,16 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 					request := vdc.NewAddPublicIpRequest()
 					request.PublicId = common.StringPtr(publicId)
 					request.Number = common.IntPtr(newNum)
-					_, errRet := vdcService.AddPublicNetworkIp(ctx, request)
+					taskId, errRet := vdcService.AddPublicNetworkIp(ctx, request)
 					if errRet != nil {
 						return errRet
+					}
+					resp, err := taskService.DescribeTask(ctx, taskId)
+					if err != nil {
+						return err
+					}
+					if *resp.Code != "Success" {
+						return errors.New("query task failed with message " + *resp.Message)
 					}
 				} else if newNum < oldNum && u.ContainsInt(validNums, newNum) {
 					oldValue, newValue := d.GetChange("public_network")
@@ -315,9 +328,25 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 					request := vdc.NewModifyPublicNetworkRequest()
 					request.PublicId = common.StringPtr(publicId)
 					request.Qos = common.StringPtr(value[1].(string))
-					_, errRet := vdcService.ModifyPublicNetwork(ctx, request)
+					qos, err := strconv.Atoi(value[1].(string))
+					if err != nil || qos <= 0 {
+						oldValue, newValue := d.GetChange("public_network")
+						oldMap := oldValue.(map[string]interface{})
+						newMap := newValue.(map[string]interface{})
+						newMap["qos"] = oldMap["qos"]
+						d.Set("public_network", newMap)
+						return errors.New(fmt.Sprintf("invalid value %v of qos", value[1]))
+					}
+					taskId, errRet := vdcService.ModifyPublicNetwork(ctx, request)
 					if errRet != nil {
 						return errRet
+					}
+					resp, err := taskService.DescribeTask(ctx, taskId)
+					if err != nil {
+						return err
+					}
+					if *resp.Code != "Success" {
+						return errors.New("query task failed with message " + *resp.Message)
 					}
 				} else {
 					return errors.New("Qos can not be modified if the billingmethod is Traffic.")
@@ -331,9 +360,16 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 				request := vdc.NewRenewPublicNetworkRequest()
 				request.PublicId = common.StringPtr(publicId)
 				request.AutoRenew = common.IntPtr(i)
-				_, errRet := vdcService.RenewPublicNetwork(ctx, request)
+				taskId, errRet := vdcService.RenewPublicNetwork(ctx, request)
 				if errRet != nil {
 					return errRet
+				}
+				resp, err := taskService.DescribeTask(ctx, taskId)
+				if err != nil {
+					return err
+				}
+				if *resp.Code != "Success" {
+					return errors.New("query task failed with message " + *resp.Message)
 				}
 			case "type":
 				continue
@@ -342,7 +378,7 @@ func resourceCdsVdcUpdate(d *schema.ResourceData, meta interface{}) error {
 
 		d.SetPartial("public_network")
 	}
-	time.Sleep(20 * time.Second)
+	_ = waitVdcUpdateFinished(ctx, vdcService, id)
 	return nil
 }
 
@@ -351,9 +387,9 @@ func resourceCdsVdcDelete(d *schema.ResourceData, meta interface{}) error {
 	fmt.Println("delete vdc")
 	logId := getLogId(contextNil)
 	ctx := context.WithValue(context.TODO(), "logId", logId)
-
 	vdcService := VdcService{client: meta.(*CdsClient).apiConn}
 	id := d.Id()
+
 	if publicId, ok := d.GetOk("public_id"); ok {
 		publicId := publicId.(string)
 		if len(publicId) > 0 {
@@ -365,8 +401,7 @@ func resourceCdsVdcDelete(d *schema.ResourceData, meta interface{}) error {
 			}
 		}
 	}
-	time.Sleep(60 * time.Second)
-
+	_ = waitVdcNetWorkDeleted(ctx, vdcService, id)
 	request := vdc.NewDeleteVdcRequest()
 	request.VdcId = common.StringPtr(id)
 
@@ -375,7 +410,95 @@ func resourceCdsVdcDelete(d *schema.ResourceData, meta interface{}) error {
 	if errRet != nil {
 		return errRet
 	}
-
-	time.Sleep(time.Second * 30)
+	_ = waitVdcUpdateDeleted(ctx, vdcService, id)
 	return nil
+}
+
+func waitVdcUpdateFinished(ctx context.Context, service VdcService, vdcId string, flag ...string) error {
+	var timeoutLine = time.Now().Add(20 * time.Minute)
+	request := vdc.DescribeVdcRequest()
+	request.VdcId = common.StringPtr(vdcId)
+	for {
+		time.Sleep(time.Second * 5)
+		if time.Now().After(timeoutLine) {
+			return errors.New("wait vdc update timeout")
+		}
+		response, err := service.DescribeVdc(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			return errors.New(fmt.Sprintf("query vdc failed with message: %v", *response.Message))
+		}
+		if len(response.Data) <= 0 {
+			return errors.New(fmt.Sprintf("can not find vdc %v", vdcId))
+		}
+		if response.Data[0].VdcStatus == nil {
+			continue
+		}
+		if *response.Data[0].VdcStatus != "ok" {
+			continue
+		}
+		if len(response.Data[0].PublicNetwork) != 0 {
+			for _, pub := range response.Data[0].PublicNetwork {
+				if *pub.Status != "ok" {
+					continue
+				}
+			}
+		}
+		if len(response.Data[0].PrivateNetwork) != 0 {
+			for _, private := range response.Data[0].PrivateNetwork {
+				if *private.Status != "ok" {
+					continue
+				}
+			}
+		}
+		if len(flag) != 0 {
+			data, _ := json.Marshal(response)
+			log.Println(fmt.Sprintf("创建实例时查询vdc:%s", string(data)))
+		}
+		return nil
+	}
+}
+
+func waitVdcUpdateDeleted(ctx context.Context, service VdcService, vdcId string) error {
+	var timeoutLine = time.Now().Add(20 * time.Minute)
+	request := vdc.DescribeVdcRequest()
+	request.VdcId = common.StringPtr(vdcId)
+	for {
+		if time.Now().After(timeoutLine) {
+			return errors.New("wait vdc update timeout")
+		}
+		response, err := service.DescribeVdc(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code == "VDCNotFound" || (*response.Code == "Success" && len(response.Data) == 0) {
+			return nil
+		}
+		if *response.Code != "Success" {
+			return errors.New(fmt.Sprintf("query vdc failed with message: %v", *response.Message))
+		}
+		time.Sleep(time.Second * 5)
+	}
+}
+
+func waitVdcNetWorkDeleted(ctx context.Context, service VdcService, vdcId string) error {
+	var timeoutLine = time.Now().Add(20 * time.Minute)
+	request := vdc.DescribeVdcRequest()
+	request.VdcId = common.StringPtr(vdcId)
+	for {
+		time.Sleep(time.Second * 5)
+		if time.Now().After(timeoutLine) {
+			return errors.New("wait vdc update timeout")
+		}
+		response, err := service.DescribeVdc(ctx, request)
+		if err != nil {
+			return err
+		}
+		if len(response.Data[0].PublicNetwork) == 0 && len(response.Data[0].PrivateNetwork) == 0 {
+			return nil
+		}
+
+	}
 }

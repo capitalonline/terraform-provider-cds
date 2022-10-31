@@ -2,7 +2,10 @@ package cds
 
 import (
 	"context"
+	"errors"
 	"log"
+	"math/rand"
+	"time"
 
 	"terraform-provider-cds/cds/connectivity"
 	"terraform-provider-cds/cds/utils"
@@ -63,16 +66,27 @@ func (me *VdcService) CreatePrivateNetwork(ctx context.Context, request *vdc.Add
 	}()
 
 	ratelimit.Check(request.GetAction())
-	response, err := me.client.UseVdcClient().AddPrivateNetwork(request)
-	if err == nil {
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	timeout := time.Now().Add(20 * time.Minute)
+	for {
+		if time.Now().After(timeout) {
+			errRet = errors.New("create private network timeout")
+		}
+		response, err := me.client.UseVdcClient().AddPrivateNetwork(request)
+		if err != nil {
+			return "", err
+		}
 		log.Printf("[DEBUG]%s api[%s] , request body [%s], response body[%s]\n",
 			logId, request.GetAction(), request.ToJsonString(), response.ToJsonString())
 		taskId = *response.TaskId
+		if *response.Code == "TaskDuplicate" {
+			time.Sleep(5)
+			continue
+		}
 		return
 	}
-
-	errRet = err
-	return
 }
 
 func (me *VdcService) DescribeVdc(ctx context.Context, request *vdc.DescVdcRequest) (result vdc.DescVdcResponse, errRet error) {
@@ -86,6 +100,9 @@ func (me *VdcService) DescribeVdc(ctx context.Context, request *vdc.DescVdcReque
 	}()
 
 	ratelimit.Check(request.GetAction())
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
 	response, err := me.client.UseVdcGetClient().DescribeVdc(request)
 	if err == nil {
 		log.Printf("[DEBUG]%s api[%s] , request body [%s], response body[%s]\n",
@@ -149,6 +166,21 @@ func (me *VdcService) DeletePublicNetwork(
 
 	errRet = err
 	return
+}
+
+func (me *VdcService) CreatePublicNetwork(ctx context.Context, request *vdc.CreatePublicNetworkRequest) (*vdc.CreatePublicNetworkResponse, error) {
+	logId := getLogId(ctx)
+	var err error
+	defer func() {
+		if err != nil {
+			log.Printf("[CRITAL]%s api[%s] fail, request body [%s], reason[%s]\n",
+				logId, request.GetAction(), request.ToJsonString(), err.Error())
+		}
+	}()
+
+	ratelimit.Check(request.GetAction())
+
+	return me.client.UseVdcClient().CreatePublicNetwork(request)
 }
 
 func (me *VdcService) DeleteVdc(

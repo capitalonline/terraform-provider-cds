@@ -59,6 +59,7 @@ func resourceCdsPrivateSubnetCreate(d *schema.ResourceData, meta interface{}) er
 	vdcSign := d.Get("vdc_id").(string)
 	createPrivateNetworkRequest := vdc.NewAddPrivateNetworkRequest()
 	createPrivateNetworkRequest.VdcId = common.StringPtr(vdcSign)
+	_ = waitVdcUpdateFinished(ctx, vdcService, vdcSign)
 	if name, ok := d.GetOk("name"); ok {
 		name := name.(string)
 		if len(name) > 0 {
