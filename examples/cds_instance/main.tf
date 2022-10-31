@@ -1,6 +1,8 @@
 resource "cds_vdc" "my_vdc" {
   vdc_name  = "Terraform(using)25"
   region_id = "CN_Beijing_A"
+  #  This method is not recommended after v1.4.5.
+  #  We recommend using 'cds_vdc_public_network' to create public networks.
   public_network = {
     "ipnum"          = 4
     "qos"            = 10
@@ -48,6 +50,7 @@ resource "cds_instance" "my_instance2" {
   region_id     = "CN_Beijing_A"
   image_id      = "Ubuntu_16.04_64"
   instance_type = "high_ccs"
+  # In v1.4.5 and later, changing the instance specification will automatically shut down and start up
   cpu           = 4
   ram           = 4
   vdc_id        = cds_vdc.my_vdc.id
