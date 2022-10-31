@@ -277,8 +277,10 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
 	taskService := TaskService{client: meta.(*CdsClient).apiConn}
 	securityGroupService := SecurityGroupService{client: meta.(*CdsClient).apiConn}
+	vdcService := VdcService{client: meta.(*CdsClient).apiConn}
 
 	createInstanceRequest := instance.NewAddInstanceRequest()
+	vdcId := d.Get("vdc_id")
 
 	if regionId, ok := d.GetOk("region_id"); ok {
 		regionId := regionId.(string)
@@ -438,7 +440,7 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 			createInstanceRequest.UserData = common.StringPtrs(items)
 		}
 	}
-
+	_ = waitVdcUpdateFinished(ctx, vdcService, vdcId.(string), "instance")
 	taskId, errRet := instanceService.CreateInstance(ctx, createInstanceRequest)
 	if errRet != nil {
 		return errRet
@@ -723,14 +725,44 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 				request.InstanceType = common.StringPtr(instanceType.(string))
 			}
 		}
+
+		descReq := instance.NewDescribeInstanceRequest()
+		descReq.InstanceId = common.StringPtr(id)
+
+		descResp, err := instanceService.DescribeInstance(ctx, descReq)
+		if err != nil {
+			return err
+		}
+		if *descResp.Code != "Success" {
+			return errors.New(fmt.Sprintf("get instance status failed:%s", *descResp.Message))
+		}
+		if *descResp.Data.Instances[0].InstanceStatus != "stop" {
+			stopReq := instance.NewStopInstanceRequest()
+			stopReq.InstanceId = common.StringPtr(id)
+			// stop instance first
+			stopResp, err := instanceService.StopInstance(ctx, stopReq)
+			if err != nil {
+				return err
+			}
+			if *stopResp.Code != "Success" {
+				return errors.New("failed to stop instance")
+			}
+			waitInstanceFinish(context.Background(), instanceService, id)
+		}
 		requestdata, _ := json.Marshal(request)
 		log.Printf("DEBUG_REQUEST: %s", string(requestdata))
 
-		_, err := instanceService.client.UseCvmClient().ModifyInstanceSpec(request)
+		_, err = instanceService.client.UseCvmClient().ModifyInstanceSpec(request)
 		if err != nil {
 			return err
 		}
 		waitInstanceUpdated(context.Background(), instanceService, id)
+
+		// run instance
+		runReq := instance.NewStartInstanceRequest()
+		runReq.InstanceId = common.StringPtr(id)
+		_, err = instanceService.StartInstance(ctx, runReq)
+		waitInstanceFinish(context.Background(), instanceService, id)
 	}
 
 	if d.HasChange("security_group_binding") {
@@ -979,6 +1011,30 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		}
 		if publicKey, ok := d.GetOk("public_key"); ok {
 			request.PublicKey = common.StringPtr(publicKey.(string))
+		}
+
+		descReq := instance.NewDescribeInstanceRequest()
+		descReq.InstanceId = common.StringPtr(id)
+
+		descResp, err := instanceService.DescribeInstance(ctx, descReq)
+		if err != nil {
+			return err
+		}
+		if *descResp.Code != "Success" {
+			return errors.New(fmt.Sprintf("get instance status failed:%s", *descResp.Message))
+		}
+		if *descResp.Data.Instances[0].InstanceStatus != "stop" {
+			stopReq := instance.NewStopInstanceRequest()
+			stopReq.InstanceId = common.StringPtr(id)
+			// stop instance first
+			stopResp, err := instanceService.StopInstance(ctx, stopReq)
+			if err != nil {
+				return err
+			}
+			if *stopResp.Code != "Success" {
+				return errors.New("failed to stop instance")
+			}
+			waitInstanceFinish(context.Background(), instanceService, id)
 		}
 		response, err := instanceService.ResetImage(ctx, request)
 		if err != nil {
