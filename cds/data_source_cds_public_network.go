@@ -90,7 +90,7 @@ func dataSourceCdsPublicNetworkRead(d *schema.ResourceData, meta interface{}) er
 	if err != nil {
 		return err
 	}
-	if *resp.Code != "Success" {
+	if *resp.Code != "Success" || len(resp.Data) == 0 {
 		return errors.New(fmt.Sprintf("request public network failed: %v,message: %s", *resp.Code, *resp.Message))
 	}
 	publicId := d.Get("public_id")

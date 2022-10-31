@@ -410,7 +410,7 @@ func resourceCdsVdcDelete(d *schema.ResourceData, meta interface{}) error {
 	if errRet != nil {
 		return errRet
 	}
-	_ = waitVdcUpdateDeleted(ctx, vdcService, id)
+	_ = waitVdcDeleted(ctx, vdcService, id)
 	return nil
 }
 
@@ -461,7 +461,7 @@ func waitVdcUpdateFinished(ctx context.Context, service VdcService, vdcId string
 	}
 }
 
-func waitVdcUpdateDeleted(ctx context.Context, service VdcService, vdcId string) error {
+func waitVdcDeleted(ctx context.Context, service VdcService, vdcId string) error {
 	var timeoutLine = time.Now().Add(20 * time.Minute)
 	request := vdc.DescribeVdcRequest()
 	request.VdcId = common.StringPtr(vdcId)
