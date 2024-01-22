@@ -57,7 +57,7 @@ endif
 
 all: mac windows linux
 
-all-with-version: mac-with-version windows-with-version linux-with-version
+all-with-version: mac-with-version windows-with-version linux-with-version manifest checksum
 
 dev: clean fmt mac copy
 
@@ -66,43 +66,58 @@ devlinux: clean fmt linux linuxcopy
 devwin: clean fmt windows windowscopy
 
 copy:
-	tar -xvf bin/terraform-provider-cds_darwin-amd64.tgz && mv bin/terraform-provider-cds $(shell dirname `which terraform`)
+	tar -xvf bin/terraform-provider-cds_darwin_amd64.tgz && mv bin/terraform-provider-cds $(shell dirname `which terraform`)
 
 clean:
 	rm -rf bin/*
 
 mac:
 	GOOS=darwin GOARCH=amd64 go build -o bin/terraform-provider-cds
-	tar czvf bin/terraform-provider-cds_darwin-amd64.tgz bin/terraform-provider-cds
+	#tar czvf bin/terraform-provider-cds_darwin-amd64.tgz bin/terraform-provider-cds
+	zip -r bin/terraform-provider-cds_darwin_amd64.zip bin/terraform-provider-cds
 	rm -rf bin/terraform-provider-cds
 
 mac-with-version:
-	GOOS=darwin GOARCH=amd64 go build -o bin/terraform-provider-cds_$(RELEASE_TAG)
-	tar czvf bin/terraform-provider-cds_darwin-amd64_$(RELEASE_TAG).tgz bin/terraform-provider-cds_$(RELEASE_TAG)
-	rm -rf bin/terraform-provider-cds_$(RELEASE_TAG)
+	GOOS=darwin GOARCH=amd64 go build -o bin/terraform-provider-cds_v$(RELEASE_TAG)
+	#tar czvf bin/terraform-provider-cds_darwin-amd64_$(RELEASE_TAG).tgz bin/terraform-provider-cds_$(RELEASE_TAG)
+	zip -r bin/terraform-provider-cds_$(RELEASE_TAG)_darwin_amd64.zip bin/terraform-provider-cds_v$(RELEASE_TAG)
+	rm -rf bin/terraform-provider-cds_v$(RELEASE_TAG)
 
 windowscopy:
-	tar -xvf bin/terraform-provider-cds_windows-amd64.tgz && mv bin/terraform-provider-cds $(shell dirname `which terraform`)
+	tar -xvf bin/terraform-provider-cds_windows_amd64.tgz && mv bin/terraform-provider-cds $(shell dirname `which terraform`)
 
 windows:
 	GOOS=windows GOARCH=amd64 go build -o bin/terraform-provider-cds.exe
-	tar czvf bin/terraform-provider-cds_windows-amd64.tgz bin/terraform-provider-cds.exe
+	#tar czvf bin/terraform-provider-cds_windows-amd64.tgz bin/terraform-provider-cds.exe
+	zip -r  bin/terraform-provider-cds_windows_amd64.zip bin/terraform-provider-cds.exe
 	rm -rf bin/terraform-provider-cds.exe
 
 windows-with-version:
-	GOOS=windows GOARCH=amd64 go build -o bin/terraform-provider-cds_$(RELEASE_TAG).exe
-	tar czvf bin/terraform-provider-cds_windows-amd64_$(RELEASE_TAG).tgz bin/terraform-provider-cds_$(RELEASE_TAG).exe
-	rm -rf bin/terraform-provider-cds_$(RELEASE_TAG).exe
+	GOOS=windows GOARCH=amd64 go build -o bin/terraform-provider-cds_v$(RELEASE_TAG).exe
+	#tar czvf bin/terraform-provider-cds_windows-amd64_$(RELEASE_TAG).tgz bin/terraform-provider-cds_$(RELEASE_TAG).exe
+	zip -r bin/terraform-provider-cds_$(RELEASE_TAG)_windows_amd64.zip bin/terraform-provider-cds_v$(RELEASE_TAG).exe
+	rm -rf bin/terraform-provider-cds_v$(RELEASE_TAG).exe
 
 linuxcopy:
-	tar -xvf bin/terraform-provider-cds_linux-amd64.tgz && mv bin/terraform-provider-cds $(shell dirname `which terraform`)
+	tar -xvf bin/terraform-provider-cds_linux_amd64.tgz && mv bin/terraform-provider-cds $(shell dirname `which terraform`)
 
 linux:
 	GOOS=linux GOARCH=amd64 go build -o bin/terraform-provider-cds
-	tar czvf bin/terraform-provider-cds_linux-amd64.tgz bin/terraform-provider-cds
+	#tar czvf bin/terraform-provider-cds_linux-amd64.tgz bin/terraform-provider-cds
+	zip -r czvf bin/terraform-provider-cds_linux_amd64.zip bin/terraform-provider-cds
 	rm -rf bin/terraform-provider-cds
 
 linux-with-version:
-	GOOS=linux GOARCH=amd64 go build -o bin/terraform-provider-cds_$(RELEASE_TAG)
-	tar czvf bin/terraform-provider-cds_linux-amd64_$(RELEASE_TAG).tgz bin/terraform-provider-cds_$(RELEASE_TAG)
-	rm -rf bin/terraform-provider-cds_$(RELEASE_TAG)
+	GOOS=linux GOARCH=amd64 go build -o bin/terraform-provider-cds_v$(RELEASE_TAG)
+	#tar czvf bin/terraform-provider-cds_linux-amd64_$(RELEASE_TAG).tgz bin/terraform-provider-cds_$(RELEASE_TAG)
+	zip -r bin/terraform-provider-cds_$(RELEASE_TAG)_linux_amd64.zip bin/terraform-provider-cds_v$(RELEASE_TAG)
+	rm -rf bin/terraform-provider-cds_v$(RELEASE_TAG)
+
+manifest:
+	cp terraform-registry-manifest.json bin/terraform-provider-cds_$(RELEASE_TAG)_manifest.json
+
+checksum:
+	shasum -a 256 ./bin/*.zip > terraform-provider-cds_$(RELEASE_TAG)_SHA256SUMS
+	gpg --detach-sign terraform-provider-cds_$(RELEASE_TAG)_SHA256SUMS
+	mv terraform-provider-cds_$(RELEASE_TAG)_SHA256SUMS ./bin/
+	mv terraform-provider-cds_$(RELEASE_TAG)_SHA256SUMS.sig ./bin/
