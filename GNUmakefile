@@ -57,7 +57,7 @@ endif
 
 all: mac windows linux
 
-all-with-version: mac-with-version windows-with-version linux-with-version manifest checksum
+all-with-version: mac-with-version windows-with-version linux-with-version freebsd-with-version manifest checksum
 
 dev: clean fmt mac copy
 
@@ -142,11 +142,30 @@ linux-with-version:
 	zip -r terraform-provider-cds_$(RELEASE_TAG)_linux_arm64.zip terraform-provider-cds_v$(RELEASE_TAG)
 	rm -rf terraform-provider-cds_v$(RELEASE_TAG)
 
+freebsd-with-version:
+	GOOS=freebsd GOARCH=amd64 go build -o terraform-provider-cds_v$(RELEASE_TAG)
+	zip -r terraform-provider-cds_$(RELEASE_TAG)_freebsd_amd64.zip terraform-provider-cds_v$(RELEASE_TAG)
+	rm -rf terraform-provider-cds_v$(RELEASE_TAG)
+
+	GOOS=freebsd GOARCH='386' go build -o terraform-provider-cds_v$(RELEASE_TAG)
+	zip -r terraform-provider-cds_$(RELEASE_TAG)_freebsd_386.zip terraform-provider-cds_v$(RELEASE_TAG)
+	rm -rf terraform-provider-cds_v$(RELEASE_TAG)
+
+	GOOS=freebsd GOARCH=arm go build -o terraform-provider-cds_v$(RELEASE_TAG)
+	zip -r terraform-provider-cds_$(RELEASE_TAG)_freebsd_arm.zip terraform-provider-cds_v$(RELEASE_TAG)
+	rm -rf terraform-provider-cds_v$(RELEASE_TAG)
+
+	GOOS=freebsd GOARCH=arm64 go build -o terraform-provider-cds_v$(RELEASE_TAG)
+	zip -r terraform-provider-cds_$(RELEASE_TAG)_freebsd_arm64.zip terraform-provider-cds_v$(RELEASE_TAG)
+	rm -rf terraform-provider-cds_v$(RELEASE_TAG)
+
+
 manifest:
-	cp terraform-registry-manifest.json terraform-provider-cds_$(RELEASE_TAG)_manifest.json
+	#cp terraform-registry-manifest.json terraform-provider-cds_$(RELEASE_TAG)_manifest.json
 
 checksum:
-	shasum -a 256 *.zip terraform-provider-cds_$(RELEASE_TAG)_manifest.json > terraform-provider-cds_$(RELEASE_TAG)_SHA256SUMS
+	#shasum -a 256 *.zip terraform-provider-cds_$(RELEASE_TAG)_manifest.json > terraform-provider-cds_$(RELEASE_TAG)_SHA256SUMS
+	shasum -a 256 *.zip  > terraform-provider-cds_$(RELEASE_TAG)_SHA256SUMS
 	gpg --detach-sign terraform-provider-cds_$(RELEASE_TAG)_SHA256SUMS
 	#mv terraform-provider-cds_$(RELEASE_TAG)_SHA256SUMS ./bin/
 	#mv terraform-provider-cds_$(RELEASE_TAG)_SHA256SUMS.sig ./bin/
