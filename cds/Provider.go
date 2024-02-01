@@ -50,6 +50,7 @@ func Provider() terraform.ResourceProvider {
 			"cds_data_source_redis":          dataSourceCdsRedis(),
 			"cds_data_source_mongodb":        dataSourceCdsMongodb(),
 			"cds_data_source_public_network": dataSourceCdsPublicNetwork(),
+			"cds_data_source_dedicated_host": dataSourceDedicatedHost(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"cds_vdc":            resourceCdsVdc(),
@@ -64,6 +65,7 @@ func Provider() terraform.ResourceProvider {
 			"cds_redis":          resourceCdsRedis(),
 			"cds_mongodb":        resourceCdsMongodb(),
 			"cds_public_network": resourceCdsPublicNetwork(),
+			"cds_dedicated_host": resourceCdsDedicatedHost(),
 		},
 
 		ConfigureFunc: providerConfigure,
