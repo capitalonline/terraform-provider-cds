@@ -28,69 +28,82 @@ func resourceCdsCcsInstance() *schema.Resource {
 		Delete: resourceCdsCcsInstanceDelete,
 		Schema: map[string]*schema.Schema{
 			"region_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "CN_Beijing_A",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "CN_Beijing_A",
+				Description: "The Region of the instance, refer to [All Regions](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E5%8F%AF%E7%94%A8%E5%8C%BA%E5%90%8D%E7%A7%B0)",
 			},
 			"instance_name": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: u.ValidateStringLengthInRange(1, 36),
+				Description:  "The name of the instance",
 			},
 			"vdc_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Vdc Id",
 			},
 			"image_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "Ubuntu_16.04_64",
-				Optional: true,
+				Type:        schema.TypeString,
+				Default:     "Ubuntu_16.04_64",
+				Optional:    true,
+				Description: "The image of the operating system, default value is Ubuntu_16.04_64. [All valid images ](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E5%85%AC%E5%85%B1%E6%A8%A1%E6%9D%BF)",
 			},
 			"cpu": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The number of cpu, the unit (a) can only be selected [1, 2, 4, 8, 10, 16, 32] The default selection can be purchased the smallest.",
 			},
 			"ram": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The amount of memory, the unit (GB) can only be selected [1, 2, 4, 8, 12, 16, 24, 32, 48, 64, 96, 128] The default selection can be purchased the smallest.",
 			},
 			"password": &schema.Schema{
-				Type:      schema.TypeString,
-				Optional:  true,
-				Sensitive: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Sensitive:   true,
+				Description: "Password to an instance is a string of 8 to 30 characters. It must contain uppercase/lowercase letters, numerals and special symbols.",
 			},
 			"public_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Public key",
 			},
 			"instance_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The type of the instance.[All valid type](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E4%B8%BB%E6%9C%BA%E7%B1%BB%E5%9E%8B)",
 			},
 			"instance_charge_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "PostPaid",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "PostPaid",
+				Description: "The payment methods for instance are as follows: 1. PrePaid: Prepaid, monthly or yearly subscription.  2. PostPaid (default): Pay-as-you-go.",
 			},
 			"auto_renew": &schema.Schema{
-				Type:     schema.TypeInt,
-				Default:  1,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Default:     1,
+				Optional:    true,
+				Description: "Whether the subscription-based instance will automatically renew. 1 indicates automatic renewal (default), 0 indicates no automatic renewal.",
 			},
 			"prepaid_month": &schema.Schema{
-				Type:     schema.TypeInt,
-				Default:  1,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Default:     1,
+				Optional:    true,
+				Description: "The duration of the subscription for the instance, where 0 indicates a purchase until the end of the current month, 1 indicates one full calendar month. The default value is 0.",
 			},
 			"amount": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  1,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     1,
+				Description: "Number of instances created in batch, maximum 50",
 			},
 			"public_ip": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "公网ip",
+				Description: "The public ip of the instance",
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					if old != "" && new == "auto" {
 						return true
@@ -103,12 +116,13 @@ func resourceCdsCcsInstance() *schema.Resource {
 				ConfigMode:  schema.SchemaConfigModeAttr,
 				MaxItems:    15,
 				Optional:    true,
-				Description: "私网IP",
+				Description: "Private ip",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"private_id": &schema.Schema{
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Private subnet ID.",
 						},
 						"address": &schema.Schema{
 							Type:     schema.TypeString,
@@ -119,11 +133,13 @@ func resourceCdsCcsInstance() *schema.Resource {
 								}
 								return false
 							},
+							Description: "Ip address. Automatically assign input: auto, the default is not written as not assigning private network ip.",
 						},
 						"interface_id": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Computed:    true,
+							Description: "Network interface id",
 						},
 					},
 				},
@@ -133,30 +149,34 @@ func resourceCdsCcsInstance() *schema.Resource {
 				ConfigMode: schema.SchemaConfigModeAuto,
 				// ConfigMode:  schema.SchemaConfigModeAttr,
 				Optional:    true,
-				Description: "System disk info.",
+				Description: "System Disk . If not set , default: size = 20 , type = system_disk ,iops = 0",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The type of the disk. Allow values: `system_disk`、`ssd_system_disk`.",
 						},
 						"size": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The size of the disk in GiBs.",
 						},
 						"iops": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The size of the disk iops , type equal ssd_system_disk can set iops, type equal system_disk can not set iops (iops must equal 0)",
 						},
 					},
 				},
 			},
 			"data_disks": {
-				Type:       schema.TypeList,
-				ConfigMode: schema.SchemaConfigModeAttr,
-				Optional:   true,
-				MinItems:   1,
-				MaxItems:   15,
+				Type:        schema.TypeList,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				Optional:    true,
+				MinItems:    1,
+				MaxItems:    15,
+				Description: "Data Disks. Add at creation time and append after creation. The quantity limit can be set between 1 and 15.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"size": {
@@ -164,108 +184,217 @@ func resourceCdsCcsInstance() *schema.Resource {
 							Required: true,
 						},
 						"type": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Default:  "high_disk",
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "high_disk",
+							Description: "The type of the disk. Allow values: `big_disk`, `high_disk`, `ssd_disk`",
 						},
 						"iops": {
-							Type:     schema.TypeInt,
-							Optional: true,
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Description: " The size of the disk iops",
 						},
 					},
 				},
 			},
 			"update_data_disks": {
-				Type:       schema.TypeList,
-				ConfigMode: schema.SchemaConfigModeAttr,
-				Optional:   true,
-				MinItems:   1,
-				MaxItems:   15,
+				Type:        schema.TypeList,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				Optional:    true,
+				MinItems:    1,
+				MaxItems:    15,
+				Description: "Modify data disks",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"disk_id": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The id of data disk , from data source instance",
 						},
 						"size": {
-							Type:     schema.TypeInt,
-							Required: true,
+							Type:        schema.TypeInt,
+							Required:    true,
+							Description: "The size of the disk in GiBs.",
 						},
 						"type": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Default:  "high_disk",
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "high_disk",
+							Description: "The type of the disk. Allow values: `big_disk``, `high_disk`, `ssd_disk`",
 						},
 						"iops": {
-							Type:     schema.TypeInt,
-							Optional: true,
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Description: "The size of the disk iops int,type equal ssd_disk can modify iops.",
 						},
 					},
 				},
 			},
 			"delete_data_disks": {
-				Type:       schema.TypeList,
-				ConfigMode: schema.SchemaConfigModeAttr,
-				Optional:   true,
-				MinItems:   1,
-				MaxItems:   15,
+				Type:        schema.TypeList,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				Optional:    true,
+				MinItems:    1,
+				MaxItems:    15,
+				Description: "Data disks to delete.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"disk_id": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Disk id",
 						},
 					},
 				},
 			},
 			"security_group_binding": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				MinItems: 1,
-				MaxItems: 15,
+				Type:        schema.TypeSet,
+				Optional:    true,
+				MinItems:    1,
+				MaxItems:    15,
+				Description: "Instance binding security group",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Specify a public or private network binding security group. Allow values: `private`, `public`.",
 						},
 						"subnet_id": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Subnet ID",
 						},
 						"security_group_id": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Security group ID",
 						},
 					},
 				},
 			},
 			"instance_status": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Status of the instance",
 			},
 			//service
 			"operate_instance_status": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Operate instance . Allow values: `reboot`, `stop`, `run`",
 			},
 			"utc": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Whether to set the time zone to UTC",
 			},
 			"image_password": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "When using a public image, this field is optional; when using a custom image, this field is required.",
 			},
 			"user_data": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "User-defined data must be in base64 encoding format.",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 		},
-	}
+		Description: "Instance of vm. [View documentation](https://github.com/capitalonline/openapi/blob/master/%E4%BA%91%E4%B8%BB%E6%9C%BA%E6%A6%82%E8%A7%88.md)\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource "cds_instance" "my_instance" {
+  instance_name = "test_zz_04"
+  region_id     = "CN_Beijing_A"
+  image_id      = "Ubuntu_16.04_64"
+  instance_type = "high_ccs"
+  # In v1.4.5 and later, changing the instance specification will automatically shut down and start up
+  cpu           = 4
+  ram           = 4
+  vdc_id        = cds_vdc.my_vdc.id
+  # public_key = file("/home/guest/.ssh/test.pub")
+  # password is required after v1.3.1
+  password  = "123abc,.;"
+  # image_password is optional
+  image_password = "123abc,.;"
+  # operate_instance_status required value 'run' or 'stop' or 'reboot'
+  operate_instance_status = "run"
+  # user self-defined data,must be encoded by base64
+  user_data = ["IyEvYmluL3NoCmVjaG8gIkhlbGxvIFdvcmxkIg==",#!/bin/sh echo "Hello World"
+    "IyEvYmluL3NoCmVjaG8gIm5hbWVzZXJ2ZXIgOC44LjguOCIgfCB0ZWUgL2V0Yy9yZXNvbHYuY29uZg==",]#!/bin/sh echo "nameserver 8.8.8.8" | tee /etc/resolv.conf
+  public_ip = "auto"
+  private_ip {
+    private_id = cds_private_subnet.my_private_subnet_1.id
+    address    = "auto"
+  }
+
+
+  # type  system_disk | ssd_system_disk
+  # if type = system_disk ,you can not set and modify iops ,iops must set 0
+  # if type = ssd_system_disk ,you can set and modify iops
+  # if you not set system_disk , Default when created size = 20 type = system_disk ,iops = 0
+  system_disk = {
+    type = var.system_disk_type
+    size = 100
+    iops = 5
+  }
+  
+  # you can set data_disks at create instance ,or after append data_disks
+  
+  #data_disks = [{   
+  #    iops = 5
+  #    size = 100
+  #    type = "ssd_disk"
+  # },
+  # {
+  #    iops = 0
+  #    size = 120
+  #    type = "high_disk"
+  # }
+  #]
+
+  # you can modify data disk iops and size 
+  # if you want modify iops ,the type must be ssd_disk,
+  # if type = high_disk ,the iops must equal 0
+  #update_data_disks = [
+  #  {   disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxx"
+  #      iops = 22
+  #      size = 122
+  #      type = "ssd_disk"
+  #  },
+  #  {   disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxx"
+  #      iops = 33
+  #      size = 133
+  #      type = "ssd_disk"
+  #  },
+  #]
+
+  # you can delete data disks by disk_id 
+  # disk_id from data cds_data_source_instance
+  #delete_data_disks = [
+  #  {
+  #    disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  #  }, 
+  #  {
+  #    disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  #  },    
+  #]
+  
+  
+
+  security_group_binding {
+    type              = "private"
+    subnet_id         = cds_private_subnet.my_private_subnet_1.id
+    security_group_id = cds_security_group.security_group_2.id
+  }
+  #utc = true
+}
+` +
+			"\n```"}
 }
 
 func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) error {
