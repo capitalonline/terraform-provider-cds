@@ -35,7 +35,7 @@ func resourceCdsCcsInstance() *schema.Resource {
 			"instance_name": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: u.ValidateStringLengthInRange(1, 36),
+				ValidateFunc: u.ValidateStringLengthInRange(1, 128),
 			},
 			"vdc_id": &schema.Schema{
 				Type:     schema.TypeString,
