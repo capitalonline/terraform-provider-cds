@@ -22,10 +22,10 @@ description: |-
 
 ### Optional
 
-- `instance_name` (String) Instance name
-- `instance_uuid` (String) Instance uuid
-- `ip` (String) ip
-- `readonly_instances` (List of Object) create readonly instances (see [below for nested schema](#nestedatt--readonly_instances))
+- `instance_name` (String) Instance name.
+- `instance_uuid` (String) Instance uuid.
+- `ip` (String) Ip.
+- `readonly_instances` (List of Object) Readonly instances. (see [below for nested schema](#nestedatt--readonly_instances))
 
 ### Read-Only
 

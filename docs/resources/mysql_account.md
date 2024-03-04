@@ -3,12 +3,51 @@
 page_title: "cds_mysql_account Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
+  Mysql account.
+  Example usage
+  ```hcl
+  resource "cdsmysqlaccount" "user1" {
+      instanceuuid= cdsmysql.mysqlexample.id
+      accountname = "testuser"
+      password = "xxxxxxxx"
+      account_type = "Normal"
+      description = "test"
+  to give permission
+  The db must be created in advance,and openapi does not support db creation. You need to create a DB manually
+  operations = [{
+      db_name = "db1"
+      privilege = "DMLOnly"
+  }
+  ]
   
+  }
+  ```
 ---
 
 # cds_mysql_account (Resource)
 
+Mysql account.
 
+## Example usage
+
+```hcl
+
+resource "cds_mysql_account" "user1" {
+    instance_uuid= cds_mysql.mysql_example.id
+    account_name = "testuser"
+    password = "xxxxxxxx"
+    account_type = "Normal"
+    description = "test"
+#  to give permission
+#  The db must be created in advance,and openapi does not support db creation. You need to create a DB manually
+    operations = [{
+        db_name = "db1"
+        privilege = "DMLOnly"
+    }
+    ]
+}
+
+```
 
 
 
@@ -17,15 +56,15 @@ description: |-
 
 ### Required
 
-- `account_name` (String)
-- `account_type` (String)
-- `instance_uuid` (String)
-- `password` (String)
+- `account_name` (String) Account name. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)
+- `account_type` (String) Account type, supports creating high privilege users and normal users. Possible values: High privilege user: "Super" 、Normal user: "Normal". Note: An instance can only have one high privilege account.[View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)
+- `instance_uuid` (String) Instance uuid. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)
+- `password` (String) Password. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)
 
 ### Optional
 
-- `description` (String)
-- `operations` (List of Object) modify db privilege (see [below for nested schema](#nestedatt--operations))
+- `description` (String) Description. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)
+- `operations` (List of Object) Modify db privilege.[View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#OperationsObj) (see [below for nested schema](#nestedatt--operations))
 
 ### Read-Only
 

@@ -16,64 +16,65 @@ func dataSourceDedicatedHost() *schema.Resource {
 			"host_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Host id",
+				Description: "Host id.",
 			},
 			"host_name": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Host name",
+				Description: "Host name.",
 			},
 			"host_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Host type",
+				Description: "Host type.",
 			},
 			"ram_rate": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Ram rate",
+				Description: "Ram rate.",
 			},
 			"cpu_rate": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Cpu rate",
+				Description: "Cpu rate.",
 			},
 			"bill_method": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Bill method",
+				Description: "Bill method.",
 			},
 			"duration": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Duration",
+				Description: "Duration.",
 			},
 			"end_bill_time": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "End bill time",
+				Description: "End bill time.",
 			},
 			"region": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Region",
+				Description: "Region.",
 			},
 			"start_bill_time": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Start bill time",
+				Description: "Start bill time.",
 			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Status",
+				Description: "Status.",
 			},
 			"vm_num": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Vm num",
+				Description: "Vm num.",
 			},
 		},
+		Description: "Data source dedicated host.",
 	}
 }
 

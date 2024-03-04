@@ -17,12 +17,12 @@ description: |-
 
 ### Required
 
-- `id` (String) vdc ID.
+- `id` (String) Vdc ID.
 - `result_output_file` (String) Used to save results.
 
 ### Optional
 
-- `vdc_name` (String) vdc name.
+- `vdc_name` (String) Vdc name.
 
 ### Read-Only
 

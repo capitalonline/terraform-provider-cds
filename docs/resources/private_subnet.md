@@ -3,12 +3,36 @@
 page_title: "cds_private_subnet Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Private network. View Document https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#5createprivatenetwork
+  Example usage
+  ```hcl
+  resource "cdsprivatesubnet" "myprivatesubnet1" {
+    vdcid  = "xxx"
+    name    = "private_1"
+    type    = "private"
+    address = ""
+    mask    = "26"
+  }
+  ```
 ---
 
 # cds_private_subnet (Resource)
 
+Private network. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#5createprivatenetwork)
 
+## Example usage
+
+```hcl
+
+resource "cds_private_subnet" "my_private_subnet_1" {
+  vdc_id  = "xxx"
+  name    = "private_1"
+  type    = "private"
+  address = ""
+  mask    = "26"
+}
+
+```
 
 
 
@@ -17,14 +41,14 @@ description: |-
 
 ### Required
 
-- `vdc_id` (String)
+- `vdc_id` (String) Vdc id.
 
 ### Optional
 
-- `address` (String) private network address.
-- `mask` (Number) private network mask.
-- `name` (String) private network name.
-- `type` (String) private network type.
+- `address` (String) Private network address.
+- `mask` (Number) Private network mask.
+- `name` (String) Private network name.
+- `type` (String) Private network type. (auto/manual), default is auto.
 
 ### Read-Only
 

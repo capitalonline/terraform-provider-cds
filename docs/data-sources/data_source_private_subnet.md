@@ -17,8 +17,8 @@ description: |-
 
 ### Required
 
-- `result_output_file` (String) used to save results.
-- `vdc_id` (String)
+- `result_output_file` (String) Used to save results.
+- `vdc_id` (String) Vdc id.
 
 ### Read-Only
 

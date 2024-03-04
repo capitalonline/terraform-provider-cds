@@ -17,17 +17,17 @@ func dataSourceCdsSecurityGroup() *schema.Resource {
 			"id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "security group ID.",
+				Description: "Security group ID.",
 			},
 			"security_group_name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "security group name.",
+				Description: "Security group name.",
 			},
 			"security_group_type": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "security group type.",
+				Description: "Security group type.",
 			},
 			"result_output_file": {
 				Type:        schema.TypeString,

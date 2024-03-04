@@ -3,12 +3,32 @@
 page_title: "cds_certificate Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Upload CA certificate for haproxy
+  Example usage
+  ```hcl
+  resource cdscertificate mycdscertificate {
+    certificatename  = "mycert"
+    certificate       = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    privatekey       = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  }
+  ```
 ---
 
 # cds_certificate (Resource)
 
+Upload CA certificate for haproxy
 
+## Example usage
+
+```hcl
+
+resource cds_certificate my_cds_certificate {
+  certificate_name  = "my_cert"
+  certificate       = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  private_key       = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+```
 
 
 
@@ -17,19 +37,19 @@ description: |-
 
 ### Optional
 
-- `certificate` (String) Certificate Infomation
+- `certificate` (String) Certificate Infomation.
 - `certificate_id` (String) Certificate id.
-- `certificate_name` (String) Certificate name
-- `private_key` (String) Certificate private key
+- `certificate_name` (String) Certificate name.
+- `private_key` (String) Certificate private key.
 
 ### Read-Only
 
-- `brand` (String) Certificate brand
-- `certificate_type` (String) Certificate type
-- `domain` (String) Certificate domain
-- `end_time` (String) Certificate end time
+- `brand` (String) Certificate brand.
+- `certificate_type` (String) Certificate type.
+- `domain` (String) Certificate domain.
+- `end_time` (String) Certificate end time.
 - `id` (String) The ID of this resource.
-- `organization` (String) Certificate Organization
-- `public_key` (String) Certificate public key
-- `start_time` (String) Certificate start time
-- `valid` (Number) Certificate vaild
+- `organization` (String) Certificate Organization.
+- `public_key` (String) Certificate public key.
+- `start_time` (String) Certificate start time.
+- `valid` (Number) Certificate vaild.

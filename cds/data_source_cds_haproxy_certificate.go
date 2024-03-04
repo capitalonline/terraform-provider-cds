@@ -19,7 +19,7 @@ func dataSourceHaproxyCertificate() *schema.Resource {
 			"id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "id",
+				Description: "Id.",
 			},
 			"result_output_file": {
 				Type:        schema.TypeString,
@@ -29,58 +29,59 @@ func dataSourceHaproxyCertificate() *schema.Resource {
 			"ha_cert_list": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "ha certificate list",
+				Description: "Ha certificate list.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"brand": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "brand",
+							Description: "Brand. Certificate Brand",
 						},
 						"certificate_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "certificate id",
+							Description: "Certificate id.",
 						},
 						"certificate_name": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "certificate name",
+							Description: "Certificate name.",
 						},
 						"certificate_type": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "certificate type",
+							Description: "Certificate type.",
 						},
 						"domain": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "domain",
+							Description: "Domain.",
 						},
 						"start_time": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "start time",
+							Description: "Start time.",
 						},
 						"end_time": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "end time",
+							Description: "End time.",
 						},
 						"organization": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "organization",
+							Description: "Organization.",
 						},
 						"valid": {
 							Type:        schema.TypeInt,
 							Computed:    true,
-							Description: "valid",
+							Description: "Valid.",
 						},
 					},
 				},
 			},
 		},
+		Description: "Data source haproxy certificate. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#4describeloadbalancers)",
 	}
 }
 

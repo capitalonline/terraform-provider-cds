@@ -15,14 +15,15 @@ func dataSourceCdsPrivateSubnet() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"vdc_id": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: false,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    false,
+				Description: "Vdc id.",
 			},
 			"result_output_file": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "used to save results.",
+				Description: "Used to save results.",
 			},
 		},
 	}

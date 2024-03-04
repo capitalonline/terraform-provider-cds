@@ -17,10 +17,10 @@ description: |-
 
 ### Required
 
-- `id` (String) security group ID.
+- `id` (String) Security group ID.
 - `result_output_file` (String) used to save results.
 
 ### Optional
 
-- `security_group_name` (String) security group name.
-- `security_group_type` (String) security group type.
+- `security_group_name` (String) Security group name.
+- `security_group_type` (String) Security group type.

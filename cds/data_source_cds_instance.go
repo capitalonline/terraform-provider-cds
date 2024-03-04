@@ -17,12 +17,12 @@ func dataSourceCdsInstance() *schema.Resource {
 			"instance_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "instance ID.",
+				Description: "Instance ID.",
 			},
 			"vdc_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "vdc id.",
+				Description: "Vdc id.",
 			},
 			"result_output_file": {
 				Type:        schema.TypeString,
@@ -30,6 +30,7 @@ func dataSourceCdsInstance() *schema.Resource {
 				Description: "Used to save results.",
 			},
 		},
+		Description: "Data source vm instance.",
 	}
 }
 

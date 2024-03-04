@@ -3,12 +3,12 @@
 page_title: "cds_data_source_haproxy Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Data source haproxy. View Document https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#4describeloadbalancers
 ---
 
 # cds_data_source_haproxy (Data Source)
 
-
+Data source haproxy. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#4describeloadbalancers)
 
 
 
@@ -22,16 +22,16 @@ description: |-
 
 ### Optional
 
-- `end_time` (String) end time.
-- `instance_name` (String) instance name.
-- `instance_uuid` (String) instance uuid
-- `ip` (String) haproxy ip.
-- `start_time` (String) start time.
+- `end_time` (String) End time.
+- `instance_name` (String) Instance name.
+- `instance_uuid` (String) Instance uuid.
+- `ip` (String) Haproxy ip.
+- `start_time` (String) Start time.
 
 ### Read-Only
 
-- `ha_list` (List of Object) haproxy list (see [below for nested schema](#nestedatt--ha_list))
-- `id` (String) ha id
+- `ha_list` (List of Object) Haproxy list. (see [below for nested schema](#nestedatt--ha_list))
+- `id` (String) Ha id.
 
 <a id="nestedatt--ha_list"></a>
 ### Nested Schema for `ha_list`

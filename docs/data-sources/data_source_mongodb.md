@@ -17,14 +17,14 @@ description: |-
 
 ### Required
 
-- `region_id` (String) region id
-- `result_output_file` (String) Used to save results
+- `region_id` (String) Region id.
+- `result_output_file` (String) Used to save results.
 
 ### Optional
 
-- `instance_name` (String) instance name
-- `instance_uuid` (String) instance uuid
-- `ip` (String) ip
+- `instance_name` (String) Instance name.
+- `instance_uuid` (String) Instance uuid.
+- `ip` (String) Ip.
 
 ### Read-Only
 

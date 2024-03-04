@@ -3,12 +3,44 @@
 page_title: "cds_public_network Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Public network.
+  Example usage
+  ```hcl
+  resource "cdspublicnetwork" "pb1" {
+    ipnum          = 4
+    qos             = 10
+    # To identify multiple different public networks, the 'name' field is required .
+    name            = "terraform-copy"
+    floatbandwidth = 200
+    billingmethod  = "BandwIdth"
+    autorenew      = 1
+    type            = "BandwidthMultiISPBGP"
+    vdcid          = "xxxxxxxx-xxxx"
+  }
+  ```
 ---
 
 # cds_public_network (Resource)
 
+Public network.
 
+## Example usage
+
+```hcl
+
+resource "cds_public_network" "pb1" {
+  ip_num          = 4
+  qos             = 10
+  # To identify multiple different public networks, the 'name' field is required .
+  name            = "terraform-copy"
+  float_bandwidth = 200
+  billing_method  = "BandwIdth"
+  auto_renew      = 1
+  type            = "Bandwidth_Multi_ISP_BGP"
+  vdc_id          = "xxxxxxxx-xxxx"
+}
+
+```
 
 
 
@@ -17,18 +49,18 @@ description: |-
 
 ### Required
 
-- `auto_renew` (Number) whether to automatically renew
-- `billing_method` (String) public network address.
-- `float_bandwidth` (Number)
-- `ip_num` (Number) the number of IPs purchased
-- `name` (String) public network name.
-- `qos` (Number) public network qos.
-- `type` (String) public network type.
-- `vdc_id` (String)
+- `auto_renew` (Number) Whether to automatically renew. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)
+- `billing_method` (String) Public network address. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)
+- `float_bandwidth` (Number) Float bandwidth. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)
+- `ip_num` (Number) The number of IPs purchased. The valid values are:4, 8, 16, 32, 64. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)
+- `name` (String) Public network name.
+- `qos` (Number) Public network qos. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)
+- `type` (String) Public network type. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)
+- `vdc_id` (String) Vdc id.
 
 ### Optional
 
-- `public_id` (String)
+- `public_id` (String) Public network id.
 
 ### Read-Only
 

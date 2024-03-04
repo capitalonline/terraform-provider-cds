@@ -3,12 +3,12 @@
 page_title: "cds_data_source_instance Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Data source vm instance.
 ---
 
 # cds_data_source_instance (Data Source)
 
-
+Data source vm instance.
 
 
 
@@ -21,8 +21,8 @@ description: |-
 
 ### Optional
 
-- `instance_id` (String) instance ID.
-- `vdc_id` (String) vdc id.
+- `instance_id` (String) Instance ID.
+- `vdc_id` (String) Vdc id.
 
 ### Read-Only
 

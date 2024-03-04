@@ -22,49 +22,65 @@ func resourceCdsRedis() *schema.Resource {
 			"region_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "region id",
+				Description: "Region id. ",
 			},
 			"vdc_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "vdc id",
+				Description: "Vdc id. ",
 			},
 			"base_pipe_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "base pipe id",
+				Description: "Base pipe id. ",
 			},
 			"instance_name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "instance name",
+				Description: "Instance name. ",
 			},
 			"architecture_type": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "architecture type",
+				Description: "Architecture type. [View Document](https://github.com/capitalonline/openapi/blob/master/Redis%E6%A6%82%E8%A7%88.md#2describeavailabledbconfig)",
 			},
 			"ram": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "ram",
+				Description: "Ram.[View Document](https://github.com/capitalonline/openapi/blob/master/Redis%E6%A6%82%E8%A7%88.md#2describeavailabledbconfig)",
 			},
 			"redis_version": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "redis version",
+				Description: "Redis version.[View Document](https://github.com/capitalonline/openapi/blob/master/Redis%E6%A6%82%E8%A7%88.md#2describeavailabledbconfig)",
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "password",
+				Description: "Password.",
 			},
 			"ip": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "ip comput by create instance",
+				Description: "Ip.",
 			},
 		},
+		Description: "Redis instance. \n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource "cds_redis" "redis_example" {
+    region_id         = "CN_Beijing_A"
+    vdc_id            = "xxx"
+    base_pipe_id      = "xxx"
+    instance_name     = "redis_test"
+    architecture_type = 3
+    ram               = 4
+    redis_version     = "2.8"
+    password          = "password"
+}
+` +
+			"\n```",
 	}
 }
 

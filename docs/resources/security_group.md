@@ -3,12 +3,54 @@
 page_title: "cds_security_group Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Security Group.
+  Example usage
+  ```hcl
+  resource "cdssecuritygroup" "securitygroup2" {
+    name        = "testtfnewzz25"
+    description = "New security group25"
+    type        = "private"
+    rule {
+      action        = "1"
+      description   = "tfrule_test"
+      targetaddress = "120.78.170.188/28;120.78.170.188/28;120.78.170.188/28"
+      targetport    = "70;90;8"
+      localport     = "800"
+      direction     = "all"
+      priority      = "11"
+      protocol      = "TCP"
+      ruletype      = "ip"
+    }
+  }
+  ```
 ---
 
 # cds_security_group (Resource)
 
+Security Group. 
 
+## Example usage
+
+```hcl
+
+resource "cds_security_group" "security_group_2" {
+  name        = "test_tf_new_zz25"
+  description = "New security group25"
+  type        = "private"
+  rule {
+    action        = "1"
+    description   = "tf_rule_test"
+    targetaddress = "120.78.170.188/28;120.78.170.188/28;120.78.170.188/28"
+    targetport    = "70;90;8"
+    localport     = "800"
+    direction     = "all"
+    priority      = "11"
+    protocol      = "TCP"
+    ruletype      = "ip"
+  }
+}
+
+```
 
 
 
@@ -18,17 +60,17 @@ description: |-
 ### Required
 
 - `description` (String) Description of the security group.
-- `name` (String) Name of the security group to be queried.
-- `type` (String) Description of the security group.
+- `name` (String) Name of the security group.
+- `type` (String) Type of the security group.
 
 ### Optional
 
-- `rule` (Set of Object) (see [below for nested schema](#nestedatt--rule))
+- `rule` (Set of Object) Security group rule. [View Document](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1createsecuritygroup) (see [below for nested schema](#nestedatt--rule))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `rule_current` (Set of Object) (see [below for nested schema](#nestedatt--rule_current))
+- `rule_current` (Set of Object) Current rules. (see [below for nested schema](#nestedatt--rule_current))
 
 <a id="nestedatt--rule"></a>
 ### Nested Schema for `rule`

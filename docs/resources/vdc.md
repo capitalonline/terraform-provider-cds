@@ -17,13 +17,13 @@ description: |-
 
 ### Required
 
-- `region_id` (String)
-- `vdc_name` (String)
+- `region_id` (String) Region id.
+- `vdc_name` (String) Vdc name.
 
 ### Optional
 
-- `add_public_ip` (Number)
-- `delete_public_ip` (String)
+- `add_public_ip` (Number) Add public ip.
+- `delete_public_ip` (String) Delete public ip.
 - `public_network` (Map of String) Public Network info.
 
 ### Read-Only

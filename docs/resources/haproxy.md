@@ -3,12 +3,154 @@
 page_title: "cds_haproxy Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
+  Haproxy instance.
+  Example usage
+  ```hcl
+  resource cdshaproxy myhaproxy {
+      region_id       = "XXXXXXXX"
+  vdc_id      = "XXXXXXXX"
+  base_pipe_id  = "XXXXXXXX"
+  instance_name   = "ha_instance"
+  # paas_goods_id 从data.json PaasGoodsId 获取
+  cpu = 1
+  ram = 2
+  ips = [
+      {
+          # pipe_id is PrivateNetwork PrivateId from vdc info 
+          pipe_id    = "xxx"
+          pipe_type  = "private"
+          segment_id = "xxx"
+      },
+      #This parameter is required if you want to create a public network(如创建公网，则需要)
+      {
+          # pipe_id is PublicNetwork PublicId from vdc info 
+          pipe_id    = "xxx"
+          pipe_type  = "public"
+          segment_id = "xxx"
+      }
+  ]
+  http_listeners = [{
+      server_timeout_unit = "s"
+      server_timeout      = 1300
+      sticky_session      = "on"
+      acl_white_list      = "192.168.9.1"
+      listener_mode       = "http"
+      max_conn            = "2022"
+      connect_timeout_unit = "s"
+      scheduler           = "roundrobin"
+      connect_timeout     = "1300"
+      client_timeout      = "1022"
+      listener_name       = "terraform"
+      client_timeout_unit = "ms"
+      listener_port       = 24354
+      backend_server = [{
+          ip       = "192.168.12.1"
+          max_conn = 2022
+          port     = 12314
+          weight   = 255
+      }]
+      certificate_ids = []
   
+  The parameters option is a list,only one element at most
+  option = [{
+  httpchk = {
+  method = "GET"
+  uri = "/health"
+  }
+  }]
+  The parameters session_persistence is a list,only one element at most
+  session_persistence  = [
+  {
+  key = "test"
+  mode = 1
+  timer = {
+  max_idle=33
+  max_life=44
+  }
+  }
+  ]
+  }]
+  
+  }
+  ```
 ---
 
 # cds_haproxy (Resource)
 
+Haproxy instance.
 
+## Example usage
+
+```hcl
+
+resource cds_haproxy my_haproxy {
+	region_id 		= "XXXXXXXX"
+
+	vdc_id 		= "XXXXXXXX"
+	base_pipe_id  = "XXXXXXXX"
+	instance_name   = "ha_instance"
+    # paas_goods_id 从data.json PaasGoodsId 获取
+	cpu = 1
+	ram = 2
+	ips = [
+		{
+			# pipe_id is PrivateNetwork PrivateId from vdc info 
+			pipe_id    = "xxx"
+			pipe_type  = "private"
+			segment_id = "xxx"
+		},
+		#This parameter is required if you want to create a public network(如创建公网，则需要)
+		{
+			# pipe_id is PublicNetwork PublicId from vdc info 
+			pipe_id    = "xxx"
+			pipe_type  = "public"
+			segment_id = "xxx"
+		}
+	]
+	http_listeners = [{
+		server_timeout_unit = "s"
+		server_timeout      = 1300
+		sticky_session      = "on"
+		acl_white_list      = "192.168.9.1"
+		listener_mode       = "http"
+		max_conn            = "2022"
+		connect_timeout_unit = "s"
+		scheduler           = "roundrobin"
+		connect_timeout     = "1300"
+		client_timeout      = "1022"
+		listener_name       = "terraform"
+		client_timeout_unit = "ms"
+		listener_port       = 24354
+		backend_server = [{
+			ip       = "192.168.12.1"
+			max_conn = 2022
+			port     = 12314
+			weight   = 255
+		}]
+		certificate_ids = []
+
+#		The parameters option is a list,only one element at most
+#		option = [{
+#			httpchk = {
+#				method = "GET"
+#				uri = "/health"
+#			}
+#		}]
+#		The parameters session_persistence is a list,only one element at most
+#		session_persistence  = [
+#			{
+#				key = "test"
+#				mode = 1
+#				timer = {
+#					max_idle=33
+#					max_life=44
+#				}
+#			}
+#		]
+	}]
+}
+
+```
 
 
 
@@ -17,18 +159,18 @@ description: |-
 
 ### Required
 
-- `base_pipe_id` (String) base pipe id.
-- `cpu` (Number) instance cpu num
-- `instance_name` (String) instance name.
-- `ips` (List of Object) (see [below for nested schema](#nestedatt--ips))
-- `ram` (Number) instance ram size
-- `region_id` (String) regon id.
-- `vdc_id` (String) vdc id.
+- `base_pipe_id` (String) Base pipe id.
+- `cpu` (Number) Instance cpu num.
+- `instance_name` (String) Instance name.
+- `ips` (List of Object) The network used by HA. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#3createloadbalancer) (see [below for nested schema](#nestedatt--ips))
+- `ram` (Number) Instance ram size.
+- `region_id` (String) Regon id.
+- `vdc_id` (String) Vdc id.
 
 ### Optional
 
-- `http_listeners` (List of Object) http listeners (see [below for nested schema](#nestedatt--http_listeners))
-- `tcp_listeners` (List of Object) base pipe id. (see [below for nested schema](#nestedatt--tcp_listeners))
+- `http_listeners` (List of Object) Http listeners. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#3createloadbalancer) (see [below for nested schema](#nestedatt--http_listeners))
+- `tcp_listeners` (List of Object) Tcp listeners.[View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5tcplistenersobj) (see [below for nested schema](#nestedatt--tcp_listeners))
 
 ### Read-Only
 

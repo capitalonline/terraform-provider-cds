@@ -3,12 +3,44 @@
 page_title: "cds_mongodb Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Mongodb instance.View documentation https://github.com/capitalonline/openapi/blob/master/%E6%96%B0%E7%89%88MongoDB%E6%A6%82%E8%A7%88.md#3createdbinstance## Example usage
+  ```hcl
+  resource "cdsmongodb" "mongodbexample" {
+      regionid         = "CNBeijingA"
+      vdcid            = "xxx"
+      basepipeid      = "xxx"
+      instancename     = "mongoa"
+      cpu               = 1
+      ram               = 2
+      disktype         = "ssddisk"'
+      diskvalue        = 100
+      password          = "password"
+      mongodbversion   = "4.0.3"
+  }
+  ```
 ---
 
 # cds_mongodb (Resource)
 
+Mongodb instance.[View documentation](https://github.com/capitalonline/openapi/blob/master/%E6%96%B0%E7%89%88MongoDB%E6%A6%82%E8%A7%88.md#3createdbinstance)## Example usage
 
+```hcl
+
+resource "cds_mongodb" "mongodb_example" {
+    region_id         = "CN_Beijing_A"
+    vdc_id            = "xxx"
+    base_pipe_id      = "xxx"
+    instance_name     = "mongo_a"
+    cpu               = 1
+    ram               = 2
+    disk_type         = "ssd_disk"'
+    disk_value        = 100
+    password          = "password"
+    mongodb_version   = "4.0.3"
+}
+
+
+```
 
 
 
@@ -17,21 +49,21 @@ description: |-
 
 ### Required
 
-- `base_pipe_id` (String) base pipe id
-- `cpu` (Number) cpu count
-- `disk_type` (String) disk type
-- `disk_value` (Number) disk value
-- `instance_name` (String) instance name
-- `password` (String) password
-- `ram` (Number) ram info
-- `region_id` (String) region id
-- `vdc_id` (String) vdc id
+- `base_pipe_id` (String) Base pipe id.
+- `cpu` (Number) Cpu count.
+- `disk_type` (String) Disk type.
+- `disk_value` (Number) Disk value.
+- `instance_name` (String) Instance name.
+- `password` (String) Password.
+- `ram` (Number) Ram info.
+- `region_id` (String) Region id.
+- `vdc_id` (String) Vdc id.
 
 ### Optional
 
-- `mongodb_version` (String) mongodb_version
+- `mongodb_version` (String) Mongodb version. Available version: 4.0.3(default)、3.6.7、3.2.21.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `ip` (String) mongodb ip
+- `ip` (String) Mongodb ip.

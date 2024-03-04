@@ -17,17 +17,17 @@ description: |-
 
 ### Required
 
-- `public_id` (String) public id
-- `vdc_id` (String)
+- `public_id` (String) Public network id.
+- `vdc_id` (String) Vdc id.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `name` (String) name
-- `qos` (Number) qos
-- `segments` (List of Object) public network segments (see [below for nested schema](#nestedatt--segments))
-- `status` (String) status
-- `unuse_ip_num` (Number) un use ip num
+- `name` (String) Name.
+- `qos` (Number) Qos.
+- `segments` (List of Object) Public network segments. (see [below for nested schema](#nestedatt--segments))
+- `status` (String) Status.
+- `unuse_ip_num` (Number) Un use ip num.
 
 <a id="nestedatt--segments"></a>
 ### Nested Schema for `segments`

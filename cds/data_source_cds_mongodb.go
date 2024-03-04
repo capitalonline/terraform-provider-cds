@@ -17,27 +17,27 @@ func dataSourceCdsMongodb() *schema.Resource {
 			"region_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "region id",
+				Description: "Region id.",
 			},
 			"instance_uuid": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "instance uuid",
+				Description: "Instance uuid.",
 			},
 			"instance_name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "instance name",
+				Description: "Instance name.",
 			},
 			"ip": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "ip",
+				Description: "Ip.",
 			},
 			"result_output_file": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Used to save results",
+				Description: "Used to save results.",
 			},
 		},
 	}

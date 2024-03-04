@@ -304,7 +304,7 @@ func resourceCdsCcsInstance() *schema.Resource {
 			},
 		},
 		Description: "Instance of vm. [View documentation](https://github.com/capitalonline/openapi/blob/master/%E4%BA%91%E4%B8%BB%E6%9C%BA%E6%A6%82%E8%A7%88.md)\n\n" +
-			"## Example usage\n\n" +
+			"## Example Usage\n\n" +
 			"```hcl\n" +
 			`
 resource "cds_instance" "my_instance" {

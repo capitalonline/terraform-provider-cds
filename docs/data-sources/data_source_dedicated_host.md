@@ -3,12 +3,12 @@
 page_title: "cds_data_source_dedicated_host Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Data source dedicated host.
 ---
 
 # cds_data_source_dedicated_host (Data Source)
 
-
+Data source dedicated host.
 
 
 
@@ -17,19 +17,19 @@ description: |-
 
 ### Required
 
-- `host_id` (String) Host id
+- `host_id` (String) Host id.
 
 ### Read-Only
 
-- `bill_method` (String) Bill method
-- `cpu_rate` (String) Cpu rate
-- `duration` (String) Duration
-- `end_bill_time` (String) End bill time
-- `host_name` (String) Host name
-- `host_type` (String) Host type
+- `bill_method` (String) Bill method.
+- `cpu_rate` (String) Cpu rate.
+- `duration` (String) Duration.
+- `end_bill_time` (String) End bill time.
+- `host_name` (String) Host name.
+- `host_type` (String) Host type.
 - `id` (String) The ID of this resource.
-- `ram_rate` (String) Ram rate
-- `region` (String) Region
-- `start_bill_time` (String) Start bill time
-- `status` (String) Status
-- `vm_num` (String) Vm num
+- `ram_rate` (String) Ram rate.
+- `region` (String) Region.
+- `start_bill_time` (String) Start bill time.
+- `status` (String) Status.
+- `vm_num` (String) Vm num.

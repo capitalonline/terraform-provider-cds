@@ -3,12 +3,42 @@
 page_title: "cds_redis Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Redis instance.
+  Example usage
+  ```hcl
+  resource "cdsredis" "redisexample" {
+      regionid         = "CNBeijingA"
+      vdcid            = "xxx"
+      basepipeid      = "xxx"
+      instancename     = "redistest"
+      architecturetype = 3
+      ram               = 4
+      redisversion     = "2.8"
+      password          = "password"
+  }
+  ```
 ---
 
 # cds_redis (Resource)
 
+Redis instance. 
 
+## Example usage
+
+```hcl
+
+resource "cds_redis" "redis_example" {
+    region_id         = "CN_Beijing_A"
+    vdc_id            = "xxx"
+    base_pipe_id      = "xxx"
+    instance_name     = "redis_test"
+    architecture_type = 3
+    ram               = 4
+    redis_version     = "2.8"
+    password          = "password"
+}
+
+```
 
 
 
@@ -17,16 +47,16 @@ description: |-
 
 ### Required
 
-- `architecture_type` (Number) architecture type
-- `base_pipe_id` (String) base pipe id
-- `instance_name` (String) instance name
-- `password` (String) password
-- `ram` (Number) ram
-- `redis_version` (String) redis version
-- `region_id` (String) region id
-- `vdc_id` (String) vdc id
+- `architecture_type` (Number) Architecture type. [View Document](https://github.com/capitalonline/openapi/blob/master/Redis%E6%A6%82%E8%A7%88.md#2describeavailabledbconfig)
+- `base_pipe_id` (String) Base pipe id.
+- `instance_name` (String) Instance name.
+- `password` (String) Password.
+- `ram` (Number) Ram.[View Document](https://github.com/capitalonline/openapi/blob/master/Redis%E6%A6%82%E8%A7%88.md#2describeavailabledbconfig)
+- `redis_version` (String) Redis version.[View Document](https://github.com/capitalonline/openapi/blob/master/Redis%E6%A6%82%E8%A7%88.md#2describeavailabledbconfig)
+- `region_id` (String) Region id.
+- `vdc_id` (String) Vdc id.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `ip` (String) ip comput by create instance
+- `ip` (String) Ip.

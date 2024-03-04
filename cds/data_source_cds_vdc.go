@@ -18,12 +18,12 @@ func dataSourceCdsVdc() *schema.Resource {
 			"id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "vdc ID.",
+				Description: "Vdc ID.",
 			},
 			"vdc_name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "vdc name.",
+				Description: "Vdc name.",
 			},
 			"result_output_file": {
 				Type:        schema.TypeString,
@@ -39,49 +39,49 @@ func dataSourceCdsVdc() *schema.Resource {
 						"vdc_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "vdc id",
+							Description: "Vdc id,",
 						},
 						"vdc_name": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "vdc name",
+							Description: "Vdc name.",
 						},
 						"region_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "region id",
+							Description: "Region id.",
 						},
 						"private_network": {
 							Type:        schema.TypeList,
 							Computed:    true,
-							Description: "PrivateNetwork list",
+							Description: "PrivateNetwork list.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"private_id": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "Private network Id",
+										Description: "Private network Id.",
 									},
 									"status": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "status",
+										Description: "Status.",
 									},
 									"name": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "name",
+										Description: "Name.",
 									},
 									"unuse_ip_num": {
 										Type:        schema.TypeInt,
 										Computed:    true,
-										Description: "unuse ip num",
+										Description: "Un use ip num.",
 									},
 									"segments": {
 										Type:        schema.TypeList,
 										Computed:    true,
 										Elem:        &schema.Schema{Type: schema.TypeString},
-										Description: "private network segments list",
+										Description: "Private network segments list.",
 									},
 								},
 							},
@@ -89,59 +89,59 @@ func dataSourceCdsVdc() *schema.Resource {
 						"public_network": {
 							Type:        schema.TypeList,
 							Computed:    true,
-							Description: "Public Network list",
+							Description: "Public Network list.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"public_id": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "public id",
+										Description: "Public id.",
 									},
 									"status": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "status",
+										Description: "Status.",
 									},
 									"qos": {
 										Type:        schema.TypeInt,
 										Computed:    true,
-										Description: "qos",
+										Description: "Qos.",
 									},
 									"name": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "name",
+										Description: "Name.",
 									},
 									"unuse_ip_num": {
 										Type:        schema.TypeInt,
 										Computed:    true,
-										Description: "un use ip num",
+										Description: "Un use ip num.",
 									},
 									"segments": {
 										Type:        schema.TypeList,
 										Computed:    true,
-										Description: "public network segments",
+										Description: "Public network segments.",
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"mask": {
 													Type:        schema.TypeInt,
 													Computed:    true,
-													Description: "mask",
+													Description: "Mask.",
 												},
 												"gateway": {
 													Type:        schema.TypeString,
 													Computed:    true,
-													Description: "gateway",
+													Description: "Gateway.",
 												},
 												"segment_id": {
 													Type:        schema.TypeString,
 													Computed:    true,
-													Description: "segmetId",
+													Description: "Segment Id.",
 												},
 												"address": {
 													Type:        schema.TypeString,
 													Computed:    true,
-													Description: "address",
+													Description: "Address.",
 												},
 											},
 										},
