@@ -379,6 +379,11 @@ Mode. The default value is 1.
 					},
 				},
 			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject ID.",
+			},
 		},
 		Description: "Haproxy instance.\n\n" +
 			"## Example usage\n\n" +
@@ -506,6 +511,13 @@ func createResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 		instanceName, exist := inter.(string)
 		if exist {
 			request.InstanceName = common.StringPtr(instanceName)
+		}
+	}
+
+	if inter, ok := data.GetOk("subject_id"); ok {
+		subjectId, exist := inter.(int)
+		if exist {
+			request.SubjectId = common.IntPtr(subjectId)
 		}
 	}
 

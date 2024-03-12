@@ -65,6 +65,11 @@ func resourceCdsPublicNetwork() *schema.Resource {
 				Required:    true,
 				Description: "Float bandwidth. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)",
 			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject id. ",
+			},
 		},
 		Description: "Public network.\n\n" +
 			"## Example usage\n\n" +
@@ -118,6 +123,14 @@ func createResourceCdsPublicNetwork(data *schema.ResourceData, meta interface{})
 	request.AutoRenew = common.IntPtr(autoRenew.(int))
 	floatBandwidth := data.Get("float_bandwidth")
 	request.FloatBandwidth = common.IntPtr(floatBandwidth.(int))
+	if subject, ok := data.GetOk("subject_id"); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("subject_id must be int")
+		}
+		request.SubjectId = common.IntPtr(subjectId)
+	}
+
 	response, err := vdcService.CreatePublicNetwork(ctx, request)
 	if err != nil {
 		return err

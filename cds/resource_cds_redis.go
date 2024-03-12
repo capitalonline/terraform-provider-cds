@@ -64,6 +64,11 @@ func resourceCdsRedis() *schema.Resource {
 				Computed:    true,
 				Description: "Ip.",
 			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject id.",
+			},
 		},
 		Description: "Redis instance. \n\n" +
 			"## Example usage\n\n" +
@@ -104,6 +109,14 @@ func resourceCdsRedisCreate(data *schema.ResourceData, meta interface{}) error {
 	architecture_type := common.IntPtr(data.Get("architecture_type").(int))
 	ram := common.IntPtr(data.Get("ram").(int))
 	version := common.StringPtr(data.Get("redis_version").(string))
+
+	if subject, ok := data.GetOk("subject_id"); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("subject_id must be int")
+		}
+		request.SubjectId = common.IntPtr(subjectId)
+	}
 
 	passGoodsId, err := matchRedisPassGoodsId(ctx, redisService, *architecture_type, *ram, *version, *request.RegionId)
 

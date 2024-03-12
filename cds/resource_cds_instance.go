@@ -36,7 +36,7 @@ func resourceCdsCcsInstance() *schema.Resource {
 			"instance_name": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: u.ValidateStringLengthInRange(1, 36),
+				ValidateFunc: u.ValidateStringLengthInRange(1, 128),
 				Description:  "The name of the instance",
 			},
 			"vdc_id": &schema.Schema{
@@ -302,6 +302,16 @@ func resourceCdsCcsInstance() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"host_name": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Host name.",
+			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject id.",
+			},
 		},
 		Description: "Instance of vm. [View documentation](https://github.com/capitalonline/openapi/blob/master/%E4%BA%91%E4%B8%BB%E6%9C%BA%E6%A6%82%E8%A7%88.md)\n\n" +
 			"## Example Usage\n\n" +
@@ -550,6 +560,23 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 			createInstanceRequest.ImagePassword = common.StringPtr(passwd)
 		}
 	}
+
+	if hostName, ok := d.GetOk("host_name"); ok {
+		name, ok := hostName.(string)
+		if !ok {
+			return errors.New("host name invalid")
+		}
+		createInstanceRequest.HostName = common.StringPtr(name)
+	}
+
+	if subject, ok := d.GetOk("subject_id"); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("host name invalid")
+		}
+		createInstanceRequest.SubjectId = common.IntPtr(subjectId)
+	}
+
 	//add user_data params
 	if userdatas, ok := d.GetOk("user_data"); ok {
 		datas, ok := userdatas.([]interface{})

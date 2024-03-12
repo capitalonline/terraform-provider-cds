@@ -22,7 +22,7 @@ type VdcService struct {
 
 // ////////api
 func (me *VdcService) CreateVdc(ctx context.Context, name string, region string,
-	publicNetwork map[string]interface{}) (taskId string, errRet error) {
+	publicNetwork map[string]interface{}, subjectId int) (taskId string, errRet error) {
 
 	logId := getLogId(ctx)
 	request := vdc.NewAddVdcRequest()
@@ -41,6 +41,9 @@ func (me *VdcService) CreateVdc(ctx context.Context, name string, region string,
 		return
 	}
 	request.PublicNetwork = &pn
+	if subjectId != 0 {
+		request.SubjectId = &subjectId
+	}
 
 	ratelimit.Check(request.GetAction())
 	response, err := me.client.UseVdcClient().CreateVdc(request)

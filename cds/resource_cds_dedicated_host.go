@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/capitalonline/cds-gic-sdk-go/common"
 	"github.com/capitalonline/cds-gic-sdk-go/instance"
-	set "github.com/deckarep/golang-set/v2"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"log"
 	"strings"
@@ -55,11 +54,11 @@ func resourceCdsDedicatedHost() *schema.Resource {
 				Required:    true,
 				Description: "Dedicated host limit.Overcommitment ratio information.",
 			},
-			"amount": {
-				Type:        schema.TypeInt,
-				Required:    true,
-				Description: "Amount.",
-			},
+			//"amount": {
+			//	Type:        schema.TypeInt,
+			//	Required:    true,
+			//	Description: "Amount.",
+			//},
 			"prepaid_month": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -78,15 +77,7 @@ func resourceCdsDedicatedHost() *schema.Resource {
 			"subject_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "Subject id。Test project ID.",
-			},
-			"dedicated_host_id_list": {
-				Type:        schema.TypeList,
-				Computed:    true,
-				Description: "Dedicated host id list",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+				Description: "Subject id. Test project ID.",
 			},
 		},
 		Description: "Dedicated host\n\n" +
@@ -120,23 +111,18 @@ func readResourceDedicatedHost(data *schema.ResourceData, meta interface{}) erro
 	ctx := context.WithValue(context.TODO(), "logId", logId)
 	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
 
-	id := data.Id()
 	request := instance.NewDescribeDedicatedHostsRequest()
-	idSet := set.NewSet[string]()
-	// check if all dedicated host exists
-	for _, str := range strings.Split(id, ",") {
-		request.HostId = common.StringPtr(str)
-		resp, err := instanceService.DescribeDedicatedHosts(ctx, request)
-		if err != nil {
-			return fmt.Errorf("describe dedicated hosts failed:%v ", err)
-		}
-		if len(resp.Data.HostList) < 1 {
-			bytes, _ := json.Marshal(resp)
-			return fmt.Errorf("describe dedicated hosts return a wrong response:%s", string(bytes))
-		}
-		idSet.Add(*resp.Data.HostList[0].HostId)
+	request.HostId = common.StringPtr(data.Id())
+	request.PageNumber = common.IntPtr(1)
+	request.PageSize = common.IntPtr(10)
+	resp, err := instanceService.DescribeDedicatedHosts(ctx, request)
+	if err != nil {
+		return fmt.Errorf("describe dedicated hosts failed:%v ", err)
 	}
-	data.Set("dedicated_host_id_list", idSet.ToSlice())
+	if len(resp.Data.HostList) < 1 {
+		bytes, _ := json.Marshal(resp)
+		return fmt.Errorf("describe dedicated hosts return a wrong response:%s", string(bytes))
+	}
 
 	return nil
 }
@@ -177,11 +163,13 @@ func createResourceDedicatedHost(data *schema.ResourceData, meta interface{}) er
 	if !ok || cpu < 0 {
 		return errors.New("dedicated_host_cpu is invalid")
 	}
+	request.DedicatedHostCpu = common.IntPtr(cpu)
 
 	ram, ok := data.Get("dedicated_host_ram").(int)
 	if !ok || ram < 0 {
 		return errors.New("dedicated_host_ram is invalid")
 	}
+	request.DedicatedHostRam = common.IntPtr(ram)
 
 	dedicatedHostLimit, ok := data.Get("dedicated_host_limit").(int)
 	if !ok || dedicatedHostLimit < 0 {
@@ -219,16 +207,12 @@ func createResourceDedicatedHost(data *schema.ResourceData, meta interface{}) er
 	if err != nil {
 		return fmt.Errorf("allocate dedicated hosts failed:%v", err)
 	}
-	if len(response.Data) == 0 {
+	if *response.Code != success || len(response.Data) == 0 {
 		bytes, _ := json.Marshal(response)
 		return fmt.Errorf("allocate dedicated hosts has return wrong response: %s", string(bytes))
 	}
 	data.SetId(*(response.Data[0]))
-	err = data.Set("dedicated_host_id_list", common.StringValues(response.Data))
-	if err != nil {
-		return err
-	}
-	return readResourceDedicatedHost(data, nil)
+	return readResourceDedicatedHost(data, meta)
 }
 
 func updateResourceDedicatedHost(data *schema.ResourceData, meta interface{}) error {

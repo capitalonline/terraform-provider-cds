@@ -168,6 +168,11 @@ func resourceCdsMySQL() *schema.Resource {
 				},
 				Description: "Data backup. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#20modifydbbackuppolicy)",
 			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject ID.",
+			},
 		},
 		Description: "Mysql instance.\n\n" +
 			"## Example usage\n\n" +
@@ -272,6 +277,13 @@ func createResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 	request.Amount = common.IntPtr(amount)
 	if timeZone, ok := data.GetOk("time_zone"); ok {
 		request.TimeZone = common.StringPtr(timeZone.(string))
+	}
+	if subject, ok := data.GetOk("subject_id"); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("subject_id must be int")
+		}
+		request.SubjectId = common.IntPtr(subjectId)
 	}
 	response, err := mysqlService.CreateMySQL(ctx, request)
 	if err != nil {

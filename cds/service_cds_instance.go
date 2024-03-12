@@ -158,7 +158,7 @@ func (me *InstanceService) AllocateDedicatedHosts(ctx context.Context, request *
 	minSleepMs, maxSleepMs := 2000, 10000
 	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
 	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
-	response, err = me.client.UseCvmGetClient().AllocateDedicatedHosts(request)
+	response, err = me.client.UseCvmClient().AllocateDedicatedHosts(request)
 	if err != nil || response == nil {
 		return nil, fmt.Errorf("request err:%v ,response is:%v", err, response)
 	}

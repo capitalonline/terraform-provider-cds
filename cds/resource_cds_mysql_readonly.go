@@ -54,6 +54,11 @@ func resourceCdsMySQLReadonly() *schema.Resource {
 			//	Optional: true,
 			//	Computed: true,
 			//},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject ID.",
+			},
 		},
 		Description: "Mysql read-only instance\n\n" +
 			"## Example usage\n\n" +
@@ -104,6 +109,14 @@ func createResourceCdsMySQLReadonly(data *schema.ResourceData, meta interface{})
 	if ok {
 		request.TestGroupId = common.IntPtr(testGroupId.(int))
 	}
+	if subject, ok := data.GetOk("subject_id"); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("subject_id must be int")
+		}
+		request.SubjectId = common.IntPtr(subjectId)
+	}
+
 	response, err := mysqlService.CreateReadOnlyMySQL(ctx, request)
 	if err != nil {
 		return err

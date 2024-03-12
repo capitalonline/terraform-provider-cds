@@ -7,6 +7,7 @@ import (
 	"github.com/capitalonline/cds-gic-sdk-go/instance"
 	"github.com/capitalonline/cds-gic-sdk-go/mongodb"
 	"github.com/capitalonline/cds-gic-sdk-go/mysql"
+	"github.com/capitalonline/cds-gic-sdk-go/platform"
 	"github.com/capitalonline/cds-gic-sdk-go/redis"
 	"github.com/capitalonline/cds-gic-sdk-go/security_group"
 	"github.com/capitalonline/cds-gic-sdk-go/security_group_rule"
@@ -36,6 +37,9 @@ type CdsClient struct {
 	redisGetConn   *redis.Client
 	mongodbConn    *mongodb.Client
 	mongodbGetConn *mongodb.Client
+
+	platformConn    *platform.Client
+	platformGetConn *platform.Client
 }
 
 func NewCdsClient(secretId, secretKey, region string) *CdsClient {
@@ -262,4 +266,31 @@ func (me *CdsClient) UseMongodbGetClient() *mongodb.Client {
 	client.WithHttpTransport(&round)
 	me.mongodbGetConn = client
 	return me.mongodbGetConn
+}
+
+func (me *CdsClient) UsePlatformClient() *platform.Client {
+	if me.platformConn != nil {
+		return me.platformConn
+	}
+
+	credential := common.NewCredential(me.SecretId, me.SecretKey)
+	client, _ := platform.NewClient(credential, me.Region, clientProfile("POST"))
+
+	var round LogRoundTripper
+	client.WithHttpTransport(&round)
+	me.platformConn = client
+	return me.platformConn
+}
+
+func (me *CdsClient) UsePlatformGetClient() *platform.Client {
+	if me.platformGetConn != nil {
+		return me.platformGetConn
+	}
+
+	credential := common.NewCredential(me.SecretId, me.SecretKey)
+	client, _ := platform.NewClient(credential, me.Region, clientProfile("GET"))
+	var round LogRoundTripper
+	client.WithHttpTransport(&round)
+	me.platformGetConn = client
+	return me.platformGetConn
 }

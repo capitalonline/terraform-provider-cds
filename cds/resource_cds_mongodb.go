@@ -75,6 +75,11 @@ func resourceCdsMongodb() *schema.Resource {
 				Computed:    true,
 				Description: "Mongodb ip.",
 			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject ID.",
+			},
 		},
 		Description: "Mongodb instance.[View documentation](https://github.com/capitalonline/openapi/blob/master/%E6%96%B0%E7%89%88MongoDB%E6%A6%82%E8%A7%88.md#3createdbinstance)" +
 			"## Example usage\n\n" +
@@ -116,6 +121,13 @@ func resourceCdsMongodbCreate(data *schema.ResourceData, meta interface{}) error
 	request.DiskType = common.StringPtr(data.Get("disk_type").(string))
 	request.DiskValue = common.IntPtr(data.Get("disk_value").(int))
 	request.Password = common.StringPtr(data.Get("password").(string))
+	if subject, ok := data.GetOk(""); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("subject_id must be int")
+		}
+		request.SubjectId = common.IntPtr(subjectId)
+	}
 
 	mongodb_version := data.Get("mongodb_version").(string)
 	request.Version = common.StringPtr(mongodb_version)

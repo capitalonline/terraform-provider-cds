@@ -96,6 +96,11 @@ func resourceCdsVdc() *schema.Resource {
 				Optional:    true,
 				Description: "Delete public ip.",
 			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject id.",
+			},
 		},
 	}
 }
@@ -114,8 +119,15 @@ func resourceCdsVdcCreate(d *schema.ResourceData, meta interface{}) error {
 	if v, ok := d.GetOk("public_network"); ok {
 		publicNetwork = v.(map[string]interface{})
 	}
+	var subjectId int
+	if v, ok := d.GetOk("subject_id"); ok {
+		subjectId, ok = v.(int)
+		if !ok {
+			return errors.New("subject id invalid")
+		}
+	}
 
-	taskId, err := vdcService.CreateVdc(ctx, name, region, publicNetwork)
+	taskId, err := vdcService.CreateVdc(ctx, name, region, publicNetwork, subjectId)
 	if err != nil {
 		return err
 	}
