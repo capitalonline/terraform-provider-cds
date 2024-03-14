@@ -121,7 +121,7 @@ func resourceCdsMongodbCreate(data *schema.ResourceData, meta interface{}) error
 	request.DiskType = common.StringPtr(data.Get("disk_type").(string))
 	request.DiskValue = common.IntPtr(data.Get("disk_value").(int))
 	request.Password = common.StringPtr(data.Get("password").(string))
-	if subject, ok := data.GetOk(""); ok {
+	if subject, ok := data.GetOk("subject_id"); ok {
 		subjectId, ok := subject.(int)
 		if !ok {
 			return errors.New("subject_id must be int")

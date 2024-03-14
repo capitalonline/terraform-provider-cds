@@ -269,8 +269,11 @@ func waitRedisDeleted(ctx context.Context, service RedisService, instanceUuid st
 	request.SetHttpMethod("GET")
 	for {
 		time.Sleep(time.Second * 15)
-		_, err := service.DescribeRedis(ctx, request)
+		resp, err := service.DescribeRedis(ctx, request)
 		if err != nil {
+			return nil
+		}
+		if resp.Data == nil || len(resp.Data) == 0 {
 			return nil
 		}
 	}
