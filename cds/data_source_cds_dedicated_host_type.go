@@ -82,6 +82,11 @@ func dataSourceDedicatedHostType() *schema.Resource {
 					},
 				},
 			},
+			"result_output_file": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Used to save results.",
+			},
 		},
 		Description: "Data source dedicated host.\n\n" +
 			"## Example usage\n\n" +
@@ -158,5 +163,13 @@ func dataSourceDedicatedHostTypeRead(d *schema.ResourceData, meta interface{}) e
 	}
 	id := fmt.Sprintf("dedicated_host_types-%s", regionId)
 	d.SetId(id)
+	output, ok := d.GetOk("result_output_file")
+	if ok && output.(string) != "" {
+		if err = writeToFile(output.(string), map[string]interface{}{
+			"dedicated_host_types": dedicatedHostTypes,
+		}); err != nil {
+			return err
+		}
+	}
 	return nil
 }
