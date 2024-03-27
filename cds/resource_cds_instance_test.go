@@ -1,7 +1,10 @@
 package cds
 
 import (
+	"errors"
 	"fmt"
+	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
@@ -135,7 +138,8 @@ resource "cds_instance" "my_instance" {
   vdc_id              = cds_vdc.my_vdc.id
   password            = "123abc,.;"
   public_ip           = "auto"
-  private_ip          = {
+  host_name = "123"
+  private_ip           {
     "private_id" = cds_private_subnet.my_private_subnet_1.id
     "address" = "auto"
   }
@@ -233,3 +237,45 @@ resource "cds_instance" "my_instance" {
   }
 }
 `
+
+func TestName(t *testing.T) {
+	s := []string{
+		"www.baidu.com",
+		"x.19hx",
+		"x..19hx",
+		"x-.19hx",
+		"x--19hx",
+		"x.19h-x",
+		"x.19h-x_",
+		"x.19h-xl.",
+		".x.19h-x",
+		"_x.19h-xl",
+	}
+	for _, value := range s {
+		fmt.Println(value+"    ", v(value))
+	}
+}
+
+func v(value string) (errs []error) {
+	k := "hostname"
+	if len(value) < 1 {
+		errs = append(errs, fmt.Errorf("length of \"%s\"  should be more than or equal %d, the length of the current input value is %d", k, 1, len(value)))
+	}
+	if len(value) > 64 {
+		errs = append(errs, fmt.Errorf("length of \"%s\"  should be less than or equal %d, the length of the current input value is %d", k, 64, len(value)))
+	}
+	re := regexp.MustCompile(`^[a-zA-Z0-9\-.]+$`)
+	if !re.MatchString(value) {
+		errs = append(errs, errors.New(`static and transient hostnames should only contain a-z, A-Z, 0-9, "-", and "."`))
+	}
+	if strings.Contains(value, "..") ||
+		strings.Contains(value, "--") ||
+		strings.HasSuffix(value, ".") ||
+		strings.HasSuffix(value, "-") ||
+		strings.HasPrefix(value, "_") ||
+		strings.HasPrefix(value, ".") {
+		errs = append(errs, errors.New(`static and transient hostnames should cannot start or end with "." and "-". Consecutive "." or "-" are not allowed`))
+
+	}
+	return errs
+}

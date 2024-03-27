@@ -60,20 +60,24 @@ func resourceCdsDedicatedHost() *schema.Resource {
 			//	Description: "Amount.",
 			//},
 			"prepaid_month": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Description: "Prepaid month.Purchase time (unit/month)",
+				Type:         schema.TypeInt,
+				Optional:     true,
+				Default:      1,
+				ValidateFunc: validatePrepaidMonth(),
+				Description:  "Prepaid month.Purchase time (unit/month)",
 			},
 			"auto_renew": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Description: "Auto renew. Whether to enable automatic renewal.",
+				Type:         schema.TypeInt,
+				Optional:     true,
+				Default:      1,
+				ValidateFunc: validateAutoRenew(),
+				Description:  "Auto renew. Whether to enable automatic renewal.",
 			},
-			"description_num": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Description: "Description num. Whether to enable appending suffix to names.",
-			},
+			//"description_num": {
+			//	Type:        schema.TypeBool,
+			//	Optional:    true,
+			//	Description: "Description num. Whether to enable appending suffix to names.",
+			//},
 			"subject_id": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -96,7 +100,6 @@ resource cds_dedicated_host dedicated_host {
 	prepaid_month = 1
 	auto_renew = 1
 	amount = 1
-	description_num = true
 	subject_id=101
 }
 ` +
@@ -185,6 +188,8 @@ func createResourceDedicatedHost(data *schema.ResourceData, meta interface{}) er
 			return errors.New("prepaid_month is invalid")
 		}
 		request.PrepaidMonth = common.IntPtr(prepaidMonthValue)
+	} else {
+		request.PrepaidMonth = common.IntPtr(0)
 	}
 
 	if autoRenew, ok := data.GetOk("auto_renew"); ok {
@@ -193,9 +198,11 @@ func createResourceDedicatedHost(data *schema.ResourceData, meta interface{}) er
 			return errors.New("auto_renew is invalid")
 		}
 		request.AutoRenew = common.IntPtr(autoRenewValue)
+	} else {
+		request.AutoRenew = common.IntPtr(0)
 	}
 
-	if subjectId, ok := data.GetOk("subject_id"); !ok {
+	if subjectId, ok := data.GetOk("subject_id"); ok {
 		subjectIdValue, ok := subjectId.(int)
 		if !ok || subjectIdValue < 0 {
 			return errors.New("subject_id is invalid")
@@ -222,4 +229,28 @@ func updateResourceDedicatedHost(data *schema.ResourceData, meta interface{}) er
 
 func deleteResourceDedicatedHost(data *schema.ResourceData, meta interface{}) error {
 	return errors.New("unsupported delete dedicated host")
+}
+
+func validateAutoRenew() schema.SchemaValidateFunc {
+	return func(v interface{}, k string) (ws []string, errs []error) {
+
+		value := v.(int)
+		if value != 0 && value != 1 {
+			errs = append(errs, fmt.Errorf("auto_renew should be \"0\" or \"1\", the current input value is %v", value))
+		}
+		return
+	}
+}
+
+func validatePrepaidMonth() schema.SchemaValidateFunc {
+	return func(v interface{}, k string) (ws []string, errs []error) {
+
+		value := v.(int)
+		switch value {
+		case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 24, 36:
+			return
+		}
+		errs = append(errs, errors.New("prepaid_month must be one of the values[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 24, 36]"))
+		return
+	}
 }

@@ -96,12 +96,10 @@ func ValidateStringLengthInRange(min, max int) schema.SchemaValidateFunc {
 	return func(v interface{}, k string) (ws []string, errors []error) {
 		value := len(v.(string))
 		if value < min {
-			errors = append(errors, fmt.Errorf(
-				"length of %q cannot be lower than %d: %d", k, min, value))
+			errors = append(errors, fmt.Errorf("length of \"%s\"  should be more than or equal %d, the length of the current input value is %d", k, min, value))
 		}
 		if value > max {
-			errors = append(errors, fmt.Errorf(
-				"length of %q cannot be higher than %d: %d", k, max, value))
+			errors = append(errors, fmt.Errorf("length of \"%s\"  should be less than or equal %d, the length of the current input value is %d", k, max, value))
 		}
 		return
 	}

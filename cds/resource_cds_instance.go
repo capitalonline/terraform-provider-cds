@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -192,6 +193,7 @@ func resourceCdsCcsInstance() *schema.Resource {
 						"iops": {
 							Type:        schema.TypeInt,
 							Optional:    true,
+							Default:     "0",
 							Description: " The size of the disk iops",
 						},
 					},
@@ -225,6 +227,7 @@ func resourceCdsCcsInstance() *schema.Resource {
 						"iops": {
 							Type:        schema.TypeInt,
 							Optional:    true,
+							Default:     "0",
 							Description: "The size of the disk iops int,type equal ssd_disk can modify iops.",
 						},
 					},
@@ -303,9 +306,10 @@ func resourceCdsCcsInstance() *schema.Resource {
 				},
 			},
 			"host_name": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Host name.",
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateHostname(),
+				Description:  "Host name.",
 			},
 			"subject_id": {
 				Type:        schema.TypeInt,
@@ -1133,6 +1137,29 @@ func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) erro
 		}
 		waitInstanceUpdated(ctx, instanceService, id)
 	}
+	if d.HasChange("host_name") {
+		_, newHostName := d.GetChange("host_name")
+		password, ok := d.GetOk("password")
+		if !ok {
+			return errors.New("password is required while reset hostname")
+		}
+		request := instance.NewModifyInstanceHostNameRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.HostName = common.StringPtr(newHostName.(string))
+		request.Password = common.StringPtr(password.(string))
+		resp, err := instanceService.client.UseCvmClient().ModifyInstanceHostName(request)
+		if err != nil {
+			return err
+		}
+		if resp == nil || resp.Code == nil {
+			return errors.New(fmt.Sprintf("modify host name failed,response error:%v", resp))
+		}
+		if *resp.Code != "Success" {
+			return errors.New(*resp.Message)
+		}
+		time.Sleep(time.Second * 10)
+	}
+
 	// reset image
 	if d.HasChange("image_id") {
 		imageId := d.Get("image_id")
@@ -1427,5 +1454,31 @@ func waitInstanceFinish(ctx context.Context, service InstanceService, instanceUu
 		if now.Add(time.Hour * 2).Before(time.Now()) {
 			return errors.New("operate elapsed to many time,more than two hours")
 		}
+	}
+}
+
+func validateHostname() schema.SchemaValidateFunc {
+	return func(v interface{}, k string) (ws []string, errs []error) {
+		value := v.(string)
+		if len(value) < 1 {
+			errs = append(errs, fmt.Errorf("length of \"%s\"  should be more than or equal %d, the length of the current input value is %d", k, 1, len(value)))
+		}
+		if len(value) > 64 {
+			errs = append(errs, fmt.Errorf("length of \"%s\"  should be less than or equal %d, the length of the current input value is %d", k, 64, len(value)))
+		}
+		re := regexp.MustCompile(`^[a-zA-Z0-9\-.]+$`)
+		if !re.MatchString(value) {
+			errs = append(errs, errors.New(`static and transient hostnames should only contain a-z, A-Z, 0-9, "-", and "."`))
+		}
+		if strings.Contains(value, "..") ||
+			strings.Contains(value, "--") ||
+			strings.HasSuffix(value, ".") ||
+			strings.HasSuffix(value, "-") ||
+			strings.HasPrefix(value, "-") ||
+			strings.HasPrefix(value, ".") {
+			errs = append(errs, errors.New(`static and transient hostnames should cannot start or end with "." and "-". Consecutive "." or "-" are not allowed`))
+
+		}
+		return
 	}
 }

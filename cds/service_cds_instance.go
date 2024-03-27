@@ -221,3 +221,30 @@ func (me *InstanceService) DescribeDedicatedHostTypes(ctx context.Context, reque
 	}
 	return response, err
 }
+
+func (me *InstanceService) ModifyInstanceHostName(ctx context.Context, request *instance.ModifyInstanceHostNameRequest) (*instance.ModifyInstanceHostNameResponse, error) {
+	var (
+		err      error
+		response *instance.ModifyInstanceHostNameResponse
+	)
+	logId := getLogId(ctx)
+	defer func() {
+		respStr := ""
+		if response != nil {
+			respStr = response.ToJsonString()
+		}
+		log.Println(fmt.Sprintf("[DEBUG]%s api[%s] , request body [%s], response body [%s] err [%v]", logId, request.GetAction(), request.ToJsonString(), respStr, err))
+	}()
+	ratelimit.Check(request.GetAction())
+	minSleepMs, maxSleepMs := 2000, 10000
+	sleepMs := minSleepMs + rand.Intn(maxSleepMs)
+	time.Sleep(time.Duration(sleepMs) * time.Millisecond)
+	response, err = me.client.UseCvmClient().ModifyInstanceHostName(request)
+	if err != nil || response == nil {
+		return nil, fmt.Errorf("request err:%v ,response is:%v", err, response)
+	}
+	if *response.Code != success {
+		return nil, fmt.Errorf("request failed with code:%v ,message:%v", response.Code, response.Message)
+	}
+	return response, err
+}
