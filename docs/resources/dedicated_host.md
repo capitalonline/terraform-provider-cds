@@ -17,7 +17,6 @@ description: |-
   prepaid_month = 1
   auto_renew = 1
   amount = 1
-  description_num = true
   subject_id=101
   
   }
@@ -44,7 +43,6 @@ resource cds_dedicated_host dedicated_host {
 	prepaid_month = 1
 	auto_renew = 1
 	amount = 1
-	description_num = true
 	subject_id=101
 }
 
@@ -57,7 +55,6 @@ resource cds_dedicated_host dedicated_host {
 
 ### Required
 
-- `amount` (Number) Amount.
 - `dedicated_host_cpu` (Number) Dedicated host cpu
 - `dedicated_host_good_id` (Number) Dedicated host good id. Host machine sells product ID. You can obtain the compute types from the cds_dedicated_host_type resource.
 - `dedicated_host_limit` (Number) Dedicated host limit.Overcommitment ratio information.
@@ -69,11 +66,9 @@ resource cds_dedicated_host dedicated_host {
 ### Optional
 
 - `auto_renew` (Number) Auto renew. Whether to enable automatic renewal.
-- `description_num` (Boolean) Description num. Whether to enable appending suffix to names.
 - `prepaid_month` (Number) Prepaid month.Purchase time (unit/month)
-- `subject_id` (Number) Subject id。Test project ID.
+- `subject_id` (Number) Subject id. Test project ID.
 
 ### Read-Only
 
-- `dedicated_host_id_list` (List of String) Dedicated host id list
 - `id` (String) The ID of this resource.

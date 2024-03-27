@@ -56,6 +56,10 @@ resource "cds_redis" "redis_example" {
 - `region_id` (String) Region id.
 - `vdc_id` (String) Vdc id.
 
+### Optional
+
+- `subject_id` (Number) Subject id.
+
 ### Read-Only
 
 - `id` (String) The ID of this resource.

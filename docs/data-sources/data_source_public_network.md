@@ -3,12 +3,30 @@
 page_title: "cds_data_source_public_network Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Data source public network.
+  Example usage
+  ```hcl
+  data "cdsdatasourcepublicnetwork" "pbn" {
+    vdcid    = ""
+    publicid = ""
+  }
+  ```
 ---
 
 # cds_data_source_public_network (Data Source)
 
+Data source public network.
 
+## Example usage
+
+```hcl
+
+data "cds_data_source_public_network" "pbn" {
+  vdc_id    = ""
+  public_id = ""
+}
+
+```
 
 
 

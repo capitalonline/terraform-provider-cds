@@ -64,16 +64,16 @@ resource "cds_mysql_account" "user1" {
 ### Optional
 
 - `description` (String) Description. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)
-- `operations` (List of Object) Modify db privilege.[View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#OperationsObj) (see [below for nested schema](#nestedatt--operations))
+- `operations` (Block List) Modify db privilege.[View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#OperationsObj) (see [below for nested schema](#nestedblock--operations))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 
-<a id="nestedatt--operations"></a>
+<a id="nestedblock--operations"></a>
 ### Nested Schema for `operations`
 
-Optional:
+Required:
 
-- `db_name` (String)
-- `privilege` (String)
+- `db_name` (String) Database name.
+- `privilege` (String) Privilege. ReadWrite: Read and write permission. DMLOnly: Only DML (Data Manipulation Language) permission. ReadOnly: Read-only permission. DDLOnly: Only DDL (Data Definition Language) permission

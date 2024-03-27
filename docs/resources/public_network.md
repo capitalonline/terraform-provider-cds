@@ -61,6 +61,7 @@ resource "cds_public_network" "pb1" {
 ### Optional
 
 - `public_id` (String) Public network id.
+- `subject_id` (Number) Subject id.
 
 ### Read-Only
 

@@ -118,7 +118,8 @@ resource "cds_mysql" "mysql_example" {
 - `backup` (Map of String) Create db instance backup.[View document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#16createbackup)
 - `data_backups` (Map of String) Data backup. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#20modifydbbackuppolicy)
 - `instance_uuid` (String)
-- `parameters` (List of Object) Mysql instance parameters (see [below for nested schema](#nestedatt--parameters))
+- `parameters` (Block List) Mysql instance parameters (see [below for nested schema](#nestedblock--parameters))
+- `subject_id` (Number) Subject ID.
 - `time_zone` (String) Time zone.
 
 ### Read-Only
@@ -126,7 +127,7 @@ resource "cds_mysql" "mysql_example" {
 - `id` (String) The ID of this resource.
 - `ip` (String) Instance ip
 
-<a id="nestedatt--parameters"></a>
+<a id="nestedblock--parameters"></a>
 ### Nested Schema for `parameters`
 
 Optional:

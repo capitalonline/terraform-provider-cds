@@ -3,12 +3,36 @@
 page_title: "cds_data_source_redis Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Data source dedicated host.
+  Example usage
+  ```hcl
+  data cdsdatasourceredis "redisdata" {
+      regionid           = ""
+      instanceuuid       = ""
+      instancename       = ""
+      ip                  = ""
+      resultoutput_file  = "data.json" // availableDB, instances, regions
+  }
+  ```
 ---
 
 # cds_data_source_redis (Data Source)
 
+Data source dedicated host.
 
+## Example usage
+
+```hcl
+
+data cds_data_source_redis "redis_data" {
+    region_id           = ""
+    instance_uuid       = ""
+    instance_name       = ""
+    ip                  = ""
+    result_output_file  = "data.json" // availableDB, instances, regions
+}
+
+```
 
 
 

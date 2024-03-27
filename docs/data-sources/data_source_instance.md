@@ -4,11 +4,32 @@ page_title: "cds_data_source_instance Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
   Data source vm instance.
+  Example usage
+  ```hcl
+  data cdsdatasourceinstance "myinstancedata" {
+      instanceid = "xx"
+      vdcid =  "xx"
+      resultoutput_file = "data.json"
+  }
+  ```
 ---
 
 # cds_data_source_instance (Data Source)
 
 Data source vm instance.
+
+## Example usage
+
+```hcl
+
+data cds_data_source_instance "my_instance_data" {
+    instance_id = "xx"
+    vdc_id =  "xx"
+    result_output_file = "data.json"
+}
+
+
+```
 
 
 

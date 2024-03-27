@@ -13,6 +13,7 @@ import (
 	"github.com/capitalonline/cds-gic-sdk-go/security_group_rule"
 	"github.com/capitalonline/cds-gic-sdk-go/task"
 	"github.com/capitalonline/cds-gic-sdk-go/vdc"
+	"log"
 )
 
 // client for all Capitalonline data service
@@ -274,8 +275,10 @@ func (me *CdsClient) UsePlatformClient() *platform.Client {
 	}
 
 	credential := common.NewCredential(me.SecretId, me.SecretKey)
-	client, _ := platform.NewClient(credential, me.Region, clientProfile("POST"))
-
+	client, err := platform.NewClient(credential, me.Region, clientProfile("POST"))
+	if err != nil {
+		log.Println("create platform client failed")
+	}
 	var round LogRoundTripper
 	client.WithHttpTransport(&round)
 	me.platformConn = client
@@ -288,7 +291,10 @@ func (me *CdsClient) UsePlatformGetClient() *platform.Client {
 	}
 
 	credential := common.NewCredential(me.SecretId, me.SecretKey)
-	client, _ := platform.NewClient(credential, me.Region, clientProfile("GET"))
+	client, err := platform.NewClient(credential, me.Region, clientProfile("GET"))
+	if err != nil {
+		log.Println("create platform client failed")
+	}
 	var round LogRoundTripper
 	client.WithHttpTransport(&round)
 	me.platformGetConn = client

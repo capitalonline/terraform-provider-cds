@@ -3,12 +3,23 @@
 page_title: "cds_data_source_mysql Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Data source mysql readonly instance.
+  Example usage
+  ```hcl
+  ```
 ---
 
 # cds_data_source_mysql (Data Source)
 
+Data source mysql readonly instance.
 
+## Example usage
+
+```hcl
+
+
+
+```
 
 
 
@@ -25,20 +36,23 @@ description: |-
 - `instance_name` (String) Instance name.
 - `instance_uuid` (String) Instance uuid.
 - `ip` (String) Ip.
-- `readonly_instances` (List of Object) Readonly instances. (see [below for nested schema](#nestedatt--readonly_instances))
+- `readonly_instances` (Block List) Readonly instances. (see [below for nested schema](#nestedblock--readonly_instances))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 
-<a id="nestedatt--readonly_instances"></a>
+<a id="nestedblock--readonly_instances"></a>
 ### Nested Schema for `readonly_instances`
+
+Required:
+
+- `disk_type` (String) Disk type.
+- `disk_value` (Number) Disk value.
+- `test_group_id` (Number) Ttest-group id.
 
 Optional:
 
-- `amount` (Number)
-- `disk_type` (String)
-- `disk_value` (Number)
-- `instance_name` (String)
-- `paas_goods_id` (Number)
-- `test_group_id` (Number)
+- `amount` (Number) Amount.
+- `instance_name` (String) Instance name.
+- `paas_goods_id` (Number) Paas goods id.

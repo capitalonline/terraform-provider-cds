@@ -25,6 +25,7 @@ description: |-
 - `add_public_ip` (Number) Add public ip.
 - `delete_public_ip` (String) Delete public ip.
 - `public_network` (Map of String) Public Network info.
+- `subject_id` (Number) Subject id.
 
 ### Read-Only
 

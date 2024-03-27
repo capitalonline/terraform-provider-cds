@@ -4,11 +4,35 @@ page_title: "cds_data_source_haproxy Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
   Data source haproxy. View Document https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#4describeloadbalancers
+  Example usage
+  ```hcl
+  data cdsdatasourcehaproxy "myhaproxydata" {
+      instanceuuid      = "xxxxxxxxxxxxx"
+      instancename      = ""
+      regionid          = ""
+      resultoutputfile = "data.json"
+      #ha_list  computed by terraform apply
+  }
+  ```
 ---
 
 # cds_data_source_haproxy (Data Source)
 
 Data source haproxy. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#4describeloadbalancers)
+
+## Example usage
+
+```hcl
+
+data cds_data_source_haproxy "my_haproxy_data" {
+	instance_uuid      = "xxxxxxxxxxxxx" 
+	instance_name      = ""
+	region_id          = ""
+	result_output_file = "data.json"
+	#ha_list  computed by terraform apply
+}
+
+```
 
 
 

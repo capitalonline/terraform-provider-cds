@@ -57,6 +57,7 @@ resource "cds_mysql_readonly" "readonly1" {
 ### Optional
 
 - `paas_goods_id` (Number) Paas goods id.[View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#15createreadonlydbinstance)
+- `subject_id` (Number) Subject ID.
 - `test_group_id` (Number) Test group id. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#15createreadonlydbinstance)
 
 ### Read-Only

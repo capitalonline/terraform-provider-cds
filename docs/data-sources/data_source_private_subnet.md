@@ -3,12 +3,23 @@
 page_title: "cds_data_source_private_subnet Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
-  
+  Data source private subnet.
+  Example usage
+  ```hcl
+  ```
 ---
 
 # cds_data_source_private_subnet (Data Source)
 
+Data source private subnet.
 
+## Example usage
+
+```hcl
+
+
+
+```
 
 
 

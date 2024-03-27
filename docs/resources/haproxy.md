@@ -162,117 +162,127 @@ resource cds_haproxy my_haproxy {
 - `base_pipe_id` (String) Base pipe id.
 - `cpu` (Number) Instance cpu num.
 - `instance_name` (String) Instance name.
-- `ips` (List of Object) The network used by HA. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#3createloadbalancer) (see [below for nested schema](#nestedatt--ips))
+- `ips` (Block List, Min: 1) The network used by HA. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#3createloadbalancer) (see [below for nested schema](#nestedblock--ips))
 - `ram` (Number) Instance ram size.
 - `region_id` (String) Regon id.
 - `vdc_id` (String) Vdc id.
 
 ### Optional
 
-- `http_listeners` (List of Object) Http listeners. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#3createloadbalancer) (see [below for nested schema](#nestedatt--http_listeners))
-- `tcp_listeners` (List of Object) Tcp listeners.[View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5tcplistenersobj) (see [below for nested schema](#nestedatt--tcp_listeners))
+- `http_listeners` (Block List) Http listeners. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#3createloadbalancer) (see [below for nested schema](#nestedblock--http_listeners))
+- `subject_id` (Number) Subject ID.
+- `tcp_listeners` (Block List) Tcp listeners.[View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5tcplistenersobj) (see [below for nested schema](#nestedblock--tcp_listeners))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 
-<a id="nestedatt--ips"></a>
+<a id="nestedblock--ips"></a>
 ### Nested Schema for `ips`
 
 Required:
 
-- `pipe_id` (String)
-- `pipe_type` (String)
-- `segment_id` (String)
+- `pipe_id` (String) Pipe id. Internal network ID, or public network ID.
+- `pipe_type` (String) Pipe type. Possible values: pipe_type、public.
+
+Optional:
+
+- `segment_id` (String) Segment id. The number of the occupied public network segment, which will occupy 3 public networks.
 
 
-<a id="nestedatt--http_listeners"></a>
+<a id="nestedblock--http_listeners"></a>
 ### Nested Schema for `http_listeners`
 
+Required:
+
+- `acl_white_list` (String) Acl white list. Set a whitelist, for example 192.168.12.1,192.168.1.1/20.
+
 Optional:
 
-- `acl_white_list` (String)
-- `backend_server` (List of Object) (see [below for nested schema](#nestedobjatt--http_listeners--backend_server))
-- `certificate_ids` (List of Object) (see [below for nested schema](#nestedobjatt--http_listeners--certificate_ids))
-- `client_timeout` (String)
-- `client_timeout_unit` (String)
-- `connect_timeout` (String)
-- `connect_timeout_unit` (String)
-- `listener_mode` (String)
-- `listener_name` (String)
-- `listener_port` (Number)
-- `max_conn` (Number)
-- `option` (List of Object) (see [below for nested schema](#nestedobjatt--http_listeners--option))
-- `scheduler` (String)
-- `server_timeout` (String)
-- `server_timeout_unit` (String)
-- `session_persistence` (List of Object) (see [below for nested schema](#nestedobjatt--http_listeners--session_persistence))
-- `sticky_session` (String)
+- `backend_server` (Block List) Backend server. Backend server configuration. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5BackendServerObj) (see [below for nested schema](#nestedblock--http_listeners--backend_server))
+- `certificate_ids` (Block List) [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5certificateIdsobj) (see [below for nested schema](#nestedblock--http_listeners--certificate_ids))
+- `client_timeout` (String) Client timeout. Set the timeout period for client connections.
+- `client_timeout_unit` (String) Client timeout unit. Set the timeout period for request connections in units ["ms", "s"].
+- `connect_timeout` (String) Connect timeout. Set the timeout period for request connections.
+- `connect_timeout_unit` (String) Connect timeout unit. Set the timeout unit for request connections ["ms", "s"].
+- `listener_mode` (String) Listener mode.
+- `listener_name` (String) The name of the listening strategy.The character length is 1~50, starting with a letter and ending with a letter or number. It consists of lowercase letters, numbers, or underscores. The name must be unique.
+- `listener_port` (Number) Listener port. Listening port for the strategy.The value range is 1-65535, with ports 22, 1080, 9100, and 9101 disabled.
+- `max_conn` (Number) Max connection. Maximum number of connections for the proxy end.
+- `option` (Block List) Option. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5OptionObj) (see [below for nested schema](#nestedblock--http_listeners--option))
+- `scheduler` (String) Scheduler. Scheduling algorithm ["roundrobin", "leastconn", "static-rr", "source"].
+- `server_timeout` (String) Server timeout.
+- `server_timeout_unit` (String) Server timeout unit. Set the server timeout unit ["ms", "s"].
+- `session_persistence` (Block List, Max: 1) Session persistence. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5SessionPersistenceObj) (see [below for nested schema](#nestedblock--http_listeners--session_persistence))
+- `sticky_session` (String) Sticky session. Enable keep-alive for long connections ["on", "off"].
 
-<a id="nestedobjatt--http_listeners--backend_server"></a>
+<a id="nestedblock--http_listeners--backend_server"></a>
 ### Nested Schema for `http_listeners.backend_server`
 
-Optional:
+Required:
 
-- `ip` (String)
-- `max_conn` (Number)
-- `port` (Number)
-- `weight` (String)
+- `ip` (String) Ip. IP addresses of the backend servers (domain names are supported under the public network).
+- `max_conn` (Number) Max connection. Maximum number of connections for the backend servers.
+- `port` (Number) Port. Backend server port.
+- `weight` (String) Weight. Backend server weight, with a range of 1-256.
 
 
-<a id="nestedobjatt--http_listeners--certificate_ids"></a>
+<a id="nestedblock--http_listeners--certificate_ids"></a>
 ### Nested Schema for `http_listeners.certificate_ids`
 
-Optional:
+Required:
 
-- `certificate_id` (String)
-- `certificate_name` (String)
+- `certificate_id` (String) Certificate id.
+- `certificate_name` (String) Certificate name.
 
 
-<a id="nestedobjatt--http_listeners--option"></a>
+<a id="nestedblock--http_listeners--option"></a>
 ### Nested Schema for `http_listeners.option`
 
 Optional:
 
-- `httpchk` (Map of String)
+- `httpchk` (Map of String) Http check. Enable health checks for HTTP.
 
 
-<a id="nestedobjatt--http_listeners--session_persistence"></a>
+<a id="nestedblock--http_listeners--session_persistence"></a>
 ### Nested Schema for `http_listeners.session_persistence`
 
 Optional:
 
-- `key` (String)
-- `mode` (Number)
-- `timer` (Map of String)
+- `key` (String) Key. Set the Cookie key value in the HTTP response. The character length is 2-15, starting with a letter and ending with a letter or number. It consists of lowercase letters, numbers, or underscores, and the key must be unique.
+- `mode` (Number) Mode. The default value is 1.
+0. Indicates that the content of the Cookie is retained in the cache (e.g., CDN).
+1. Indicates that the content of the Cookie is not retained in the cache (e.g., CDN) and the cookie set by the load balancer is visible to the backend service.
+2. Indicates that the content of the Cookie is not retained in the cache (e.g., CDN) and the cookie set by the load balancer is not visible to the backend service, i.e., in transparent mode, only the cookies set by the client are visible.
+- `timer` (Map of String) Timer.Set the session persistence time parameter, unit: seconds. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5TimerObj)
 
 
 
-<a id="nestedatt--tcp_listeners"></a>
+<a id="nestedblock--tcp_listeners"></a>
 ### Nested Schema for `tcp_listeners`
 
 Optional:
 
-- `acl_white_list` (String)
-- `backend_server` (List of Object) (see [below for nested schema](#nestedobjatt--tcp_listeners--backend_server))
-- `client_timeout` (String)
-- `client_timeout_unit` (String)
-- `connect_timeout` (String)
-- `connect_timeout_unit` (String)
-- `listener_mode` (String)
-- `listener_name` (String)
-- `listener_port` (Number)
-- `max_conn` (Number)
-- `scheduler` (String)
-- `server_timeout` (String)
-- `server_timeout_unit` (String)
+- `acl_white_list` (String) Acl white list. Set whitelist, for example: ["129.12.12.1", "192.168.1.1/20"].
+- `backend_server` (Block List) Backend server configuration. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5BackendServerObj) (see [below for nested schema](#nestedblock--tcp_listeners--backend_server))
+- `client_timeout` (String) Client timeout. Set the client connection timeout duration.
+- `client_timeout_unit` (String) Client timeout unit. Set the unit of client connection timeout duration to ["ms", "s"].
+- `connect_timeout` (String) Connect timeout. Set the request connection timeout duration.
+- `connect_timeout_unit` (String) Connect timeout unit. Set the unit of request connection timeout duration to ["ms", "s"].
+- `listener_mode` (String) Listener mode.
+- `listener_name` (String) Listener name. The name of the listening strategy.  Character length: 1-50.  Starts with a letter, ends with a letter or number. Consists of lowercase letters, numbers, or underscores. The name must be unique.
+- `listener_port` (Number) Listener port. Listening port for the strategy. Value range: 1-65535. Ports 22, 1080, 9100, and 9101 are disabled and not within the valid range.
+- `max_conn` (Number) Max connection. Maximum number of connections for the proxy end.
+- `scheduler` (String) Scheduler. Scheduling algorithm options include: ["roundrobin", "leastconn", "static-rr",  "source"].
+- `server_timeout` (String) Server timeout. Set the server-side timeout duration.
+- `server_timeout_unit` (String) Server timeout unit. Set the unit of server-side timeout duration to ["ms", "s"].
 
-<a id="nestedobjatt--tcp_listeners--backend_server"></a>
+<a id="nestedblock--tcp_listeners--backend_server"></a>
 ### Nested Schema for `tcp_listeners.backend_server`
 
-Optional:
+Required:
 
-- `ip` (String)
-- `max_conn` (Number)
-- `port` (Number)
-- `weight` (String)
+- `ip` (String) Ip. Backend server IP address (support domain names in public network).
+- `max_conn` (Number) Max connection. Maximum number of connections for the backend server.
+- `port` (Number) Backend server port.
+- `weight` (String) Backend server weight, with a range of 1-256.

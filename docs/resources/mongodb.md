@@ -62,6 +62,7 @@ resource "cds_mongodb" "mongodb_example" {
 ### Optional
 
 - `mongodb_version` (String) Mongodb version. Available version: 4.0.3(default)、3.6.7、3.2.21.
+- `subject_id` (Number) Subject ID.
 
 ### Read-Only
 
