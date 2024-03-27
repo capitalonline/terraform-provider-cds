@@ -17,46 +17,73 @@ func resourceCdsMySQLAccount() *schema.Resource {
 		Delete: deleteResourceCdsMySQLAccount,
 		Schema: map[string]*schema.Schema{
 			"instance_uuid": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Instance uuid. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)",
 			},
 			"account_name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Account name. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)",
 			},
 			"password": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Password. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)",
 			},
 			"account_type": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Account type, supports creating high privilege users and normal users. Possible values: High privilege user: \"Super\" 、Normal user: \"Normal\". Note: An instance can only have one high privilege account.[View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)",
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Description. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#5createprivilegedaccount)",
 			},
 			"operations": {
 				Type:        schema.TypeList,
 				Optional:    true,
 				Computed:    true,
-				Description: "modify db privilege",
+				Description: "Modify db privilege.[View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#OperationsObj)",
 				ConfigMode:  schema.SchemaConfigModeAttr,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"db_name": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Database name.",
 						},
 						"privilege": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Privilege. ReadWrite: Read and write permission. DMLOnly: Only DML (Data Manipulation Language) permission. ReadOnly: Read-only permission. DDLOnly: Only DDL (Data Definition Language) permission",
 						},
 					},
 				},
 			},
 		},
+		Description: "Mysql account.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource "cds_mysql_account" "user1" {
+    instance_uuid= cds_mysql.mysql_example.id
+    account_name = "testuser"
+    password = "xxxxxxxx"
+    account_type = "Normal"
+    description = "test"
+#  to give permission
+#  The db must be created in advance,and openapi does not support db creation. You need to create a DB manually
+    operations = [{
+        db_name = "db1"
+        privilege = "DMLOnly"
+    }
+    ]
+}
+` +
+			"\n```",
 	}
 }
 

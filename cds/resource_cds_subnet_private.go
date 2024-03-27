@@ -20,30 +20,44 @@ func resourceCdsPrivateSubnet() *schema.Resource {
 		Delete: resourceCdsPrivateSubnetDelete,
 		Schema: map[string]*schema.Schema{
 			"vdc_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Vdc id.",
 			},
 			"name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "private network name.",
+				Description: "Private network name.",
 			},
 			"type": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "private network type.",
+				Description: "Private network type. (auto/manual), default is auto.",
 			},
 			"address": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "private network address.",
+				Description: "Private network address.",
 			},
 			"mask": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "private network mask.",
+				Description: "Private network mask.",
 			},
 		},
+		Description: "Private network. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#5createprivatenetwork)\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource "cds_private_subnet" "my_private_subnet_1" {
+  vdc_id  = "xxx"
+  name    = "private_1"
+  type    = "private"
+  address = ""
+  mask    = "26"
+}
+` +
+			"\n```",
 	}
 }
 

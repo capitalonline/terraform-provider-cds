@@ -22,60 +22,84 @@ func resourceCdsMongodb() *schema.Resource {
 			"region_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "region id",
+				Description: "Region id.",
 			},
 			"vdc_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "vdc id",
+				Description: "Vdc id.",
 			},
 			"base_pipe_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "base pipe id",
+				Description: "Base pipe id.",
 			},
 			"instance_name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "instance name",
+				Description: "Instance name.",
 			},
 			"cpu": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "cpu count",
+				Description: "Cpu count.",
 			},
 			"ram": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "ram info",
+				Description: "Ram info.",
 			},
 			"disk_type": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "disk type",
+				Description: "Disk type.",
 			},
 			"disk_value": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "disk value",
+				Description: "Disk value.",
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "password",
+				Description: "Password.",
 			},
 			"mongodb_version": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "mongodb_version",
+				Description: "Mongodb version. Available version: 4.0.3(default)、3.6.7、3.2.21.",
 				Default:     "4.0.3",
 			},
 			"ip": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "mongodb ip",
+				Description: "Mongodb ip.",
+			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject ID.",
 			},
 		},
+		Description: "Mongodb instance.[View documentation](https://github.com/capitalonline/openapi/blob/master/%E6%96%B0%E7%89%88MongoDB%E6%A6%82%E8%A7%88.md#3createdbinstance)" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource "cds_mongodb" "mongodb_example" {
+    region_id         = "CN_Beijing_A"
+    vdc_id            = "xxx"
+    base_pipe_id      = "xxx"
+    instance_name     = "mongo_a"
+    cpu               = 1
+    ram               = 2
+    disk_type         = "ssd_disk"'
+    disk_value        = 100
+    password          = "password"
+    mongodb_version   = "4.0.3"
+}
+
+` +
+			"\n```",
 	}
 
 }
@@ -97,6 +121,13 @@ func resourceCdsMongodbCreate(data *schema.ResourceData, meta interface{}) error
 	request.DiskType = common.StringPtr(data.Get("disk_type").(string))
 	request.DiskValue = common.IntPtr(data.Get("disk_value").(int))
 	request.Password = common.StringPtr(data.Get("password").(string))
+	if subject, ok := data.GetOk("subject_id"); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("subject_id must be int")
+		}
+		request.SubjectId = common.IntPtr(subjectId)
+	}
 
 	mongodb_version := data.Get("mongodb_version").(string)
 	request.Version = common.StringPtr(mongodb_version)

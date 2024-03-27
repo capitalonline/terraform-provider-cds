@@ -31,7 +31,7 @@ func resourceCdsSecurityGroup() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: u.ValidateStringLengthInRange(1, 128),
-				Description:  "Name of the security group to be queried.",
+				Description:  "Name of the security group.",
 			},
 			"description": {
 				Type:         schema.TypeString,
@@ -43,7 +43,7 @@ func resourceCdsSecurityGroup() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: u.ValidateStringLengthInRange(1, 36),
-				Description:  "Description of the security group.",
+				Description:  "Type of the security group.",
 			},
 			"rule": {
 				Type:       schema.TypeSet,
@@ -64,66 +64,67 @@ func resourceCdsSecurityGroup() *schema.Resource {
 							Optional:     true,
 							Computed:     true,
 							ValidateFunc: u.ValidateStringLengthInRange(1, 1),
-							Description:  "Name of the security group rule to be queried.",
+							Description:  "Action. Network connectivity policy within a security group. 0 represents deny, 1 represents allow. [View Document](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1createsecuritygroup)",
 						},
 						"description": {
 							Type:         schema.TypeString,
 							Optional:     true,
 							Computed:     true,
 							ValidateFunc: u.ValidateStringLengthInRange(1, 256),
-							Description:  "Description of the security group rule.",
+							Description:  "Description of the security group rule. Less than 256 characters. [View Document](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1createsecuritygroup)",
 						},
 						"targetaddress": {
 							Type:         schema.TypeString,
 							Optional:     true,
 							Computed:     true,
 							ValidateFunc: u.ValidateStringLengthInRange(1, 200),
-							Description:  "Description of the security group rule.",
+							Description:  "Target address. Less than 200 characters. [View Document](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1createsecuritygroup)",
 						},
 						"targetport": {
 							Type:         schema.TypeString,
 							Optional:     true,
 							Computed:     true,
 							ValidateFunc: u.ValidateStringLengthInRange(1, 200),
-							Description:  "Description of the security group rule.",
+							Description:  "Target port. [View Document](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1createsecuritygroup)",
 						},
 						"localport": {
 							Type:         schema.TypeString,
 							Optional:     true,
 							Computed:     true,
 							ValidateFunc: u.ValidateStringLengthInRange(1, 200),
-							Description:  "Description of the security group rule.",
+							Description:  "Local port. The source port that is open or blocked on this machine. [View Document](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1createsecuritygroup)",
 						},
 						"priority": {
 							Type:         schema.TypeString,
 							Optional:     true,
 							Computed:     true,
 							ValidateFunc: u.ValidateStringLengthInRange(1, 12),
-							Description:  "Description of the security group rule.",
+							Description:  "Priority. Set the rule priority in the security group, ranging from 1 to 100. [View Document](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1createsecuritygroup)",
 						},
 						"direction": {
 							Type:         schema.TypeString,
 							Optional:     true,
 							Computed:     true,
 							ValidateFunc: u.ValidateStringLengthInRange(1, 16),
-							Description:  "Description of the security group rule.",
+							Description:  "Description of the security group rule. ",
 						},
 						"protocol": {
 							Type:         schema.TypeString,
 							Optional:     true,
 							Computed:     true,
 							ValidateFunc: u.ValidateStringLengthInRange(1, 16),
-							Description:  "Description of the security group rule.",
+							Description:  "Protocol. Transport layer protocol. Optional parameters are: ICMP, TCP, UDP. Note: If the protocol is ICMP, there is no need to pass the TargetPort and LocalPort parameters. [View Document](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1createsecuritygroup)",
 						},
 						"ruletype": {
 							Type:         schema.TypeString,
 							Optional:     true,
 							Computed:     true,
 							ValidateFunc: u.ValidateStringLengthInRange(1, 36),
-							Description:  "Description of the security group rule.",
+							Description:  "Rule type. Set rule type. Options: mac/ip.",
 						},
 					},
 				},
+				Description: "Security group rule. [View Document](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#1createsecuritygroup)",
 			},
 			"rule_current": {
 				Type:       schema.TypeSet,
@@ -203,9 +204,32 @@ func resourceCdsSecurityGroup() *schema.Resource {
 						},
 					},
 				},
-				Set: resourceSecurityRuleHash,
+				Set:         resourceSecurityRuleHash,
+				Description: "Current rules.",
 			},
 		},
+		Description: "Security Group. \n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource "cds_security_group" "security_group_2" {
+  name        = "test_tf_new_zz25"
+  description = "New security group25"
+  type        = "private"
+  rule {
+    action        = "1"
+    description   = "tf_rule_test"
+    targetaddress = "120.78.170.188/28;120.78.170.188/28;120.78.170.188/28"
+    targetport    = "70;90;8"
+    localport     = "800"
+    direction     = "all"
+    priority      = "11"
+    protocol      = "TCP"
+    ruletype      = "ip"
+  }
+}
+` +
+			"\n```",
 	}
 }
 

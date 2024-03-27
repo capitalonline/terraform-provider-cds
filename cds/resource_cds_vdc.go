@@ -29,11 +29,13 @@ func resourceCdsVdc() *schema.Resource {
 				Required:     true,
 				ForceNew:     false,
 				ValidateFunc: u.ValidateStringLengthInRange(1, 36),
+				Description:  "Vdc name.",
 			},
 			"region_id": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: false,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    false,
+				Description: "Region id.",
 			},
 			"public_network": {
 				Type:        schema.TypeMap,
@@ -42,32 +44,39 @@ func resourceCdsVdc() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"ipnum": &schema.Schema{
-							Type:     schema.TypeInt,
-							Required: true,
+							Type:        schema.TypeInt,
+							Required:    true,
+							Description: "Ip num.",
 						},
 						"name": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Name.",
 						},
 						"qos": &schema.Schema{
-							Type:     schema.TypeInt,
-							Required: true,
+							Type:        schema.TypeInt,
+							Required:    true,
+							Description: "Qos",
 						},
 						"floatbandwidth": &schema.Schema{
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Float bandwidth.",
 						},
 						"billingmethod": &schema.Schema{
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Billing method.",
 						},
 						"autorenew": &schema.Schema{
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Auto renew.",
 						},
 						"type": &schema.Schema{
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Type.",
 						},
 					},
 				},
@@ -78,12 +87,19 @@ func resourceCdsVdc() *schema.Resource {
 				Description: "Public Network id.",
 			},
 			"add_public_ip": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Add public ip.",
 			},
 			"delete_public_ip": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Delete public ip.",
+			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject id.",
 			},
 		},
 	}
@@ -103,8 +119,15 @@ func resourceCdsVdcCreate(d *schema.ResourceData, meta interface{}) error {
 	if v, ok := d.GetOk("public_network"); ok {
 		publicNetwork = v.(map[string]interface{})
 	}
+	var subjectId int
+	if v, ok := d.GetOk("subject_id"); ok {
+		subjectId, ok = v.(int)
+		if !ok {
+			return errors.New("subject id invalid")
+		}
+	}
 
-	taskId, err := vdcService.CreateVdc(ctx, name, region, publicNetwork)
+	taskId, err := vdcService.CreateVdc(ctx, name, region, publicNetwork, subjectId)
 	if err != nil {
 		return err
 	}

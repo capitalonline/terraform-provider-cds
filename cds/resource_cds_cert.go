@@ -27,59 +27,70 @@ func resourceCdsCert() *schema.Resource {
 			"brand": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Certificate brand",
+				Description: "Certificate brand.",
 			},
 			"certificate": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Certificate Infomation",
+				Description: "Certificate Infomation.",
 			},
 			"certificate_name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Certificate name",
+				Description: "Certificate name.",
 			},
 			"certificate_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Certificate type",
+				Description: "Certificate type.",
 			},
 			"domain": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Certificate domain",
+				Description: "Certificate domain.",
 			},
 			"start_time": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Certificate start time",
+				Description: "Certificate start time.",
 			},
 			"end_time": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Certificate end time",
+				Description: "Certificate end time.",
 			},
 			"organization": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Certificate Organization",
+				Description: "Certificate Organization.",
 			},
 			"private_key": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Certificate private key",
+				Description: "Certificate private key.",
 			},
 			"public_key": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Certificate public key",
+				Description: "Certificate public key.",
 			},
 			"valid": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "Certificate vaild",
+				Description: "Certificate vaild.",
 			},
 		},
+		Description: "Upload CA certificate for haproxy\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource cds_certificate my_cds_certificate {
+  certificate_name  = "my_cert"
+  certificate       = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  private_key       = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+` +
+			"\n```",
 	}
 }
 

@@ -20,50 +20,74 @@ func resourceCdsPublicNetwork() *schema.Resource {
 		Delete: deleteResourceCdsPublicNetwork,
 		Schema: map[string]*schema.Schema{
 			"public_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Public network id.",
 			},
 			"vdc_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Vdc id.",
 			},
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "public network name.",
+				Description: "Public network name.",
 			},
 			"type": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "public network type.",
+				Description: "Public network type. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)",
 			},
 			"billing_method": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "public network address.",
+				Description: "Public network address. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)",
 			},
 			"qos": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "public network qos.",
+				Description: "Public network qos. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)",
 			},
 			"ip_num": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "the number of IPs purchased",
+				Description: "The number of IPs purchased. The valid values are:4, 8, 16, 32, 64. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)",
 			},
 			"auto_renew": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "whether to automatically renew",
+				Description: "Whether to automatically renew. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)",
 			},
 			"float_bandwidth": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "",
+				Description: "Float bandwidth. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#4createpublicnetwork)",
+			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject id. ",
 			},
 		},
+		Description: "Public network.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource "cds_public_network" "pb1" {
+  ip_num          = 4
+  qos             = 10
+  # To identify multiple different public networks, the 'name' field is required .
+  name            = "terraform-copy"
+  float_bandwidth = 200
+  billing_method  = "BandwIdth"
+  auto_renew      = 1
+  type            = "Bandwidth_Multi_ISP_BGP"
+  vdc_id          = "xxxxxxxx-xxxx"
+}
+` +
+			"\n```",
 	}
 }
 
@@ -99,6 +123,14 @@ func createResourceCdsPublicNetwork(data *schema.ResourceData, meta interface{})
 	request.AutoRenew = common.IntPtr(autoRenew.(int))
 	floatBandwidth := data.Get("float_bandwidth")
 	request.FloatBandwidth = common.IntPtr(floatBandwidth.(int))
+	if subject, ok := data.GetOk("subject_id"); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("subject_id must be int")
+		}
+		request.SubjectId = common.IntPtr(subjectId)
+	}
+
 	response, err := vdcService.CreatePublicNetwork(ctx, request)
 	if err != nil {
 		return err

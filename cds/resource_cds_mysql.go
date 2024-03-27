@@ -26,59 +26,70 @@ func resourceCdsMySQL() *schema.Resource {
 				Optional: true,
 			},
 			"region_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Region id",
 			},
 			"vdc_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Vdc id",
 			},
 			"base_pipe_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Base pipe id",
 			},
 			"instance_name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Instance name",
 			},
 			"cpu": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "Cpu num",
 			},
 			"ram": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "Ram num",
 			},
 			"mysql_version": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Mysql version",
 			},
 			"architecture_type": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "Architecture type :0.basic edition 、1.master-slave edition",
 			},
 			"compute_type": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "Compute type: 0.common type",
 			},
 			"disk_type": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Disk type: ssd_disk、high_disk",
 			},
 			"disk_value": {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
 			"ip": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Instance ip",
 			},
 			"parameters": {
 				Type:        schema.TypeList,
 				Optional:    true,
 				Computed:    true,
 				ConfigMode:  schema.SchemaConfigModeAttr,
-				Description: "mysql instance parameters",
+				Description: "Mysql instance parameters",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
@@ -95,32 +106,36 @@ func resourceCdsMySQL() *schema.Resource {
 				},
 			},
 			"time_zone": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Time zone.",
 			},
 			"backup": {
 				Type:        schema.TypeMap,
 				Optional:    true,
 				Computed:    true,
 				ConfigMode:  schema.SchemaConfigModeAttr,
-				Description: "create backup",
+				Description: "Create db instance backup.[View document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#16createbackup)",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"backup_type": {
-							Type:     schema.TypeString,
-							Computed: true,
-							Required: true,
+							Type:        schema.TypeString,
+							Computed:    true,
+							Required:    true,
+							Description: "Backup type. Available value: physical-backup、logical-backup",
 						},
 						"desc": {
-							Type:     schema.TypeString,
-							Computed: true,
-							Optional: true,
+							Type:        schema.TypeString,
+							Computed:    true,
+							Optional:    true,
+							Description: "Description for backup",
 						},
 						"db_list": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Computed:    true,
+							Description: "Db list. When the backup type is logical-backup, it is used to specify the database backup. If not filled in, the default is a backup of the entire instance.",
 						},
 					},
 				},
@@ -132,24 +147,76 @@ func resourceCdsMySQL() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"time_slot": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Computed:    true,
+							Description: "time slot. The backup time period starts on the hour, ends on the hour, and occurs every hour.",
 						},
 						"date_list": {
-							Type:     schema.TypeString,
-							Computed: true,
-							Optional: true,
+							Type:        schema.TypeString,
+							Computed:    true,
+							Optional:    true,
+							Description: "The backup cycle, with input parameter range: [\"0\",\"1\",\"2\",\"3\",\"4\",\"5\",\"6\"], where 0 is Sunday, 1 is Monday, and so on.",
 						},
 						"sign": {
-							Type:     schema.TypeInt,
-							Computed: true,
-							Optional: true,
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Optional:    true,
+							Description: "Automatic backup switch, off: 0, on: 1.",
 						},
 					},
 				},
+				Description: "Data backup. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#20modifydbbackuppolicy)",
+			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject ID.",
 			},
 		},
+		Description: "Mysql instance.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource "cds_mysql" "mysql_example" {
+    region_id         = "CN_Beijing_E"
+    vdc_id            = "xxx"
+    base_pipe_id      = "xxx"
+    instance_name     = "mysql-instance"
+    cpu               = 2
+    ram               = 4
+    disk_type         = "ssd_disk"
+    disk_value        = 100
+    mysql_version     = "5.7"
+    architecture_type = 0
+    compute_type      = 0
+    # Set mysql instance parameters
+    parameters        = [
+        {
+          name  = "back_log"
+          value = "8888"
+        }
+    ]
+    # set mysql instance time_zone
+    time_zone = "+08:00"
+
+    #  Set  backup
+    backup = {
+        backup_type = "logical-backup"
+        desc = "backup"
+        db_list = "db1,db2"
+    }
+
+    #  Set auto backup policy
+    data_backups = {
+        time_slot="00:00-01:00"
+    #   Split databases with ","
+        date_list="1,2,3"
+        sign = 0
+    }
+}
+` +
+			"\n```",
 	}
 }
 
@@ -210,6 +277,13 @@ func createResourceCdsMySQL(data *schema.ResourceData, meta interface{}) error {
 	request.Amount = common.IntPtr(amount)
 	if timeZone, ok := data.GetOk("time_zone"); ok {
 		request.TimeZone = common.StringPtr(timeZone.(string))
+	}
+	if subject, ok := data.GetOk("subject_id"); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("subject_id must be int")
+		}
+		request.SubjectId = common.IntPtr(subjectId)
 	}
 	response, err := mysqlService.CreateMySQL(ctx, request)
 	if err != nil {

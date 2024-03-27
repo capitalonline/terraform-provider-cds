@@ -18,37 +18,64 @@ func resourceCdsMySQLReadonly() *schema.Resource {
 		Delete: deleteResourceCdsMySQLReadonly,
 		Schema: map[string]*schema.Schema{
 			"instance_uuid": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Instance uuid. Mysql instance uuid. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#15createreadonlydbinstance)",
 			},
 			"instance_name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Instance name. Read only instance name.[View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#15createreadonlydbinstance)",
 			},
 			"paas_goods_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Computed:    true,
+				Description: "Paas goods id.[View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#15createreadonlydbinstance)",
 			},
 			"test_group_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Computed:    true,
+				Description: "Test group id. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#15createreadonlydbinstance)",
 			},
 			"disk_type": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Disk type. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#15createreadonlydbinstance)",
 			},
 			"disk_value": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "Disk value. The size of disk. [View Document](https://github.com/capitalonline/openapi/blob/master/MySQL%E6%A6%82%E8%A7%88.md#15createreadonlydbinstance)",
 			},
-			"amount": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Computed: true,
+			//"amount": {
+			//	Type:     schema.TypeInt,
+			//	Optional: true,
+			//	Computed: true,
+			//},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject ID.",
 			},
 		},
+		Description: "Mysql read-only instance\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource "cds_mysql_readonly" "readonly1" {
+    instance_uuid = cds_mysql.mysql_example.id
+    instance_name = "readonly"
+#    You can find paas_goods_id in data.json.
+#    The field name is available_read_only_config
+    paas_goods_id = 1680
+#    test_group_id = 0
+    disk_type = "high_disk"
+    disk_value = "500"
+}
+` +
+			"\n```",
 	}
 }
 
@@ -73,15 +100,23 @@ func createResourceCdsMySQLReadonly(data *schema.ResourceData, meta interface{})
 
 	request.PaasGoodsId = common.IntPtr(paasGoodsId.(int))
 	request.Amount = common.IntPtr(0)
-	nums, ok := data.GetOk("amount")
-	if ok {
-		request.Amount = common.IntPtr(nums.(int))
-	}
+	//nums, ok := data.GetOk("amount")
+	//if ok {
+	request.Amount = common.IntPtr(1)
+	//}
 
 	testGroupId, ok := data.GetOk("test_group_id")
 	if ok {
 		request.TestGroupId = common.IntPtr(testGroupId.(int))
 	}
+	if subject, ok := data.GetOk("subject_id"); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("subject_id must be int")
+		}
+		request.SubjectId = common.IntPtr(subjectId)
+	}
+
 	response, err := mysqlService.CreateReadOnlyMySQL(ctx, request)
 	if err != nil {
 		return err

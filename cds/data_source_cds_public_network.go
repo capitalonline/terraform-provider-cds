@@ -15,64 +15,75 @@ func dataSourceCdsPublicNetwork() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"vdc_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Vdc id.",
 			},
 			"public_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "public id",
+				Description: "Public network id.",
 			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "status",
+				Description: "Status.",
 			},
 			"qos": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "qos",
+				Description: "Qos.",
 			},
 			"name": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "name",
+				Description: "Name.",
 			},
 			"unuse_ip_num": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "un use ip num",
+				Description: "Un use ip num.",
 			},
 			"segments": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "public network segments",
+				Description: "Public network segments.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"mask": {
 							Type:        schema.TypeInt,
 							Computed:    true,
-							Description: "mask",
+							Description: "Mask.",
 						},
 						"gateway": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "gateway",
+							Description: "Gateway.",
 						},
 						"segment_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "segmetId",
+							Description: "Segment id.",
 						},
 						"address": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "address",
+							Description: "Address",
 						},
 					},
 				},
 			},
 		},
+		Description: "Data source public network.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+data "cds_data_source_public_network" "pbn" {
+  vdc_id    = ""
+  public_id = ""
+}
+` +
+			"\n```",
 	}
 }
 

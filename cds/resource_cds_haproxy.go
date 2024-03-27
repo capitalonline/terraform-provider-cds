@@ -25,32 +25,32 @@ func resourceCdsHaproxy() *schema.Resource {
 			"region_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "regon id.",
+				Description: "Regon id.",
 			},
 			"vdc_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "vdc id.",
+				Description: "Vdc id.",
 			},
 			"base_pipe_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "base pipe id.",
+				Description: "Base pipe id.",
 			},
 			"instance_name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "instance name.",
+				Description: "Instance name.",
 			},
 			"cpu": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "instance cpu num",
+				Description: "Instance cpu num.",
 			},
 			"ram": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				Description: "instance ram size",
+				Description: "Instance ram size.",
 			},
 			"ips": {
 				Type:       schema.TypeList,
@@ -59,30 +59,35 @@ func resourceCdsHaproxy() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"pipe_type": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Pipe type. Possible values: pipe_type、public.",
 						},
 						"pipe_id": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Pipe id. Internal network ID, or public network ID.",
 						},
 						"segment_id": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Segment id. The number of the occupied public network segment, which will occupy 3 public networks.",
 						},
 					},
 				},
+				Description: "The network used by HA. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#3createloadbalancer)",
 			},
 			"http_listeners": {
 				Type:        schema.TypeList,
 				ConfigMode:  schema.SchemaConfigModeAttr,
 				Optional:    true,
-				Description: "http listeners",
+				Description: "Http listeners. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#3createloadbalancer)",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"acl_white_list": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Acl white list. Set a whitelist, for example 192.168.12.1,192.168.1.1/20.",
 						},
 						"backend_server": {
 							Type:       schema.TypeList,
@@ -91,23 +96,28 @@ func resourceCdsHaproxy() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"ip": {
-										Type:     schema.TypeString,
-										Required: true,
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Ip. IP addresses of the backend servers (domain names are supported under the public network).",
 									},
 									"max_conn": {
-										Type:     schema.TypeInt,
-										Required: true,
+										Type:        schema.TypeInt,
+										Required:    true,
+										Description: "Max connection. Maximum number of connections for the backend servers.",
 									},
 									"port": {
-										Type:     schema.TypeInt,
-										Required: true,
+										Type:        schema.TypeInt,
+										Required:    true,
+										Description: "Port. Backend server port.",
 									},
 									"weight": {
-										Type:     schema.TypeString,
-										Required: true,
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Weight. Backend server weight, with a range of 1-256.",
 									},
 								},
 							},
+							Description: "Backend server. Backend server configuration. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5BackendServerObj)",
 						},
 						"certificate_ids": {
 							Type:       schema.TypeList,
@@ -117,94 +127,118 @@ func resourceCdsHaproxy() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"certificate_id": {
-										Type:     schema.TypeString,
-										Required: true,
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Certificate id.",
 									},
 									"certificate_name": {
-										Type:     schema.TypeString,
-										Required: true,
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Certificate name.",
 									},
 								},
 							},
+							Description: "[View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5certificateIdsobj)",
 						},
 						"client_timeout": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Client timeout. Set the timeout period for client connections.",
 						},
 						"client_timeout_unit": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Client timeout unit. Set the timeout period for request connections in units [\"ms\", \"s\"].",
 						},
 						"connect_timeout": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Connect timeout. Set the timeout period for request connections.",
 						},
 						"connect_timeout_unit": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Connect timeout unit. Set the timeout unit for request connections [\"ms\", \"s\"].",
 						},
 						"listener_mode": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Listener mode.",
 						},
 						"listener_name": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The name of the listening strategy.The character length is 1~50, starting with a letter and ending with a letter or number. It consists of lowercase letters, numbers, or underscores. The name must be unique.",
 						},
 						"listener_port": {
-							Type:     schema.TypeInt,
-							Optional: true,
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Description: "Listener port. Listening port for the strategy.The value range is 1-65535, with ports 22, 1080, 9100, and 9101 disabled.",
 						},
 						"max_conn": {
-							Type:     schema.TypeInt,
-							Optional: true,
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Description: "Max connection. Maximum number of connections for the proxy end.",
 						},
 						"scheduler": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Scheduler. Scheduling algorithm [\"roundrobin\", \"leastconn\", \"static-rr\", \"source\"].",
 						},
 						"server_timeout": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Server timeout.",
 						},
 						"server_timeout_unit": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Server timeout unit. Set the server timeout unit [\"ms\", \"s\"].",
 						},
 						"sticky_session": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Sticky session. Enable keep-alive for long connections [\"on\", \"off\"].",
 						},
 						"session_persistence": {
 							Type:        schema.TypeList,
 							Optional:    true,
 							MaxItems:    1,
 							ConfigMode:  schema.SchemaConfigModeAttr,
-							Description: "Session persistence",
+							Description: "Session persistence. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5SessionPersistenceObj)",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"key": {
-										Type:     schema.TypeString,
-										Optional: true,
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "Key. Set the Cookie key value in the HTTP response. The character length is 2-15, starting with a letter and ending with a letter or number. It consists of lowercase letters, numbers, or underscores, and the key must be unique.",
 									},
 									"mode": {
 										Type:     schema.TypeInt,
 										Optional: true,
+										Description: `
+Mode. The default value is 1.
+0. Indicates that the content of the Cookie is retained in the cache (e.g., CDN).
+1. Indicates that the content of the Cookie is not retained in the cache (e.g., CDN) and the cookie set by the load balancer is visible to the backend service.
+2. Indicates that the content of the Cookie is not retained in the cache (e.g., CDN) and the cookie set by the load balancer is not visible to the backend service, i.e., in transparent mode, only the cookies set by the client are visible.
+`,
 									},
 									"timer": {
 										Type:        schema.TypeMap,
 										Optional:    true,
 										ConfigMode:  schema.SchemaConfigModeAttr,
-										Description: "Timer is",
+										Description: "Timer.Set the session persistence time parameter, unit: seconds. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5TimerObj)",
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"max_idle": {
-													Type:     schema.TypeInt,
-													Required: false,
+													Type:        schema.TypeInt,
+													Required:    false,
+													Description: "Max idle. The default value is 0, indicating that no setting is applied, meaning session persistence even during idle periods.Unit: seconds. Supported range: 0-7200.Set the maximum idle time for session persistence. When there are no new requests within this duration, the session persistence will end. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5TimerObj)",
 												},
 												"max_life": {
-													Type:     schema.TypeInt,
-													Required: false,
+													Type:        schema.TypeInt,
+													Required:    false,
+													Description: "Max life. The default value is 0, indicating no setting, allowing the session to persist indefinitely. Unit: seconds. Supported range: 0-7200.Set the maximum duration for session persistence. If the duration exceeds this limit, the session persistence will end. It is required that maxlife is greater than maxidle.[View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5TimerObj)",
 												},
 											},
 										},
@@ -216,7 +250,7 @@ func resourceCdsHaproxy() *schema.Resource {
 							Type:        schema.TypeList,
 							ConfigMode:  schema.SchemaConfigModeAttr,
 							Optional:    true,
-							Description: "Option",
+							Description: "Option. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5OptionObj)",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"httpchk": {
@@ -226,15 +260,18 @@ func resourceCdsHaproxy() *schema.Resource {
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"method": {
-													Type:     schema.TypeString,
-													Optional: true,
+													Type:        schema.TypeString,
+													Optional:    true,
+													Description: "Method. Default value is \"GET\". Parameter range: [\"GET\", \"HEAD\", \"OPTIONS\"].",
 												},
 												"uri": {
-													Type:     schema.TypeString,
-													Optional: true,
+													Type:        schema.TypeString,
+													Optional:    true,
+													Description: "Uri. ",
 												},
 											},
 										},
+										Description: "Http check. Enable health checks for HTTP.",
 									},
 								},
 							},
@@ -245,13 +282,14 @@ func resourceCdsHaproxy() *schema.Resource {
 			"tcp_listeners": {
 				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "base pipe id.",
+				Description: "Tcp listeners.[View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5tcplistenersobj)",
 				ConfigMode:  schema.SchemaConfigModeAttr,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"acl_white_list": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Acl white list. Set whitelist, for example: [\"129.12.12.1\", \"192.168.1.1/20\"].",
 						},
 						"backend_server": {
 							Type:       schema.TypeList,
@@ -260,72 +298,165 @@ func resourceCdsHaproxy() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"ip": {
-										Type:     schema.TypeString,
-										Required: true,
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Ip. Backend server IP address (support domain names in public network).",
 									},
 									"max_conn": {
-										Type:     schema.TypeInt,
-										Required: true,
+										Type:        schema.TypeInt,
+										Required:    true,
+										Description: "Max connection. Maximum number of connections for the backend server.",
 									},
 									"port": {
-										Type:     schema.TypeInt,
-										Required: true,
+										Type:        schema.TypeInt,
+										Required:    true,
+										Description: "Backend server port.",
 									},
 									"weight": {
-										Type:     schema.TypeString,
-										Required: true,
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Backend server weight, with a range of 1-256.",
 									},
 								},
 							},
+							Description: "Backend server configuration. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5BackendServerObj)",
 						},
 						"client_timeout": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Client timeout. Set the client connection timeout duration.",
 						},
 						"client_timeout_unit": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Client timeout unit. Set the unit of client connection timeout duration to [\"ms\", \"s\"].",
 						},
 						"connect_timeout": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Connect timeout. Set the request connection timeout duration.",
 						},
 						"connect_timeout_unit": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Connect timeout unit. Set the unit of request connection timeout duration to [\"ms\", \"s\"].",
 						},
 						"listener_mode": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Listener mode. ",
 						},
 						"listener_name": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Listener name. The name of the listening strategy.  Character length: 1-50.  Starts with a letter, ends with a letter or number. Consists of lowercase letters, numbers, or underscores. The name must be unique.",
 						},
 						"listener_port": {
-							Type:     schema.TypeInt,
-							Optional: true,
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Description: "Listener port. Listening port for the strategy. Value range: 1-65535. Ports 22, 1080, 9100, and 9101 are disabled and not within the valid range.",
 						},
 						"max_conn": {
-							Type:     schema.TypeInt,
-							Optional: true,
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Description: "Max connection. Maximum number of connections for the proxy end.",
 						},
 						"scheduler": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Scheduler. Scheduling algorithm options include: [\"roundrobin\", \"leastconn\", \"static-rr\",  \"source\"].",
 						},
 						"server_timeout": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Server timeout. Set the server-side timeout duration.",
 						},
 						"server_timeout_unit": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Server timeout unit. Set the unit of server-side timeout duration to [\"ms\", \"s\"].",
 						},
 					},
 				},
 			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject ID.",
+			},
 		},
+		Description: "Haproxy instance.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+resource cds_haproxy my_haproxy {
+	region_id 		= "XXXXXXXX"
+
+	vdc_id 		= "XXXXXXXX"
+	base_pipe_id  = "XXXXXXXX"
+	instance_name   = "ha_instance"
+    # paas_goods_id 从data.json PaasGoodsId 获取
+	cpu = 1
+	ram = 2
+	ips = [
+		{
+			# pipe_id is PrivateNetwork PrivateId from vdc info 
+			pipe_id    = "xxx"
+			pipe_type  = "private"
+			segment_id = "xxx"
+		},
+		#This parameter is required if you want to create a public network(如创建公网，则需要)
+		{
+			# pipe_id is PublicNetwork PublicId from vdc info 
+			pipe_id    = "xxx"
+			pipe_type  = "public"
+			segment_id = "xxx"
+		}
+	]
+	http_listeners = [{
+		server_timeout_unit = "s"
+		server_timeout      = 1300
+		sticky_session      = "on"
+		acl_white_list      = "192.168.9.1"
+		listener_mode       = "http"
+		max_conn            = "2022"
+		connect_timeout_unit = "s"
+		scheduler           = "roundrobin"
+		connect_timeout     = "1300"
+		client_timeout      = "1022"
+		listener_name       = "terraform"
+		client_timeout_unit = "ms"
+		listener_port       = 24354
+		backend_server = [{
+			ip       = "192.168.12.1"
+			max_conn = 2022
+			port     = 12314
+			weight   = 255
+		}]
+		certificate_ids = []
+
+#		The parameters option is a list,only one element at most
+#		option = [{
+#			httpchk = {
+#				method = "GET"
+#				uri = "/health"
+#			}
+#		}]
+#		The parameters session_persistence is a list,only one element at most
+#		session_persistence  = [
+#			{
+#				key = "test"
+#				mode = 1
+#				timer = {
+#					max_idle=33
+#					max_life=44
+#				}
+#			}
+#		]
+	}]
+}
+` +
+			"\n```",
 	}
 }
 
@@ -380,6 +511,13 @@ func createResourceCdsHaproxy(data *schema.ResourceData, meta interface{}) error
 		instanceName, exist := inter.(string)
 		if exist {
 			request.InstanceName = common.StringPtr(instanceName)
+		}
+	}
+
+	if inter, ok := data.GetOk("subject_id"); ok {
+		subjectId, exist := inter.(int)
+		if exist {
+			request.SubjectId = common.IntPtr(subjectId)
 		}
 	}
 
@@ -688,8 +826,11 @@ func waitHaproxyDelete(ctx context.Context, service HaproxyService, instanceUuid
 
 	for {
 		time.Sleep(time.Second * 15)
-		_, err := service.DescribeHaproxy(ctx, descRequest)
+		response, err := service.DescribeHaproxy(ctx, descRequest)
 		if err != nil {
+			return nil
+		}
+		if len(response.Data) == 0 {
 			return nil
 		}
 	}

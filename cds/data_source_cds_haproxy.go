@@ -18,32 +18,32 @@ func dataSourceHaproxy() *schema.Resource {
 			"id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "ha id",
+				Description: "Ha id.",
 			},
 			"instance_uuid": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "instance uuid",
+				Description: "Instance uuid.",
 			},
 			"ip": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "haproxy ip.",
+				Description: "Haproxy ip.",
 			},
 			"instance_name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "instance name.",
+				Description: "Instance name.",
 			},
 			"start_time": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "start time.",
+				Description: "Start time.",
 			},
 			"end_time": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "end time.",
+				Description: "End time.",
 			},
 			"region_id": {
 				Type:        schema.TypeString,
@@ -59,124 +59,124 @@ func dataSourceHaproxy() *schema.Resource {
 			"ha_list": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "haproxy list",
+				Description: "Haproxy list.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"cpu": {
 							Type:        schema.TypeInt,
 							Computed:    true,
-							Description: "cpu count",
+							Description: "Cpu count.",
 						},
 						"create_time": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "create time",
+							Description: "Create time.",
 						},
 						"display_name": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "display name",
+							Description: "Display name.",
 						},
 						"ip": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "ip",
+							Description: "Ip.",
 						},
 						"instance_name": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "instance name",
+							Description: "Instance name.",
 						},
 						"instance_uuid": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "instance uuid",
+							Description: "Instance uuid.",
 						},
 						"link_type": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "link type",
+							Description: "Link type.",
 						},
 						"link_type_str": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "link type str",
+							Description: "Link type str.",
 						},
 						"master_info": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "master info",
+							Description: "Master info.",
 						},
 						"port": {
 							Type:        schema.TypeInt,
 							Computed:    true,
-							Description: "port",
+							Description: "Port.",
 						},
 						"ram": {
 							Type:        schema.TypeInt,
 							Computed:    true,
-							Description: "ram",
+							Description: "Ram.",
 						},
 						"region_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "region id",
+							Description: "Region id.",
 						},
 						"resource_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "resource id",
+							Description: "Resource id.",
 						},
 						"status": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "status",
+							Description: "Status.",
 						},
 						"status_str": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "status str",
+							Description: "Status str.",
 						},
 						"sub_product_name": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "sub product name",
+							Description: "Sub product name.",
 						},
 						"vdc_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "vdc id",
+							Description: "Vdc id.",
 						},
 						"vdc_name": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "vdc name",
+							Description: "Vdc name.",
 						},
 						"version": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "version",
+							Description: "Version.",
 						},
 						"project_name": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "project name",
+							Description: "Project name.",
 						},
 						"vips": {
 							Type:        schema.TypeList,
 							Computed:    true,
-							Description: "vips list",
+							Description: "Vips list.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"ip": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "vips ip",
+										Description: "Vips ip.",
 									},
 									"type": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "vips type",
+										Description: "Vips type.",
 									},
 								},
 							},
@@ -185,40 +185,40 @@ func dataSourceHaproxy() *schema.Resource {
 						"http_listeners": {
 							Type:        schema.TypeList,
 							Computed:    true,
-							Description: "http listeners list",
+							Description: "Http listeners list.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"acl_white_list": {
 										Type:        schema.TypeList,
 										Computed:    true,
-										Description: "acl white list",
+										Description: "Acl white list.",
 										Elem:        &schema.Schema{Type: schema.TypeString},
 									},
 									"backend_server": {
 										Type:        schema.TypeList,
 										Computed:    true,
-										Description: "backend server",
+										Description: "Backend server.",
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"ip": {
 													Type:        schema.TypeString,
 													Computed:    true,
-													Description: "ip",
+													Description: "Ip.",
 												},
 												"max_conn": {
 													Type:        schema.TypeInt,
 													Computed:    true,
-													Description: "max conn",
+													Description: "Max connection.",
 												},
 												"port": {
 													Type:        schema.TypeInt,
 													Computed:    true,
-													Description: "port",
+													Description: "Port.",
 												},
 												"weight": {
 													Type:        schema.TypeString,
 													Computed:    true,
-													Description: "weight",
+													Description: "Weight.",
 												},
 											},
 										},
@@ -226,18 +226,18 @@ func dataSourceHaproxy() *schema.Resource {
 									"certificate_ids": {
 										Type:        schema.TypeList,
 										Computed:    true,
-										Description: "certificate ids",
+										Description: "Certificate ids",
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"certificate_id": {
 													Type:        schema.TypeString,
 													Computed:    true,
-													Description: "certificate id",
+													Description: "Certificate id.",
 												},
 												"certificate_name": {
 													Type:        schema.TypeString,
 													Computed:    true,
-													Description: "certificate name",
+													Description: "Certificate name.",
 												},
 											},
 										},
@@ -245,63 +245,63 @@ func dataSourceHaproxy() *schema.Resource {
 									"client_timeout": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "client timeout",
+										Description: "Client timeout.",
 									},
 									"client_timeout_unit": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "client timeout unit",
+										Description: "Client timeout unit.",
 									},
 
 									"connect_timeout": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "connect timeout",
+										Description: "Connect timeout.",
 									},
 									"connect_timeout_unit": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "connect timeout unit",
+										Description: "Connect timeout unit.",
 									},
 									"listener_mode": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "listener mode",
+										Description: "Listener mode.",
 									},
 									"listener_name": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "listener name",
+										Description: "Listener name.",
 									},
 									"listener_port": {
 										Type:        schema.TypeInt,
 										Computed:    true,
-										Description: "listener port",
+										Description: "Listener port.",
 									},
 									"max_conn": {
 										Type:        schema.TypeInt,
 										Computed:    true,
-										Description: "max conn",
+										Description: "Max connection.",
 									},
 									"scheduler": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "scheduler",
+										Description: "Scheduler.",
 									},
 									"server_timeout": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "server timeout",
+										Description: "Server timeout.",
 									},
 									"server_timeout_unit": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "server timeout unit",
+										Description: "Server timeout unit.",
 									},
 									"sticky_session": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "sticky session",
+										Description: "Sticky session.",
 									},
 									"session_persistence": {
 										Type:       schema.TypeList,
@@ -338,6 +338,7 @@ func dataSourceHaproxy() *schema.Resource {
 												},
 											},
 										},
+										Description: "Session persistence.",
 									},
 									"option": {
 										Type:       schema.TypeMap,
@@ -364,6 +365,7 @@ func dataSourceHaproxy() *schema.Resource {
 												},
 											},
 										},
+										Description: "Option. ",
 									},
 								},
 							},
@@ -372,40 +374,40 @@ func dataSourceHaproxy() *schema.Resource {
 						"tcp_listeners": {
 							Type:        schema.TypeList,
 							Computed:    true,
-							Description: "tcp listeners list",
+							Description: "Tcp listeners list.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"acl_white_list": {
 										Type:        schema.TypeList,
 										Computed:    true,
-										Description: "acl white list",
+										Description: "Acl white list.",
 										Elem:        &schema.Schema{Type: schema.TypeString},
 									},
 									"backend_server": {
 										Type:        schema.TypeList,
 										Computed:    true,
-										Description: "backend server",
+										Description: "Backend server.",
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"ip": {
 													Type:        schema.TypeString,
 													Computed:    true,
-													Description: "ip",
+													Description: "Ip.",
 												},
 												"max_conn": {
 													Type:        schema.TypeInt,
 													Computed:    true,
-													Description: "max conn",
+													Description: "Max connection.",
 												},
 												"port": {
 													Type:        schema.TypeInt,
 													Computed:    true,
-													Description: "port",
+													Description: "Port.",
 												},
 												"weight": {
 													Type:        schema.TypeString,
 													Computed:    true,
-													Description: "weight",
+													Description: "Weight.",
 												},
 											},
 										},
@@ -413,57 +415,57 @@ func dataSourceHaproxy() *schema.Resource {
 									"client_timeout": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "client timeout",
+										Description: "Client timeout.",
 									},
 									"client_timeout_unit": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "client timeout unit",
+										Description: "Client timeout unit.",
 									},
 									"connect_timeout": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "connect timeout",
+										Description: "Connect timeout.",
 									},
 									"connect_timeout_unit": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "connect timeout unit",
+										Description: "Connect timeout unit.",
 									},
 									"listener_mode": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "listener mode",
+										Description: "Listener mode.",
 									},
 									"listener_name": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "listener name",
+										Description: "Listener name.",
 									},
 									"listener_port": {
 										Type:        schema.TypeInt,
 										Computed:    true,
-										Description: "listener port",
+										Description: "Listener port.",
 									},
 									"max_conn": {
 										Type:        schema.TypeInt,
 										Computed:    true,
-										Description: "max conn",
+										Description: "Max connection.",
 									},
 									"scheduler": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "scheduler",
+										Description: "Scheduler.",
 									},
 									"server_timeout": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "server timeout",
+										Description: "Server timeout.",
 									},
 									"server_timeout_unit": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "server timeout unit",
+										Description: "Server timeout unit.",
 									},
 								},
 							},
@@ -472,6 +474,19 @@ func dataSourceHaproxy() *schema.Resource {
 				},
 			},
 		},
+		Description: "Data source haproxy. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#4describeloadbalancers)\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+data cds_data_source_haproxy "my_haproxy_data" {
+	instance_uuid      = "xxxxxxxxxxxxx" 
+	instance_name      = ""
+	region_id          = ""
+	result_output_file = "data.json"
+	#ha_list  computed by terraform apply
+}
+` +
+			"\n```",
 	}
 }
 
