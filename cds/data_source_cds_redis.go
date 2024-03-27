@@ -40,6 +40,19 @@ func dataSourceCdsRedis() *schema.Resource {
 				Description: "Used to save results.",
 			},
 		},
+		Description: "Data source dedicated host.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+data cds_data_source_redis "redis_data" {
+    region_id           = ""
+    instance_uuid       = ""
+    instance_name       = ""
+    ip                  = ""
+    result_output_file  = "data.json" // availableDB, instances, regions
+}
+` +
+			"\n```",
 	}
 }
 

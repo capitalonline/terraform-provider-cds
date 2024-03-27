@@ -64,6 +64,15 @@ func dataSourceCdsMySQLAccount() *schema.Resource {
 				Description: "Database privileges.",
 			},
 		},
+		Description: "Data source mysql account.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+data "cds_data_source_dedicated_host_types" "host_type" {
+	region_id 		= "CN_Beijing_H"
+}
+` +
+			"\n```",
 	}
 }
 

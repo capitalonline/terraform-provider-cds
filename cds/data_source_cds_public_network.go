@@ -74,6 +74,16 @@ func dataSourceCdsPublicNetwork() *schema.Resource {
 				},
 			},
 		},
+		Description: "Data source public network.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+data "cds_data_source_public_network" "pbn" {
+  vdc_id    = ""
+  public_id = ""
+}
+` +
+			"\n```",
 	}
 }
 

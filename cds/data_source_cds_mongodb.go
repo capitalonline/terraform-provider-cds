@@ -40,6 +40,19 @@ func dataSourceCdsMongodb() *schema.Resource {
 				Description: "Used to save results.",
 			},
 		},
+		Description: "Data source mongodb.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+data cds_data_source_mongodb "mongodb_data" {
+    region_id           = "CN_Beijing_A"
+    instance_uuid       = "xxx"
+    instance_name       = "xxx"
+    ip                  = ""
+    result_output_file  = "data.json" // availableDB, instances, regions
+}
+` +
+			"\n```",
 	}
 }
 

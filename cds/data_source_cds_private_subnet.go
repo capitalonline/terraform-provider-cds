@@ -26,6 +26,13 @@ func dataSourceCdsPrivateSubnet() *schema.Resource {
 				Description: "Used to save results.",
 			},
 		},
+		Description: "Data source private subnet.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+
+` +
+			"\n```",
 	}
 }
 

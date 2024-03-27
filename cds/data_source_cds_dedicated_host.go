@@ -102,7 +102,15 @@ func dataSourceDedicatedHost() *schema.Resource {
 				},
 			},
 		},
-		Description: "Data source dedicated host.",
+		Description: "Data source dedicated host.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+data "cds_data_source_dedicated_host" "test" {
+	host_id = "xx"
+}
+` +
+			"\n```",
 	}
 }
 

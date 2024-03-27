@@ -83,7 +83,14 @@ func dataSourceCdsSubjects() *schema.Resource {
 				Description: "Output file path.",
 			},
 		},
-		Description: "Data source subjects.",
+		Description: "Data source subjects \n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+data "cds_data_source_subjects" "subjects" {
+}
+` +
+			"\n```",
 	}
 }
 

@@ -84,6 +84,13 @@ func dataSourceCdsMySQL() *schema.Resource {
 				},
 			},
 		},
+		Description: "Data source mysql readonly instance.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+
+` +
+			"\n```",
 	}
 }
 

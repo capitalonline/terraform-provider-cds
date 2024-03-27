@@ -81,7 +81,16 @@ func dataSourceHaproxyCertificate() *schema.Resource {
 				},
 			},
 		},
-		Description: "Data source haproxy certificate. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#4describeloadbalancers)",
+		Description: "Data source haproxy certificate. [View Document](https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#4describeloadbalancers)\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+data cds_data_source_certificate "my_certificate" {
+     result_output_file = "data.json"
+     #ha_cert_list    computed by terraform apply
+}
+` +
+			"\n```",
 	}
 }
 

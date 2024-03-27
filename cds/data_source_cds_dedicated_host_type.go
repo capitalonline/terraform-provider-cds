@@ -83,7 +83,15 @@ func dataSourceDedicatedHostType() *schema.Resource {
 				},
 			},
 		},
-		Description: "Data source dedicated host.",
+		Description: "Data source dedicated host.\n\n" +
+			"## Example usage\n\n" +
+			"```hcl\n" +
+			`
+data "cds_data_source_dedicated_host_types" "host_type" {
+	region_id 		= "CN_Beijing_H"
+}
+` +
+			"\n```",
 	}
 }
 

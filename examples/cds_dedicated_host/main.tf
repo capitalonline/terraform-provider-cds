@@ -2,7 +2,7 @@
 
 
 resource cds_dedicated_host dedicated_host {
-	region_id 		= "CN_Beijing_h"
+	region_id 		= "CN_Beijing_H"
 	dedicated_host_type = "ff52d30d-e0bc-4adb-98ff-898ee2528090"
 	dedicated_host_good_id = 1
 	dedicated_host_name= "测试宿主机"
