@@ -226,7 +226,7 @@ func dataSourceHaproxy() *schema.Resource {
 									"certificate_ids": {
 										Type:        schema.TypeList,
 										Computed:    true,
-										Description: "Certificate ids",
+										Description: "Certificate ids.",
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"certificate_id": {

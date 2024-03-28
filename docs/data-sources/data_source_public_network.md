@@ -4,13 +4,6 @@ page_title: "cds_data_source_public_network Data Source - terraform-provider-cds
 subcategory: ""
 description: |-
   Data source public network.
-  Example usage
-  ```hcl
-  data "cdsdatasourcepublicnetwork" "pbn" {
-    vdcid    = ""
-    publicid = ""
-  }
-  ```
 ---
 
 # cds_data_source_public_network (Data Source)
@@ -52,7 +45,7 @@ data "cds_data_source_public_network" "pbn" {
 
 Read-Only:
 
-- `address` (String)
-- `gateway` (String)
-- `mask` (Number)
-- `segment_id` (String)
+- `address` (String) Address.
+- `gateway` (String) Gateway.
+- `mask` (Number) Mask.
+- `segment_id` (String) Segment id.

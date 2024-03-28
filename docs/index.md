@@ -20,3 +20,7 @@ description: |-
 - `region` (String) Region of CDS
 - `secret_id` (String) Secret ID of CDS
 - `secret_key` (String, Sensitive) Secret key of CDS
+
+## Examples
+
+` You can view examples form github registry ` [View examples](https://github.com/capitalonline/terraform-provider-cds/tree/master/examples)

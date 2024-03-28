@@ -4,20 +4,6 @@ page_title: "cds_public_network Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
   Public network.
-  Example usage
-  ```hcl
-  resource "cdspublicnetwork" "pb1" {
-    ipnum          = 4
-    qos             = 10
-    # To identify multiple different public networks, the 'name' field is required .
-    name            = "terraform-copy"
-    floatbandwidth = 200
-    billingmethod  = "BandwIdth"
-    autorenew      = 1
-    type            = "BandwidthMultiISPBGP"
-    vdcid          = "xxxxxxxx-xxxx"
-  }
-  ```
 ---
 
 # cds_public_network (Resource)

@@ -4,21 +4,6 @@ page_title: "cds_mysql_readonly Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
   Mysql read-only instance
-  Example usage
-  ```hcl
-  resource "cdsmysqlreadonly" "readonly1" {
-      instanceuuid = cdsmysql.mysqlexample.id
-      instancename = "readonly"
-  You can find paasgoodsid in data.json.
-  The field name is availablereadonly_config
-  paas_goods_id = 1680
-  
-  testgroupid = 0
-  disk_type = "high_disk"
-  disk_value = "500"
-  
-  }
-  ```
 ---
 
 # cds_mysql_readonly (Resource)

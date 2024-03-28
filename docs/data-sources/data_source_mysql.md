@@ -4,9 +4,6 @@ page_title: "cds_data_source_mysql Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
   Data source mysql readonly instance.
-  Example usage
-  ```hcl
-  ```
 ---
 
 # cds_data_source_mysql (Data Source)

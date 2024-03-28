@@ -4,16 +4,7 @@ page_title: "cds_data_source_haproxy Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
   Data source haproxy. View Document https://github.com/capitalonline/openapi/blob/master/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A6%82%E8%A7%88.md#4describeloadbalancers
-  Example usage
-  ```hcl
-  data cdsdatasourcehaproxy "myhaproxydata" {
-      instanceuuid      = "xxxxxxxxxxxxx"
-      instancename      = ""
-      regionid          = ""
-      resultoutputfile = "data.json"
-      #ha_list  computed by terraform apply
-  }
-  ```
+
 ---
 
 # cds_data_source_haproxy (Data Source)
@@ -62,28 +53,28 @@ data cds_data_source_haproxy "my_haproxy_data" {
 
 Read-Only:
 
-- `cpu` (Number)
-- `create_time` (String)
-- `display_name` (String)
+- `cpu` (Number) Cpu count.
+- `create_time` (String)  Create time.
+- `display_name` (String) Display name.
 - `http_listeners` (List of Object) (see [below for nested schema](#nestedobjatt--ha_list--http_listeners))
-- `instance_name` (String)
-- `instance_uuid` (String)
-- `ip` (String)
-- `link_type` (String)
-- `link_type_str` (String)
-- `master_info` (String)
-- `port` (Number)
-- `project_name` (String)
-- `ram` (Number)
-- `region_id` (String)
-- `resource_id` (String)
-- `status` (String)
-- `status_str` (String)
-- `sub_product_name` (String)
+- `instance_name` (String) Instance name.
+- `instance_uuid` (String) Instance uuid.
+- `ip` (String) Ip.
+- `link_type` (String) Link type.
+- `link_type_str` (String) Link type str.
+- `master_info` (String) Master info.
+- `port` (Number) Port.
+- `project_name` (String) Project name.
+- `ram` (Number) Ram.
+- `region_id` (String) Region id.
+- `resource_id` (String) Resource id.
+- `status` (String) Status.
+- `status_str` (String) Status str.
+- `sub_product_name` (String) Sub product name.
 - `tcp_listeners` (List of Object) (see [below for nested schema](#nestedobjatt--ha_list--tcp_listeners))
-- `vdc_id` (String)
-- `vdc_name` (String)
-- `version` (String)
+- `vdc_id` (String) Vdc id.
+- `vdc_name` (String) Vdc name.
+- `version` (String) Version.
 - `vips` (List of Object) (see [below for nested schema](#nestedobjatt--ha_list--vips))
 
 <a id="nestedobjatt--ha_list--http_listeners"></a>
@@ -91,33 +82,33 @@ Read-Only:
 
 Read-Only:
 
-- `acl_white_list` (List of String)
-- `backend_server` (List of Object) (see [below for nested schema](#nestedobjatt--ha_list--http_listeners--backend_server))
-- `certificate_ids` (List of Object) (see [below for nested schema](#nestedobjatt--ha_list--http_listeners--certificate_ids))
-- `client_timeout` (String)
-- `client_timeout_unit` (String)
-- `connect_timeout` (String)
-- `connect_timeout_unit` (String)
-- `listener_mode` (String)
-- `listener_name` (String)
-- `listener_port` (Number)
-- `max_conn` (Number)
-- `option` (Map of String)
-- `scheduler` (String)
-- `server_timeout` (String)
-- `server_timeout_unit` (String)
-- `session_persistence` (List of Object) (see [below for nested schema](#nestedobjatt--ha_list--http_listeners--session_persistence))
-- `sticky_session` (String)
+- `acl_white_list` (List of String) Acl white list.
+- `backend_server` (List of Object) Backend server. (see [below for nested schema](#nestedobjatt--ha_list--http_listeners--backend_server))
+- `certificate_ids` (List of Object) Certificate ids. (see [below for nested schema](#nestedobjatt--ha_list--http_listeners--certificate_ids))
+- `client_timeout` (String) Client timeout.
+- `client_timeout_unit` (String) Client timeout unit.
+- `connect_timeout` (String) Connect timeout.
+- `connect_timeout_unit` (String) Connect timeout unit.
+- `listener_mode` (String) Listener mode.
+- `listener_name` (String) Listener name.
+- `listener_port` (Number) Listener port.
+- `max_conn` (Number) Max connection.
+- `option` (Map of String) Option.
+- `scheduler` (String) Scheduler.
+- `server_timeout` (String) Server timeout.
+- `server_timeout_unit` (String) Server timeout unit.
+- `session_persistence` (List of Object) Session persistence. (see [below for nested schema](#nestedobjatt--ha_list--http_listeners--session_persistence))
+- `sticky_session` (String) Sticky session.
 
 <a id="nestedobjatt--ha_list--http_listeners--backend_server"></a>
 ### Nested Schema for `ha_list.http_listeners.backend_server`
 
 Read-Only:
 
-- `ip` (String)
-- `max_conn` (Number)
-- `port` (Number)
-- `weight` (String)
+- `ip` (String) Ip.
+- `max_conn` (Number) Max connection.
+- `port` (Number) Port.
+- `weight` (String) Weight.
 
 
 <a id="nestedobjatt--ha_list--http_listeners--certificate_ids"></a>
@@ -125,8 +116,8 @@ Read-Only:
 
 Read-Only:
 
-- `certificate_id` (String)
-- `certificate_name` (String)
+- `certificate_id` (String) Certificate id.
+- `certificate_name` (String) Certificate name.
 
 
 <a id="nestedobjatt--ha_list--http_listeners--session_persistence"></a>
@@ -145,29 +136,29 @@ Read-Only:
 
 Read-Only:
 
-- `acl_white_list` (List of String)
-- `backend_server` (List of Object) (see [below for nested schema](#nestedobjatt--ha_list--tcp_listeners--backend_server))
-- `client_timeout` (String)
-- `client_timeout_unit` (String)
-- `connect_timeout` (String)
-- `connect_timeout_unit` (String)
-- `listener_mode` (String)
-- `listener_name` (String)
-- `listener_port` (Number)
-- `max_conn` (Number)
-- `scheduler` (String)
-- `server_timeout` (String)
-- `server_timeout_unit` (String)
+- `acl_white_list` (List of String) Acl white list.
+- `backend_server` (List of Object) Backend server. (see [below for nested schema](#nestedobjatt--ha_list--tcp_listeners--backend_server))
+- `client_timeout` (String) Client timeout.
+- `client_timeout_unit` (String) Client timeout unit.
+- `connect_timeout` (String) Connect timeout.
+- `connect_timeout_unit` (String) Connect timeout unit.
+- `listener_mode` (String) Listener mode.
+- `listener_name` (String) Listener name.
+- `listener_port` (Number) Listener port.
+- `max_conn` (Number) Max connection.
+- `scheduler` (String) Scheduler.
+- `server_timeout` (String) Server timeout.
+- `server_timeout_unit` (String) Server timeout unit.
 
 <a id="nestedobjatt--ha_list--tcp_listeners--backend_server"></a>
 ### Nested Schema for `ha_list.tcp_listeners.backend_server`
 
 Read-Only:
 
-- `ip` (String)
-- `max_conn` (Number)
-- `port` (Number)
-- `weight` (String)
+- `ip` (String) Ip.
+- `max_conn` (Number) Max connection.
+- `port` (Number) Port.
+- `weight` (String) Weight.
 
 
 
@@ -176,5 +167,5 @@ Read-Only:
 
 Read-Only:
 
-- `ip` (String)
-- `type` (String)
+- `ip` (String) Vips ip.
+- `type` (String) Vips type.

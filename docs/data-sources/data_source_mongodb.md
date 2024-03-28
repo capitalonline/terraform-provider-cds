@@ -4,16 +4,6 @@ page_title: "cds_data_source_mongodb Data Source - terraform-provider-cds"
 subcategory: ""
 description: |-
   Data source mongodb.
-  Example usage
-  ```hcl
-  data cdsdatasourcemongodb "mongodbdata" {
-      regionid           = "CNBeijingA"
-      instanceuuid       = "xxx"
-      instancename       = "xxx"
-      ip                  = ""
-      resultoutput_file  = "data.json" // availableDB, instances, regions
-  }
-  ```
 ---
 
 # cds_data_source_mongodb (Data Source)

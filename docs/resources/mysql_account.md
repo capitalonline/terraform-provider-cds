@@ -4,24 +4,6 @@ page_title: "cds_mysql_account Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
   Mysql account.
-  Example usage
-  ```hcl
-  resource "cdsmysqlaccount" "user1" {
-      instanceuuid= cdsmysql.mysqlexample.id
-      accountname = "testuser"
-      password = "xxxxxxxx"
-      account_type = "Normal"
-      description = "test"
-  to give permission
-  The db must be created in advance,and openapi does not support db creation. You need to create a DB manually
-  operations = [{
-      db_name = "db1"
-      privilege = "DMLOnly"
-  }
-  ]
-  
-  }
-  ```
 ---
 
 # cds_mysql_account (Resource)

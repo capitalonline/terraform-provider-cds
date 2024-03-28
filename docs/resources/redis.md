@@ -4,19 +4,6 @@ page_title: "cds_redis Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
   Redis instance.
-  Example usage
-  ```hcl
-  resource "cdsredis" "redisexample" {
-      regionid         = "CNBeijingA"
-      vdcid            = "xxx"
-      basepipeid      = "xxx"
-      instancename     = "redistest"
-      architecturetype = 3
-      ram               = 4
-      redisversion     = "2.8"
-      password          = "password"
-  }
-  ```
 ---
 
 # cds_redis (Resource)

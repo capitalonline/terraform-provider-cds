@@ -4,20 +4,6 @@ page_title: "cds_mongodb Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
   Mongodb instance.View documentation https://github.com/capitalonline/openapi/blob/master/%E6%96%B0%E7%89%88MongoDB%E6%A6%82%E8%A7%88.md#3createdbinstance## Example usage
-  ```hcl
-  resource "cdsmongodb" "mongodbexample" {
-      regionid         = "CNBeijingA"
-      vdcid            = "xxx"
-      basepipeid      = "xxx"
-      instancename     = "mongoa"
-      cpu               = 1
-      ram               = 2
-      disktype         = "ssddisk"'
-      diskvalue        = 100
-      password          = "password"
-      mongodbversion   = "4.0.3"
-  }
-  ```
 ---
 
 # cds_mongodb (Resource)
@@ -33,7 +19,7 @@ resource "cds_mongodb" "mongodb_example" {
     instance_name     = "mongo_a"
     cpu               = 1
     ram               = 2
-    disk_type         = "ssd_disk"'
+    disk_type         = "ssd_disk"
     disk_value        = 100
     password          = "password"
     mongodb_version   = "4.0.3"

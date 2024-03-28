@@ -4,14 +4,6 @@ page_title: "cds_certificate Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
   Upload CA certificate for haproxy
-  Example usage
-  ```hcl
-  resource cdscertificate mycdscertificate {
-    certificatename  = "mycert"
-    certificate       = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    privatekey       = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  }
-  ```
 ---
 
 # cds_certificate (Resource)

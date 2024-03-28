@@ -37,7 +37,7 @@ func dataSourceDedicatedHostType() *schema.Resource {
 						"goods_id": {
 							Type:        schema.TypeInt,
 							Computed:    true,
-							Description: "Cpu.",
+							Description: "Goods id.",
 						},
 						"ram": {
 							Type:        schema.TypeInt,
@@ -47,17 +47,17 @@ func dataSourceDedicatedHostType() *schema.Resource {
 						"vm_family_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "VmFamilyId.",
+							Description: "Vm family id.",
 						},
 						"vm_rule_name": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "VmRuleName.",
+							Description: "Vm rule name.",
 						},
 						"vm_spec_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "VmSpecId.",
+							Description: "Vm spec id.",
 						},
 						"vm_type_description": {
 							Type:        schema.TypeString,
@@ -85,7 +85,7 @@ func dataSourceDedicatedHostType() *schema.Resource {
 			"result_output_file": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Used to save results.",
+				Description: "Result output file. Used to save results.",
 			},
 		},
 		Description: "Data source dedicated host.\n\n" +

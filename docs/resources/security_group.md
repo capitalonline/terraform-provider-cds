@@ -4,25 +4,7 @@ page_title: "cds_security_group Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
   Security Group.
-  Example usage
-  ```hcl
-  resource "cdssecuritygroup" "securitygroup2" {
-    name        = "testtfnewzz25"
-    description = "New security group25"
-    type        = "private"
-    rule {
-      action        = "1"
-      description   = "tfrule_test"
-      targetaddress = "120.78.170.188/28;120.78.170.188/28;120.78.170.188/28"
-      targetport    = "70;90;8"
-      localport     = "800"
-      direction     = "all"
-      priority      = "11"
-      protocol      = "TCP"
-      ruletype      = "ip"
-    }
-  }
-  ```
+
 ---
 
 # cds_security_group (Resource)

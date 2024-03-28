@@ -4,46 +4,6 @@ page_title: "cds_mysql Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
   Mysql instance.
-  Example usage
-  ```hcl
-  resource "cdsmysql" "mysqlexample" {
-      regionid         = "CNBeijingE"
-      vdcid            = "xxx"
-      basepipeid      = "xxx"
-      instancename     = "mysql-instance"
-      cpu               = 2
-      ram               = 4
-      disktype         = "ssddisk"
-      diskvalue        = 100
-      mysqlversion     = "5.7"
-      architecturetype = 0
-      computetype      = 0
-      # Set mysql instance parameters
-      parameters        = [
-          {
-            name  = "backlog"
-            value = "8888"
-          }
-      ]
-      # set mysql instance timezone
-      timezone = "+08:00"
-  #  Set  backup
-  backup = {
-      backup_type = "logical-backup"
-      desc = "backup"
-      db_list = "db1,db2"
-  }
-  
-  #  Set auto backup policy
-  data_backups = {
-      time_slot="00:00-01:00"
-  #   Split databases with ","
-      date_list="1,2,3"
-      sign = 0
-  }
-  
-  }
-  ```
 ---
 
 # cds_mysql (Resource)

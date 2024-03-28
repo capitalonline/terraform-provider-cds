@@ -4,16 +4,7 @@ page_title: "cds_private_subnet Resource - terraform-provider-cds"
 subcategory: ""
 description: |-
   Private network. View Document https://github.com/capitalonline/openapi/blob/master/%E8%99%9A%E6%8B%9F%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%A6%82%E8%A7%88.md#5createprivatenetwork
-  Example usage
-  ```hcl
-  resource "cdsprivatesubnet" "myprivatesubnet1" {
-    vdcid  = "xxx"
-    name    = "private_1"
-    type    = "private"
-    address = ""
-    mask    = "26"
-  }
-  ```
+
 ---
 
 # cds_private_subnet (Resource)

@@ -9,6 +9,23 @@ description: |-
 # cds_vdc (Resource)
 
 
+## Example usage
+
+```hcl
+
+resource "cds_redis" "redis_example" {
+    region_id         = "CN_Beijing_A"
+    vdc_id            = "xxx"
+    base_pipe_id      = "xxx"
+    instance_name     = "redis_test"
+    architecture_type = 3
+    ram               = 4
+    redis_version     = "2.8"
+    password          = "password"
+}
+
+```
+
 
 
 

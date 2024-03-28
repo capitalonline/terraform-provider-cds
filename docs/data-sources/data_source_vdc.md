@@ -44,7 +44,7 @@ Read-Only:
 
 Read-Only:
 
-- `name` (String)
+- `name` (String) 
 - `private_id` (String)
 - `segments` (List of String)
 - `status` (String)

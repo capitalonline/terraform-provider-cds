@@ -68,7 +68,7 @@ func dataSourceCdsPublicNetwork() *schema.Resource {
 						"address": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "Address",
+							Description: "Address.",
 						},
 					},
 				},
