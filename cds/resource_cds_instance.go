@@ -316,6 +316,11 @@ func resourceCdsCcsInstance() *schema.Resource {
 				Optional:    true,
 				Description: "Subject id.",
 			},
+			"dedicated_host_id": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Dedicated host id.",
+			},
 		},
 		Description: "Instance of vm. [View documentation](https://github.com/capitalonline/openapi/blob/master/%E4%BA%91%E4%B8%BB%E6%9C%BA%E6%A6%82%E8%A7%88.md)\n\n" +
 			"## Example Usage\n\n" +
@@ -579,6 +584,14 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 			return errors.New("host name invalid")
 		}
 		createInstanceRequest.SubjectId = common.IntPtr(subjectId)
+	}
+
+	if dedicatedHostId, ok := d.GetOk("dedicated_host_id"); ok {
+		dedicatedHostId, ok := dedicatedHostId.(string)
+		if !ok {
+			return errors.New("host name invalid")
+		}
+		createInstanceRequest.DedicatedHostId = common.StringPtr(dedicatedHostId)
 	}
 
 	//add user_data params
