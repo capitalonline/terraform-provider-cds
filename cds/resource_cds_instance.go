@@ -589,7 +589,7 @@ func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) erro
 	if dedicatedHostId, ok := d.GetOk("dedicated_host_id"); ok {
 		dedicatedHostId, ok := dedicatedHostId.(string)
 		if !ok {
-			return errors.New("host name invalid")
+			return errors.New("dedicated host id invalid")
 		}
 		createInstanceRequest.DedicatedHostId = common.StringPtr(dedicatedHostId)
 	}

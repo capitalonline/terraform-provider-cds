@@ -136,6 +136,7 @@ resource "cds_instance" "my_instance" {
 - `region_id` (String) The Region of the instance, refer to [All Regions](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E5%8F%AF%E7%94%A8%E5%8C%BA%E5%90%8D%E7%A7%B0)
 - `security_group_binding` (Block Set, Max: 15) Instance binding security group (see [below for nested schema](#nestedblock--security_group_binding))
 - `subject_id` (Number) Subject id.
+- `dedicated_host_id` (String) Dedicated host id.
 - `system_disk` (Map of String) System Disk . If not set , default: size = 20 , type = system_disk ,iops = 0
 - `update_data_disks` (Block List, Max: 15) Modify data disks (see [below for nested schema](#nestedblock--update_data_disks))
 - `user_data` (List of String) User-defined data must be in base64 encoding format.
