@@ -1,0 +1,1497 @@
+package cds
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"log"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
+	u "terraform-provider-cds/cds/utils"
+
+	"github.com/capitalonline/cds-gic-sdk-go/common"
+	"github.com/capitalonline/cds-gic-sdk-go/instance"
+	"github.com/capitalonline/cds-gic-sdk-go/security_group"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+)
+
+func resourceCdsCcsInstance() *schema.Resource {
+	return &schema.Resource{
+
+		Create: resourceCdsCcsInstanceCreate,
+		Read:   resourceCdsCcsInstanceRead,
+		Update: resourceCdsCcsInstanceUpdate,
+		Delete: resourceCdsCcsInstanceDelete,
+		Schema: map[string]*schema.Schema{
+			"region_id": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "CN_Beijing_A",
+				Description: "The Region of the instance, refer to [All Regions](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E5%8F%AF%E7%94%A8%E5%8C%BA%E5%90%8D%E7%A7%B0)",
+			},
+			"instance_name": &schema.Schema{
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: u.ValidateStringLengthInRange(1, 128),
+				Description:  "The name of the instance",
+			},
+			"vdc_id": &schema.Schema{
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Vdc Id",
+			},
+			"image_id": &schema.Schema{
+				Type:        schema.TypeString,
+				Default:     "Ubuntu_16.04_64",
+				Optional:    true,
+				Description: "The image of the operating system, default value is Ubuntu_16.04_64. [All valid images ](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E5%85%AC%E5%85%B1%E6%A8%A1%E6%9D%BF)",
+			},
+			"cpu": &schema.Schema{
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The number of cpu, the unit (a) can only be selected [1, 2, 4, 8, 10, 16, 32] The default selection can be purchased the smallest.",
+			},
+			"ram": &schema.Schema{
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The amount of memory, the unit (GB) can only be selected [1, 2, 4, 8, 12, 16, 24, 32, 48, 64, 96, 128] The default selection can be purchased the smallest.",
+			},
+			"password": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Sensitive:   true,
+				Description: "Password to an instance is a string of 8 to 30 characters. It must contain uppercase/lowercase letters, numerals and special symbols.",
+			},
+			"public_key": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Public key",
+			},
+			"instance_type": &schema.Schema{
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The type of the instance.[All valid type](https://github.com/capitalonline/openapi/blob/master/%E9%A6%96%E4%BA%91OpenAPI(v1.2).md#%E4%B8%BB%E6%9C%BA%E7%B1%BB%E5%9E%8B)",
+			},
+			"instance_charge_type": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "PostPaid",
+				Description: "The payment methods for instance are as follows: 1. PrePaid: Prepaid, monthly or yearly subscription.  2. PostPaid (default): Pay-as-you-go.",
+			},
+			"auto_renew": &schema.Schema{
+				Type:        schema.TypeInt,
+				Default:     1,
+				Optional:    true,
+				Description: "Whether the subscription-based instance will automatically renew. 1 indicates automatic renewal (default), 0 indicates no automatic renewal.",
+			},
+			"prepaid_month": &schema.Schema{
+				Type:        schema.TypeInt,
+				Default:     1,
+				Optional:    true,
+				Description: "The duration of the subscription for the instance, where 0 indicates a purchase until the end of the current month, 1 indicates one full calendar month. The default value is 0.",
+			},
+			"amount": &schema.Schema{
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     1,
+				Description: "Number of instances created in batch, maximum 50",
+			},
+			"public_ip": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The public ip of the instance",
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if old != "" && new == "auto" {
+						return true
+					}
+					return false
+				},
+			},
+			"private_ip": &schema.Schema{
+				Type:        schema.TypeList,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				MaxItems:    15,
+				Optional:    true,
+				Description: "Private ip",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"private_id": &schema.Schema{
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Private subnet ID.",
+						},
+						"address": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								if old != "" && new == "auto" {
+									return true
+								}
+								return false
+							},
+							Description: "Ip address. Automatically assign input: auto, the default is not written as not assigning private network ip.",
+						},
+						"interface_id": &schema.Schema{
+							Type:        schema.TypeString,
+							Optional:    true,
+							Computed:    true,
+							Description: "Network interface id",
+						},
+					},
+				},
+			},
+			"system_disk": {
+				Type:       schema.TypeMap,
+				ConfigMode: schema.SchemaConfigModeAuto,
+				// ConfigMode:  schema.SchemaConfigModeAttr,
+				Optional:    true,
+				Description: "System Disk . If not set , default: size = 20 , type = system_disk ,iops = 0",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The type of the disk. Allow values: `system_disk`、`ssd_system_disk`.",
+						},
+						"size": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The size of the disk in GiBs.",
+						},
+						"iops": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The size of the disk iops , type equal ssd_system_disk can set iops, type equal system_disk can not set iops (iops must equal 0)",
+						},
+					},
+				},
+			},
+			"data_disks": {
+				Type:        schema.TypeList,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				Optional:    true,
+				MinItems:    1,
+				MaxItems:    15,
+				Description: "Data Disks. Add at creation time and append after creation. The quantity limit can be set between 1 and 15.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"size": {
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+						"type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "high_disk",
+							Description: "The type of the disk. Allow values: `big_disk`, `high_disk`, `ssd_disk`",
+						},
+						"iops": {
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Default:     "0",
+							Description: " The size of the disk iops",
+						},
+					},
+				},
+			},
+			"update_data_disks": {
+				Type:        schema.TypeList,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				Optional:    true,
+				MinItems:    1,
+				MaxItems:    15,
+				Description: "Modify data disks",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"disk_id": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "The id of data disk , from data source instance",
+						},
+						"size": {
+							Type:        schema.TypeInt,
+							Required:    true,
+							Description: "The size of the disk in GiBs.",
+						},
+						"type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "high_disk",
+							Description: "The type of the disk. Allow values: `big_disk``, `high_disk`, `ssd_disk`",
+						},
+						"iops": {
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Default:     "0",
+							Description: "The size of the disk iops int,type equal ssd_disk can modify iops.",
+						},
+					},
+				},
+			},
+			"delete_data_disks": {
+				Type:        schema.TypeList,
+				ConfigMode:  schema.SchemaConfigModeAttr,
+				Optional:    true,
+				MinItems:    1,
+				MaxItems:    15,
+				Description: "Data disks to delete.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"disk_id": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Disk id",
+						},
+					},
+				},
+			},
+			"security_group_binding": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				MinItems:    1,
+				MaxItems:    15,
+				Description: "Instance binding security group",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Specify a public or private network binding security group. Allow values: `private`, `public`.",
+						},
+						"subnet_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Subnet ID",
+						},
+						"security_group_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Security group ID",
+						},
+					},
+				},
+			},
+			"instance_status": &schema.Schema{
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Status of the instance",
+			},
+			//service
+			"operate_instance_status": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Operate instance . Allow values: `reboot`, `stop`, `run`",
+			},
+			"utc": &schema.Schema{
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Whether to set the time zone to UTC",
+			},
+			"image_password": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "When using a public image, this field is optional; when using a custom image, this field is required.",
+			},
+			"user_data": &schema.Schema{
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "User-defined data must be in base64 encoding format.",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"host_name": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateHostname(),
+				Description:  "Host name.",
+			},
+			"subject_id": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Subject id.",
+			},
+			"dedicated_host_id": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Dedicated host id.",
+			},
+		},
+		Description: "Instance of vm. [View documentation](https://github.com/capitalonline/openapi/blob/master/%E4%BA%91%E4%B8%BB%E6%9C%BA%E6%A6%82%E8%A7%88.md)\n\n" +
+			"## Example Usage\n\n" +
+			"```hcl\n" +
+			`
+resource "cds_instance" "my_instance" {
+  instance_name = "test_zz_04"
+  region_id     = "CN_Beijing_A"
+  image_id      = "Ubuntu_16.04_64"
+  instance_type = "high_ccs"
+  # In v1.4.5 and later, changing the instance specification will automatically shut down and start up
+  cpu           = 4
+  ram           = 4
+  vdc_id        = cds_vdc.my_vdc.id
+  # public_key = file("/home/guest/.ssh/test.pub")
+  # password is required after v1.3.1
+  password  = "123abc,.;"
+  # image_password is optional
+  image_password = "123abc,.;"
+  # operate_instance_status required value 'run' or 'stop' or 'reboot'
+  operate_instance_status = "run"
+  # user self-defined data,must be encoded by base64
+  user_data = ["IyEvYmluL3NoCmVjaG8gIkhlbGxvIFdvcmxkIg==",#!/bin/sh echo "Hello World"
+    "IyEvYmluL3NoCmVjaG8gIm5hbWVzZXJ2ZXIgOC44LjguOCIgfCB0ZWUgL2V0Yy9yZXNvbHYuY29uZg==",]#!/bin/sh echo "nameserver 8.8.8.8" | tee /etc/resolv.conf
+  public_ip = "auto"
+  private_ip {
+    private_id = cds_private_subnet.my_private_subnet_1.id
+    address    = "auto"
+  }
+
+
+  # type  system_disk | ssd_system_disk
+  # if type = system_disk ,you can not set and modify iops ,iops must set 0
+  # if type = ssd_system_disk ,you can set and modify iops
+  # if you not set system_disk , Default when created size = 20 type = system_disk ,iops = 0
+  system_disk = {
+    type = var.system_disk_type
+    size = 100
+    iops = 5
+  }
+  
+  # you can set data_disks at create instance ,or after append data_disks
+  
+  #data_disks = [{   
+  #    iops = 5
+  #    size = 100
+  #    type = "ssd_disk"
+  # },
+  # {
+  #    iops = 0
+  #    size = 120
+  #    type = "high_disk"
+  # }
+  #]
+
+  # you can modify data disk iops and size 
+  # if you want modify iops ,the type must be ssd_disk,
+  # if type = high_disk ,the iops must equal 0
+  #update_data_disks = [
+  #  {   disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxx"
+  #      iops = 22
+  #      size = 122
+  #      type = "ssd_disk"
+  #  },
+  #  {   disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxx"
+  #      iops = 33
+  #      size = 133
+  #      type = "ssd_disk"
+  #  },
+  #]
+
+  # you can delete data disks by disk_id 
+  # disk_id from data cds_data_source_instance
+  #delete_data_disks = [
+  #  {
+  #    disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  #  }, 
+  #  {
+  #    disk_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  #  },    
+  #]
+  
+  
+
+  security_group_binding {
+    type              = "private"
+    subnet_id         = cds_private_subnet.my_private_subnet_1.id
+    security_group_id = cds_security_group.security_group_2.id
+  }
+  #utc = true
+}
+` +
+			"\n```"}
+}
+
+func resourceCdsCcsInstanceCreate(d *schema.ResourceData, meta interface{}) error {
+	log.Println("create instance")
+	defer logElapsed("resource.cds_instance.create")()
+	logId := getLogId(contextNil)
+	ctx := context.WithValue(context.TODO(), "logId", logId)
+
+	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
+	taskService := TaskService{client: meta.(*CdsClient).apiConn}
+	securityGroupService := SecurityGroupService{client: meta.(*CdsClient).apiConn}
+	vdcService := VdcService{client: meta.(*CdsClient).apiConn}
+
+	createInstanceRequest := instance.NewAddInstanceRequest()
+	vdcId := d.Get("vdc_id")
+
+	if regionId, ok := d.GetOk("region_id"); ok {
+		regionId := regionId.(string)
+		if len(regionId) > 0 {
+			createInstanceRequest.RegionId = common.StringPtr(regionId)
+		}
+	}
+	if instanceName, ok := d.GetOk("instance_name"); ok {
+		insName := instanceName.(string)
+		if len(insName) > 0 {
+			createInstanceRequest.InstanceName = common.StringPtr(insName)
+		}
+	}
+	if vdcId, ok := d.GetOk("vdc_id"); ok {
+		vdcId := vdcId.(string)
+		if len(vdcId) > 0 {
+			createInstanceRequest.VdcId = common.StringPtr(vdcId)
+		}
+	}
+	if cpu, ok := d.GetOk("cpu"); ok {
+		cpu := cpu.(int)
+		if cpu > 0 {
+			createInstanceRequest.Cpu = common.IntPtr(cpu)
+		}
+	}
+	if ram, ok := d.GetOk("ram"); ok {
+		ram := ram.(int)
+		if ram > 0 {
+			createInstanceRequest.Ram = common.IntPtr(ram)
+		}
+	}
+	if instanceType, ok := d.GetOk("instance_type"); ok {
+		insType := instanceType.(string)
+		if len(insType) > 0 {
+			createInstanceRequest.InstanceType = common.StringPtr(insType)
+		}
+	}
+	if imageId, ok := d.GetOk("image_id"); ok {
+		imageId := imageId.(string)
+		if len(imageId) > 0 {
+			createInstanceRequest.ImageId = common.StringPtr(imageId)
+		}
+	}
+	if instanceChargeType, ok := d.GetOk("instance_charge_type"); ok {
+		insChargeType := instanceChargeType.(string)
+		if len(insChargeType) > 0 {
+			createInstanceRequest.InstanceChargeType = common.StringPtr(insChargeType)
+		}
+	}
+	if password, ok := d.GetOk("password"); ok {
+		passwd := password.(string)
+		if len(passwd) > 0 {
+			createInstanceRequest.Password = common.StringPtr(passwd)
+		}
+	}
+	if publicKey, ok := d.GetOk("public_key"); ok {
+		publicKey := publicKey.(string)
+		if len(publicKey) > 0 {
+			createInstanceRequest.PublicKey = common.StringPtr(publicKey)
+		}
+	}
+	if autoRenew, ok := d.GetOk("auto_renew"); ok {
+		autoRenew := autoRenew.(int)
+		if autoRenew > 0 {
+			createInstanceRequest.AutoRenew = common.IntPtr(autoRenew)
+		}
+	}
+	if prepaidMonth, ok := d.GetOk("prepaid_month"); ok {
+		prepaidMonth := prepaidMonth.(int)
+		if prepaidMonth > 0 {
+			createInstanceRequest.PrepaidMonth = common.IntPtr(prepaidMonth)
+		}
+	}
+	if amount, ok := d.GetOk("amount"); ok {
+		amount := amount.(int)
+		if amount > 0 {
+			createInstanceRequest.Amount = common.IntPtr(amount)
+		}
+	}
+	if utc, ok := d.GetOk("utc"); ok {
+		utc := utc.(bool)
+		createInstanceRequest.UTC = common.BoolPtr(utc)
+	}
+	if publicIp, ok := d.GetOk("public_ip"); ok {
+		publicIp := publicIp.(string)
+		if len(publicIp) > 0 {
+			publicIpList := strings.Split(strings.TrimSpace(publicIp), ";")
+			if len(publicIpList) > 0 {
+				createInstanceRequest.PublicIp = u.MergeSlice(createInstanceRequest.PublicIp, common.StringPtrs(publicIpList))
+			}
+		}
+	}
+
+	if subnets, ok := d.GetOk("private_ip"); ok {
+		nets := subnets.([]interface{})
+		for i := range nets {
+			net := nets[i].(map[string]interface{})
+			ips := strings.Split(net["address"].(string), ",")
+			createInstanceRequest.PrivateIp = append(createInstanceRequest.PrivateIp, &instance.PrivateIp{
+				PrivateID: common.StringPtr(net["private_id"].(string)),
+				IP:        common.StringPtrs(ips),
+			})
+		}
+	}
+
+	if v, ok := d.GetOk("system_disk"); ok {
+		var sysdisk = instance.SystemDisk{}
+		err := u.Mapstructure(v.(map[string]interface{}), &sysdisk)
+		if err != nil {
+			return err
+		}
+		createInstanceRequest.SystemDisk = &sysdisk
+	} else {
+		var sysdisk = instance.SystemDisk{}
+		sysdisk.IOPS = common.IntPtr(0)
+		sysdisk.Type = common.StringPtr("system_disk")
+		sysdisk.Size = common.IntPtr(20)
+		createInstanceRequest.SystemDisk = &sysdisk
+	}
+
+	//添加数据盘
+	if addDataDisks, ok := d.GetOk("data_disks"); ok {
+		disks := addDataDisks.([]interface{})
+		for i := range disks {
+			disk := disks[i].(map[string]interface{})
+			createInstanceRequest.DataDisks = append(createInstanceRequest.DataDisks, &instance.DataDisk{
+				Type: common.StringPtr(disk["type"].(string)),
+				Size: common.IntPtr(disk["size"].(int)),
+				IOPS: common.IntPtr(disk["iops"].(int)),
+			})
+		}
+	}
+
+	// 镜像密码
+	if imagePassword, ok := d.GetOk("image_password"); ok {
+		passwd := imagePassword.(string)
+		if len(passwd) > 0 {
+			createInstanceRequest.ImagePassword = common.StringPtr(passwd)
+		}
+	}
+
+	if hostName, ok := d.GetOk("host_name"); ok {
+		name, ok := hostName.(string)
+		if !ok {
+			return errors.New("host name invalid")
+		}
+		createInstanceRequest.HostName = common.StringPtr(name)
+	}
+
+	if subject, ok := d.GetOk("subject_id"); ok {
+		subjectId, ok := subject.(int)
+		if !ok {
+			return errors.New("host name invalid")
+		}
+		createInstanceRequest.SubjectId = common.IntPtr(subjectId)
+	}
+
+	if dedicatedHostId, ok := d.GetOk("dedicated_host_id"); ok {
+		dedicatedHostId, ok := dedicatedHostId.(string)
+		if !ok {
+			return errors.New("host name invalid")
+		}
+		createInstanceRequest.DedicatedHostId = common.StringPtr(dedicatedHostId)
+	}
+
+	//add user_data params
+	if userdatas, ok := d.GetOk("user_data"); ok {
+		datas, ok := userdatas.([]interface{})
+		if ok == false {
+			return errors.New("param:user_data conversion errors")
+		}
+
+		var items []string
+		for _, v := range datas {
+			if vs, ok := v.(string); ok {
+				items = append(items, vs)
+			} else {
+				return errors.New("param:user_data elems conversion errors")
+			}
+		}
+		if len(items) > 0 {
+			createInstanceRequest.UserData = common.StringPtrs(items)
+		}
+	}
+	_ = waitVdcUpdateFinished(ctx, vdcService, vdcId.(string), "instance")
+	taskId, errRet := instanceService.CreateInstance(ctx, createInstanceRequest)
+	if errRet != nil {
+		return errRet
+	}
+	//get create result
+	time.Sleep(30 * time.Second)
+	detail, errRet := taskService.DescribeTask(ctx, taskId)
+	if errRet != nil {
+		return errRet
+	}
+	nowId := strings.Join(common.StringValues(detail.Data.ResourceIds), ",")
+	d.SetId(nowId)
+	//if security_group_binding exist, bind it
+
+	if securityGroupBinds, ok := d.GetOk("security_group_binding"); ok {
+		binds := securityGroupBinds.(*schema.Set).List()
+		for _, id := range detail.Data.ResourceIds {
+			for _, v := range binds {
+				bind := v.(map[string]interface{})
+				joinRequest := security_group.NewJoinSecurityGroupRequest()
+				joinRequest.SecurityGroupId = common.StringPtr(bind["security_group_id"].(string))
+
+				bindData := security_group.BindData{
+					InstanceId: id,
+				}
+				if bind["type"].(string) == "public" {
+					bindData.PublicId = common.StringPtr(bind["subnet_id"].(string))
+					joinRequest.BindData = append(joinRequest.BindData, &bindData)
+
+				} else if bind["type"].(string) == "private" {
+					bindData.PrivateId = common.StringPtr(bind["subnet_id"].(string))
+					joinRequest.BindData = append(joinRequest.BindData, &bindData)
+				}
+				taskId, _ := securityGroupService.JoinSecurityGroup(ctx, joinRequest)
+				log.Println("task: ", taskId)
+			}
+		}
+	}
+	waitInstanceRunning(context.Background(), instanceService, nowId)
+	return resourceCdsCcsInstanceRead(d, meta)
+}
+
+func resourceCdsCcsInstanceRead(d *schema.ResourceData, meta interface{}) error {
+	log.Println("read instance")
+	defer logElapsed("resource.cds_instance.read")()
+	logId := getLogId(contextNil)
+	ctx := context.WithValue(context.TODO(), "logId", logId)
+	ids := d.Id()
+	id := strings.Split(ids, ",")[0]
+	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
+
+	request := instance.NewDescribeInstanceRequest()
+	request.InstanceId = common.StringPtr(id)
+	response, errRet := instanceService.DescribeInstance(ctx, request)
+	if errRet != nil {
+		return errRet
+	}
+
+	instanceInfo := instance.DescribeReturnInfo{}
+
+	for _, value := range response.Data.Instances {
+		if *value.InstanceId == id {
+			instanceInfo = *value
+		}
+	}
+	if *(instanceInfo.InstanceId) == "" || instanceInfo.InstanceId == nil {
+		return fmt.Errorf("【ERROR】%s", "Read instance info faild")
+	}
+
+	jsondata, _ := json.Marshal(instanceInfo)
+	log.Printf("DEBUG_INSTANCEINFO: %s", string(jsondata))
+
+	// for instance name
+	d.Set("instance_name", *instanceInfo.InstanceName)
+
+	// for instance spec
+	d.Set("cpu", *instanceInfo.Cpu)
+	d.Set("ram", *instanceInfo.Ram)
+
+	// for instance status
+	log.Printf("DEBUG_INSTANCEINFO: status: %#v", *instanceInfo.InstanceStatus)
+	d.Set("instance_status", *instanceInfo.InstanceStatus)
+
+	sysDisk := instanceInfo.Disks.SystemDisk
+	if sysDisk != nil {
+		sys_disk_type := ""
+		if sysDisk.DiskType != nil {
+			sys_disk_type = *sysDisk.DiskType
+		}
+
+		sys_disk_size := *sysDisk.Size
+		str_sys_disk_size := strconv.Itoa(sys_disk_size)
+
+		sys_disk_iops := "0"
+		if sysDisk.Iops != nil {
+			sys_disk_iops = strconv.Itoa(*sysDisk.Iops)
+		}
+
+		sysDiskMapping := map[string]interface{}{
+			"type": common.StringPtr(sys_disk_type),
+			"size": common.StringPtr(str_sys_disk_size),
+			"iops": common.StringPtr(sys_disk_iops),
+		}
+
+		if err := d.Set("system_disk", sysDiskMapping); err != nil {
+			return err
+		}
+
+	}
+
+	// for PublicNetworkInterface
+	// TBD: keep the data structure of user resource temporarily,
+	// will change the public res config structure to slice in next big version
+	publicId0 := instanceInfo.PublicNetworkInterface
+	if len(publicId0) != 0 {
+		publicId1 := instanceInfo.PublicNetworkInterface[0]
+		d.Set("public_ip", *publicId1.IP)
+	}
+
+	// for PrivateNetworkInterface
+	var privateNets []map[string]interface{}
+	for _, p := range instanceInfo.PrivateNetworkInterface {
+		if *p.IP != "" {
+			nets := map[string]interface{}{
+				"private_id":   p.PrivateId,
+				"address":      p.IP,
+				"interface_id": p.InterfaceId,
+			}
+			privateNets = append(privateNets, nets)
+		}
+	}
+	if len(privateNets) > 0 && privateNets != nil {
+		if err := d.Set("private_ip", privateNets); err != nil {
+			return err
+		}
+	}
+	time.Sleep(3 * time.Second)
+
+	return nil
+}
+
+func resourceCdsCcsInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
+	log.Println("update instance")
+	defer logElapsed("resource.cds_instance.update")()
+	logId := getLogId(contextNil)
+	ctx := context.WithValue(context.TODO(), "logId", logId)
+
+	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
+	securityGroupService := SecurityGroupService{client: meta.(*CdsClient).apiConn}
+	taskService := TaskService{client: meta.(*CdsClient).apiConn}
+	ids := d.Id()
+	idArray := strings.Split(ids, ",")
+	if len(idArray) > 1 {
+		return errors.New("Batch creation does not allow modification")
+	}
+	id := idArray[0]
+	d.Partial(true)
+	if d.HasChange("region_id") {
+		info := "openapi does not support modification region_id"
+		log.Println(info)
+		return errors.New(info)
+	}
+	if d.HasChange("vdc_id") {
+		info := "openapi does not support modification vdc_id"
+		log.Println(info)
+		return errors.New(info)
+	}
+	if d.HasChange("public_key") {
+		info := "openapi does not support modification public_key"
+		log.Println(info)
+		return errors.New(info)
+	}
+
+	if d.HasChange("operate_instance_status") {
+		request := instance.NewDescribeInstanceRequest()
+		request.InstanceId = common.StringPtr(id)
+
+		response, err := instanceService.DescribeInstance(ctx, request)
+		if err != nil {
+			return err
+		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+		var status = ""
+		for _, entry := range response.Data.Instances {
+			if *entry.InstanceId == id {
+				status = *entry.InstanceStatus
+			}
+		}
+		operate, ok := d.GetOk("operate_instance_status")
+
+		if ok {
+			flag, _ := operate.(string)
+			if status == "stopping" || status == "starting" {
+				return errors.New(fmt.Sprintf("instance is %s,can not operate( %s)", status, flag))
+			}
+			switch flag {
+			case "run":
+				if status != "running" {
+					request := instance.NewStartInstanceRequest()
+					request.InstanceId = common.StringPtr(id)
+					resp, err := instanceService.StartInstance(ctx, request)
+					if err != nil {
+						return err
+					}
+					if *resp.Code != "Success" {
+						log.Println("start instances failed")
+						return errors.New(fmt.Sprintf("run instance failed,api err:%s", *resp.Message))
+					}
+				}
+			case "stop":
+				if status != "stop" {
+					request := instance.NewStopInstanceRequest()
+					request.InstanceId = common.StringPtr(id)
+					resp, err := instanceService.StopInstance(ctx, request)
+					if err != nil {
+						return err
+					}
+					if *resp.Code != "Success" {
+						log.Println("stop instances failed")
+						return errors.New(fmt.Sprintf("stop instance failed,api err:%s", *resp.Message))
+					}
+				}
+			case "reboot":
+				request := instance.NewRebootInstanceRequest()
+				request.InstanceId = common.StringPtr(id)
+				resp, err := instanceService.RebootInstance(ctx, request)
+				if err != nil {
+					return err
+				}
+				if *resp.Code != "Success" {
+					log.Println("reboot instances failed")
+					return errors.New(fmt.Sprintf("reboot instance failed,api err:%s", *resp.Message))
+				}
+			default:
+				return errors.New("invalid value for 'operate_instance_status',required stop/run/reboot")
+			}
+			time.Sleep(time.Second * 30)
+			waitInstanceFinish(context.Background(), instanceService, id)
+		}
+	}
+	// modify instance name
+	if d.HasChange("instance_name") {
+		d.SetPartial("instance_name")
+		_, newName := d.GetChange("instance_name")
+
+		request := instance.NewModifyInstanceNameRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.InstanceName = common.StringPtr(newName.(string))
+		_, err := instanceService.client.UseCvmClient().ModifyInstanceName(request)
+		if err != nil {
+			return err
+		}
+	}
+
+	// modify private nets
+	if d.HasChange("private_ip") {
+		d.SetPartial("private_ip")
+		err := resourceCdsInstanceUpdatePrivateIp(d, meta, id, ctx)
+		if err != nil {
+			return err
+		}
+		waitInstanceUpdated(context.Background(), instanceService, id)
+	}
+
+	// modify ModifyInstanceSpec: cpu, ram
+	if d.HasChange("cpu") || d.HasChange("ram") || d.HasChange("instance_type") {
+		d.SetPartial("cpu")
+		d.SetPartial("ram")
+		_, newCpu := d.GetChange("cpu")
+		_, newRam := d.GetChange("ram")
+
+		request := instance.NewModifyInstanceSpecRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.Cpu = common.IntPtr(newCpu.(int))
+		request.Ram = common.IntPtr(newRam.(int))
+		if d.HasChange("instance_type") {
+			instanceType := d.Get("instance_type")
+			if instanceType != nil {
+				request.InstanceType = common.StringPtr(instanceType.(string))
+			}
+		}
+
+		descReq := instance.NewDescribeInstanceRequest()
+		descReq.InstanceId = common.StringPtr(id)
+
+		descResp, err := instanceService.DescribeInstance(ctx, descReq)
+		if err != nil {
+			return err
+		}
+		if *descResp.Code != "Success" {
+			return errors.New(fmt.Sprintf("get instance status failed:%s", *descResp.Message))
+		}
+		if *descResp.Data.Instances[0].InstanceStatus != "stop" {
+			stopReq := instance.NewStopInstanceRequest()
+			stopReq.InstanceId = common.StringPtr(id)
+			// stop instance first
+			stopResp, err := instanceService.StopInstance(ctx, stopReq)
+			if err != nil {
+				return err
+			}
+			if *stopResp.Code != "Success" {
+				return errors.New("failed to stop instance")
+			}
+			waitInstanceFinish(context.Background(), instanceService, id)
+		}
+		requestdata, _ := json.Marshal(request)
+		log.Printf("DEBUG_REQUEST: %s", string(requestdata))
+
+		_, err = instanceService.client.UseCvmClient().ModifyInstanceSpec(request)
+		if err != nil {
+			return err
+		}
+		waitInstanceUpdated(context.Background(), instanceService, id)
+
+		// run instance
+		runReq := instance.NewStartInstanceRequest()
+		runReq.InstanceId = common.StringPtr(id)
+		_, err = instanceService.StartInstance(ctx, runReq)
+		waitInstanceFinish(context.Background(), instanceService, id)
+	}
+
+	if d.HasChange("security_group_binding") {
+		d.SetPartial("security_group_binding")
+		o, n := d.GetChange("security_group_binding")
+		if o == nil {
+			o = new(schema.Set)
+		}
+		if n == nil {
+			n = new(schema.Set)
+		}
+		ois := o.(*schema.Set)
+		nis := n.(*schema.Set)
+		removeIngress := ois.Difference(nis).List()
+		newIngress := nis.Difference(ois).List()
+
+		for _, ing := range removeIngress {
+
+			oldbind := ing.(map[string]interface{})
+
+			request := security_group.NewLeaveSecurityGroupRequest()
+			request.SecurityGroupId = common.StringPtr(oldbind["security_group_id"].(string))
+			//response, err := client.LeaveSecurityGroup(request)
+
+			if oldbind["type"].(string) == "public" {
+				request.BindData = append(request.BindData, &security_group.BindData{
+					InstanceId: common.StringPtr(id),
+					PublicId:   common.StringPtr(oldbind["subnet_id"].(string)),
+				})
+				_, errRet := securityGroupService.LeaveSecurityGroup(ctx, request)
+				if errRet != nil {
+					return errRet
+				}
+			} else if oldbind["type"].(string) == "private" {
+				request.BindData = append(request.BindData, &security_group.BindData{
+					InstanceId: common.StringPtr(id),
+					PrivateId:  common.StringPtr(oldbind["subnet_id"].(string)),
+				})
+				_, errRet := securityGroupService.LeaveSecurityGroup(ctx, request)
+				if errRet != nil {
+					return errRet
+				}
+			}
+		}
+		waitInstanceUpdated(context.Background(), instanceService, id)
+		for _, ing := range newIngress {
+			newbind := ing.(map[string]interface{})
+			request := security_group.NewJoinSecurityGroupRequest()
+			request.SecurityGroupId = common.StringPtr(newbind["security_group_id"].(string))
+			if newbind["type"].(string) == "public" {
+				request.BindData = append(request.BindData, &security_group.BindData{
+					InstanceId: common.StringPtr(id),
+					PublicId:   common.StringPtr(newbind["subnet_id"].(string)),
+				})
+				securityGroupService.JoinSecurityGroup(ctx, request)
+			} else if newbind["type"].(string) == "private" {
+				request.BindData = append(request.BindData, &security_group.BindData{
+					InstanceId: common.StringPtr(id),
+					PrivateId:  common.StringPtr(newbind["subnet_id"].(string)),
+				})
+				securityGroupService.JoinSecurityGroup(ctx, request)
+			}
+		}
+	}
+
+	if d.HasChange("system_disk") {
+		osd, nsd := d.GetChange("system_disk")
+		var sysdisk = instance.SystemDisk{}
+		err := u.Mapstructure(nsd.(map[string]interface{}), &sysdisk)
+		if err != nil {
+			return err
+		}
+		var oldSysdisk = instance.SystemDisk{}
+		err = u.Mapstructure(osd.(map[string]interface{}), &oldSysdisk)
+		if err != nil {
+			return err
+		}
+		var changed bool = false
+		// 变更后的值为nil或者
+		if sysdisk.Type != nil && *sysdisk.Type != *oldSysdisk.Type {
+			changed = true
+		}
+		if sysdisk.Size != nil && *sysdisk.Size != *oldSysdisk.Size {
+			changed = true
+		}
+		if sysdisk.IOPS != nil && *sysdisk.IOPS != *oldSysdisk.IOPS {
+			changed = true
+		}
+
+		if changed {
+			extendSdRequest := instance.NewExtendSystemDiskRequest()
+			extendSdRequest.InstanceId = common.StringPtr(id)
+
+			extendSdRequest.Size = sysdisk.Size
+			extendSdRequest.IOPS = sysdisk.IOPS
+
+			extendSdResponse, err := instanceService.client.UseCvmClient().ExtendSystemDisk(extendSdRequest)
+			if err != nil {
+				return err
+			}
+
+			log.Printf("system disk update action:[%v],request[%v],response[%v],err[%v]",
+				extendSdRequest.GetAction(), extendSdRequest.ToJsonString(), extendSdResponse.ToJsonString(), err)
+
+			taskId := extendSdResponse.TaskId
+			_, err = taskService.DescribeTask(ctx, *taskId)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if d.HasChange("data_disks") {
+		_, nd := d.GetChange("data_disks")
+		n := make([]map[string]interface{}, 0)
+		for _, v := range nd.([]interface{}) {
+			n = append(n, v.(map[string]interface{}))
+		}
+		addList := make([]*instance.DataDisk, 0)
+		for _, v := range n {
+			//添加磁盘
+			i := v["size"].(int)
+			temp := instance.DataDisk{
+				Size: &i,
+				Type: common.StringPtr(v["type"].(string)),
+				IOPS: common.IntPtr(v["iops"].(int)),
+			}
+			addList = append(addList, &temp)
+
+		}
+
+		if len(addList) > 0 {
+			diskRequest := instance.NewCreateDiskRequest()
+			diskRequest.InstanceId = common.StringPtr(id)
+			diskRequest.DataDisks = addList
+			respose, err := instanceService.client.UseCvmClient().CreateDisk(diskRequest)
+			if err != nil {
+				return err
+			}
+			taskId := respose.TaskId
+			_, err = taskService.DescribeTask(ctx, *taskId)
+			if err != nil {
+				return err
+			}
+		}
+
+	}
+
+	if d.HasChange("update_data_disks") {
+		_, nd := d.GetChange("update_data_disks")
+
+		editList := make([]map[string]interface{}, 0)
+		for _, v := range nd.([]interface{}) {
+			editList = append(editList, v.(map[string]interface{}))
+		}
+
+		if len(editList) > 0 {
+			for _, v := range editList {
+				request := instance.NewResizeDiskRequest()
+				request.InstanceId = common.StringPtr(id)
+				request.DataSize = common.IntPtr(v["size"].(int))
+				request.DiskId = common.StringPtr(v["disk_id"].(string))
+				request.IOPS = common.IntPtr(v["iops"].(int))
+				respose, err := instanceService.client.UseCvmClient().ResizeDisk(request)
+				if err != nil {
+					return err
+				}
+				taskId := respose.TaskId
+				_, err = taskService.DescribeTask(ctx, *taskId)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	if d.HasChange("delete_data_disks") {
+		_, nd := d.GetChange("delete_data_disks")
+		delList := make([]string, 0)
+		for _, v := range nd.([]interface{}) {
+			value := v.(map[string]interface{})
+			delList = append(delList, value["disk_id"].(string))
+		}
+
+		if len(delList) > 0 {
+			diskRequest := instance.NewDeleteDiskRequest()
+			diskRequest.InstanceId = common.StringPtr(id)
+			diskRequest.DiskIds = common.StringPtrs(delList)
+			respose, err := instanceService.client.UseCvmClient().DeleteDisk(diskRequest)
+			if err != nil {
+				return err
+			}
+			taskId := respose.TaskId
+			_, err = taskService.DescribeTask(ctx, *taskId)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	// reset instances password
+	if d.HasChange("password") {
+		_, nd := d.GetChange("password")
+		request := instance.NewResetInstancesPasswordRequest()
+		request.InstanceIds = common.StringPtr(id)
+		request.Password = common.StringPtr(nd.(string))
+		response, err := instanceService.ResetInstancesPassword(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			log.Println("Reset instances password failed")
+		}
+		waitInstanceUpdated(ctx, instanceService, id)
+	}
+	if d.HasChange("host_name") {
+		_, newHostName := d.GetChange("host_name")
+		password, ok := d.GetOk("password")
+		if !ok {
+			return errors.New("password is required while reset hostname")
+		}
+		request := instance.NewModifyInstanceHostNameRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.HostName = common.StringPtr(newHostName.(string))
+		request.Password = common.StringPtr(password.(string))
+		resp, err := instanceService.client.UseCvmClient().ModifyInstanceHostName(request)
+		if err != nil {
+			return err
+		}
+		if resp == nil || resp.Code == nil {
+			return errors.New(fmt.Sprintf("modify host name failed,response error:%v", resp))
+		}
+		if *resp.Code != "Success" {
+			return errors.New(*resp.Message)
+		}
+		time.Sleep(time.Second * 10)
+	}
+
+	// reset image
+	if d.HasChange("image_id") {
+		imageId := d.Get("image_id")
+		request := instance.NewResetImageRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.ImageId = common.StringPtr(imageId.(string))
+		//add user_data params
+		if userdatas, ok := d.GetOk("user_data"); ok {
+			datas, ok := userdatas.([]interface{})
+			if ok == false {
+				return errors.New("param:user_data conversion errors")
+			}
+
+			var items []string
+			for _, v := range datas {
+				if vs, ok := v.(string); ok {
+					items = append(items, vs)
+				} else {
+					return errors.New("param:user_data elems conversion errors")
+				}
+			}
+			if len(items) > 0 {
+				request.UserData = common.StringPtrs(items)
+			}
+		}
+
+		if password, ok := d.GetOk("password"); ok {
+			request.Password = common.StringPtr(password.(string))
+		}
+		if imagePassword, ok := d.GetOk("image_password"); ok {
+			request.ImagePassword = common.StringPtr(imagePassword.(string))
+		}
+		if publicKey, ok := d.GetOk("public_key"); ok {
+			request.PublicKey = common.StringPtr(publicKey.(string))
+		}
+
+		descReq := instance.NewDescribeInstanceRequest()
+		descReq.InstanceId = common.StringPtr(id)
+
+		descResp, err := instanceService.DescribeInstance(ctx, descReq)
+		if err != nil {
+			return err
+		}
+		if *descResp.Code != "Success" {
+			return errors.New(fmt.Sprintf("get instance status failed:%s", *descResp.Message))
+		}
+		if *descResp.Data.Instances[0].InstanceStatus != "stop" {
+			stopReq := instance.NewStopInstanceRequest()
+			stopReq.InstanceId = common.StringPtr(id)
+			// stop instance first
+			stopResp, err := instanceService.StopInstance(ctx, stopReq)
+			if err != nil {
+				return err
+			}
+			if *stopResp.Code != "Success" {
+				return errors.New("failed to stop instance")
+			}
+			waitInstanceFinish(context.Background(), instanceService, id)
+		}
+		response, err := instanceService.ResetImage(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			log.Println("Reset instances password failed")
+		}
+		waitTaskFinished(ctx, taskService, *response.TaskId)
+	}
+
+	if d.HasChange("instance_charge_type") || d.HasChange("auto_renew") || d.HasChange("prepaid_month") {
+		instanceChargeType := d.Get("instance_charge_type")
+		autoRenew := d.Get("auto_renew")
+		prepaidMonth := d.Get("prepaid_month")
+		request := instance.NewModifyInstanceChargeTypeRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.InstanceChargeType = common.StringPtr(instanceChargeType.(string))
+		if autoRenew != nil {
+			request.AutoRenew = common.IntPtr(autoRenew.(int))
+		}
+		if prepaidMonth != nil {
+			request.PrepaidMonth = common.IntPtr(prepaidMonth.(int))
+		}
+		response, err := instanceService.ModifyInstanceChargeType(ctx, request)
+		if err != nil {
+			return err
+		}
+		if *response.Code != "Success" {
+			log.Println("Reset instances password failed")
+		}
+		waitTaskFinished(ctx, taskService, *response.TaskId)
+	}
+	d.Partial(false)
+	waitInstanceUpdated(context.Background(), instanceService, id)
+	return resourceCdsCcsInstanceRead(d, meta)
+}
+
+func resourceCdsCcsInstanceDelete(d *schema.ResourceData, meta interface{}) error {
+	log.Println("delete instance")
+	defer logElapsed("resource.cds_instance.read")()
+	logId := getLogId(contextNil)
+	ctx := context.WithValue(context.TODO(), "logId", logId)
+	ids := d.Id()
+	idArray := strings.Split(ids, ",")
+	securityGroupService := SecurityGroupService{client: meta.(*CdsClient).apiConn}
+	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
+
+	if securityGroupBinds, ok := d.GetOk("security_group_binding"); ok {
+		binds := securityGroupBinds.(*schema.Set).List()
+		for _, value := range idArray {
+			for _, v := range binds {
+				bind := v.(map[string]interface{})
+				request := security_group.NewLeaveSecurityGroupRequest()
+				request.SecurityGroupId = common.StringPtr(bind["security_group_id"].(string))
+				if bind["type"].(string) == "public" {
+					request.BindData = append(request.BindData, &security_group.BindData{
+						InstanceId: common.StringPtr(value),
+						PublicId:   common.StringPtr(bind["subnet_id"].(string)),
+					})
+					_, errRet := securityGroupService.LeaveSecurityGroup(ctx, request)
+					if errRet != nil {
+						return errRet
+					}
+				} else if bind["type"].(string) == "private" {
+					request.BindData = append(request.BindData, &security_group.BindData{
+						InstanceId: common.StringPtr(value),
+						PrivateId:  common.StringPtr(bind["subnet_id"].(string)),
+					})
+					_, errRet := securityGroupService.LeaveSecurityGroup(ctx, request)
+					if errRet != nil {
+						return errRet
+					}
+
+				}
+			}
+		}
+
+	}
+	time.Sleep(30 * time.Second)
+	request := instance.NewDeleteInstanceRequest()
+	for _, value := range idArray {
+		request.InstanceIds = append(request.InstanceIds, common.StringPtr(value))
+	}
+	_, err := instanceService.client.UseCvmClient().DeleteInstance(request)
+	if err != nil {
+		return err
+	}
+	time.Sleep(30 * time.Second)
+	return nil
+}
+
+func In_slice(val map[string]interface{}, slice []map[string]interface{}, key string) bool {
+	for _, v := range slice {
+		if v[key] == val[key] {
+			return true
+		}
+	}
+	return false
+}
+
+func In_slice_value(val map[string]interface{}, slice []map[string]interface{}, key string) (bool, map[string]interface{}) {
+	for _, v := range slice {
+		if v[key] == val[key] {
+			return true, v
+		}
+	}
+	return false, nil
+}
+
+func resourceCdsInstanceUpdatePrivateIp(
+	d *schema.ResourceData, meta interface{}, id string, ctx context.Context) error {
+
+	od, nd := d.GetChange("private_ip")
+	o := make([]map[string]interface{}, 0)
+	n := make([]map[string]interface{}, 0)
+	for _, v := range od.([]interface{}) {
+		o = append(o, v.(map[string]interface{}))
+	}
+	for _, v := range nd.([]interface{}) {
+		n = append(n, v.(map[string]interface{}))
+	}
+	editList := make([]map[string]interface{}, 0)
+
+	for _, v := range n {
+		if v["address"] != "auto" {
+			editList = append(editList, v)
+		}
+	}
+	instanceService := InstanceService{client: meta.(*CdsClient).apiConn}
+	for _, v := range editList {
+		request := instance.NewModifyIpRequest()
+		request.InstanceId = common.StringPtr(id)
+		request.InterfaceId = common.StringPtr(v["interface_id"].(string))
+		request.Address = common.StringPtr(v["address"].(string))
+		if value, ok := d.GetOk("password"); ok {
+			request.Password = common.StringPtr(value.(string))
+		}
+		_, err := instanceService.client.UseCvmClient().ModifyIpAddress(request)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func waitInstanceRunning(ctx context.Context, service InstanceService, instanceUuid string) error {
+	request := instance.NewDescribeInstanceRequest()
+	request.InstanceId = &instanceUuid
+
+	for {
+		time.Sleep(time.Second * 15)
+		response, err := service.DescribeInstance(ctx, request)
+		if err != nil {
+			return err
+		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+		for _, entry := range response.Data.Instances {
+			if *entry.InstanceStatus == "running" && *entry.InstanceId == instanceUuid {
+				return nil
+			}
+		}
+	}
+}
+
+func waitInstanceUpdated(ctx context.Context, service InstanceService, instanceUuid string) error {
+	request := instance.NewDescribeInstanceRequest()
+	request.InstanceId = &instanceUuid
+
+	for {
+		time.Sleep(time.Second * 15)
+		response, err := service.DescribeInstance(ctx, request)
+		if err != nil {
+			return err
+		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+		for _, entry := range response.Data.Instances {
+			if *entry.InstanceId == instanceUuid {
+				if *entry.InstanceStatus == "error" {
+					return errors.New("updating instance failed")
+				}
+				if *entry.InstanceStatus != "updating" {
+					return nil
+				}
+			}
+		}
+	}
+}
+
+func waitTaskFinished(ctx context.Context, service TaskService, taskId string) error {
+	time.Sleep(time.Second * 15)
+	response, err := service.DescribeTask(ctx, taskId)
+	if err != nil {
+		return err
+	}
+
+	if *response.Code != "Success" {
+		return errors.New(*response.Message)
+	}
+	return nil
+}
+
+func waitInstanceFinish(ctx context.Context, service InstanceService, instanceUuid string) error {
+	request := instance.NewDescribeInstanceRequest()
+	request.InstanceId = &instanceUuid
+	now := time.Now()
+	for {
+		time.Sleep(time.Second * 15)
+		response, err := service.DescribeInstance(ctx, request)
+		if err != nil {
+			return err
+		}
+
+		if *response.Code != "Success" {
+			return errors.New(*response.Message)
+		}
+		for _, entry := range response.Data.Instances {
+			if *entry.InstanceId == instanceUuid {
+				if *entry.InstanceStatus == "error" {
+					return errors.New("updating instance failed")
+				}
+				if *entry.InstanceStatus != "updating" && *entry.InstanceStatus != "stopping" && *entry.InstanceStatus != "starting" {
+					return nil
+				}
+			}
+		}
+		if now.Add(time.Hour * 2).Before(time.Now()) {
+			return errors.New("operate elapsed to many time,more than two hours")
+		}
+	}
+}
+
+func validateHostname() schema.SchemaValidateFunc {
+	return func(v interface{}, k string) (ws []string, errs []error) {
+		value := v.(string)
+		if len(value) < 1 {
+			errs = append(errs, fmt.Errorf("length of \"%s\"  should be more than or equal %d, the length of the current input value is %d", k, 1, len(value)))
+		}
+		if len(value) > 64 {
+			errs = append(errs, fmt.Errorf("length of \"%s\"  should be less than or equal %d, the length of the current input value is %d", k, 64, len(value)))
+		}
+		re := regexp.MustCompile(`^[a-zA-Z0-9\-.]+$`)
+		if !re.MatchString(value) {
+			errs = append(errs, errors.New(`static and transient hostnames should only contain a-z, A-Z, 0-9, "-", and "."`))
+		}
+		if strings.Contains(value, "..") ||
+			strings.Contains(value, "--") ||
+			strings.HasSuffix(value, ".") ||
+			strings.HasSuffix(value, "-") ||
+			strings.HasPrefix(value, "-") ||
+			strings.HasPrefix(value, ".") {
+			errs = append(errs, errors.New(`static and transient hostnames should cannot start or end with "." and "-". Consecutive "." or "-" are not allowed`))
+
+		}
+		return
+	}
+}
