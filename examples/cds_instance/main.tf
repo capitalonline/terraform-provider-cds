@@ -54,6 +54,7 @@ resource "cds_instance" "my_instance2" {
   cpu           = 4
   ram           = 4
   vdc_id        = cds_vdc.my_vdc.id
+  # dedicated_host_id = "7ad62c33-1234-4b92-919d-7122d46cf00a"
   # public_key = file("/home/guest/.ssh/test.pub")
   # password is required after v1.3.1
   password  = "123abc,.;"
